@@ -12,6 +12,50 @@
 @tailwind utilities;
 /* Stop purging. */
 
+/* Constant */
+
+:root {
+  --light-bg: #acb1dbb3;
+  --dark-bg: #242a3e;
+  --brand: #17694b;
+
+
+  --text: ${mode === 'light' ? '#212121': '#fff'};
+  --darktext: ${mode === 'light' ? '#fff': '#fff'};
+  --background: ${mode === 'light' ? '#111831cc': '#070a15cc'};
+  --menubackground: ${mode === 'light' ? 'var(--brand)': '#121212'};
+  --postbackground: ${mode === 'light' ? '#acb1dbb3': '#242a3e'};
+  --formbackground: ${mode === 'light' ? '#d9dcf2b3' : '#acb1dbb3'};
+  --cardbackground: ${mode === 'light' ? '#d9dcf2b3': '#111831cc'};
+  --mobilebackground: ${mode === 'light' ? '#1f263f' : '#0e0f13'};
+  --border: ${mode === 'light' ? '#e0e0e0': '#333'};
+  --title: ${mode === 'light' ? 'var(--brand)': '#80bbda'};
+  --link: ${mode === 'light' ? 'var(--brand)': '#72e0b8'};
+  --button: ${mode === 'light' ? 'var(--brand)': '#1E1E1E'};
+  --buttonhover: ${mode === 'light' ? '#fff': '#fff'};
+  --menutogglehover: ${mode === 'light' ? 'var(--brand)': '#80bbda'};
+  --menutogglehoverclose: ${mode === 'light' ? '#000': '#80bbda'};
+  --code: ${mode === 'light' ? '#121212': '#343434'};
+  --imgfilter: ${mode === 'light' ? 'brightness(100%)' : 'brightness(90%)'};
+  --transition: 500ms;
+  --textsize: ${text === 'normal' ? '1.25rem' : '1.625rem'};
+  --asize: ${text === 'normal' ? '1.25rem' : '1.625rem'};
+  --asize2: ${text === 'normal' ? '1rem' : '1.5rem'};
+  --h1size: ${text === 'normal' ? '2.5rem' : '3rem'};
+  --h2size: ${text === 'normal' ? '2rem' : '2.5rem'};
+  --h2sizecard: ${text === 'normal' ? '1.5rem' : '2rem'};
+  --h3size: ${text === 'normal' ? '1.75rem' : '2.25rem'};
+  --h4size: ${text === 'normal' ? '1.5rem' : '2rem'};
+  --h5size: ${text === 'normal' ? '1.375rem' : '1.875rem'};
+  --h6size: ${text === 'normal' ? '1.25rem' : '1.75rem'};
+  --colortoggleactice: ${mode === 'light' ? 'var(--background)': 'var(--brand)'};
+  --texttoggleactice: ${text === 'normal' ? 'var(--background)': 'var(--brand)'};
+  --colortoggleacticebox: ${mode === 'light' ? 'var(--brand)': '#fff'};
+  --svgcolor: ${mode === 'light' ? 'var(--brand)': '#fff'};
+  --texttoggleacticebox: ${text === 'normal' ? 'var(--svgcolor)': '#fff'};
+  --navlinks: ${text === 'normal' ? '18px' : '24px'};
+}
+
 /* Your own custom utilities */
 
 .has-text-align-left {
@@ -101,4 +145,100 @@
 
 .wp-block-media-text {
   @apply grid grid-cols-2 gap-4;
+}
+
+/* Light Mode Specific Colors*/
+
+.light-bg {
+  background: var(--light-bg)
+}
+
+.dark-bg {
+  background: var(--dark-bg)
+}
+
+/* Dark Mode Specific Colors */
+
+@media (prefers-color-scheme: dark) {
+
+
+
+}
+
+
+/* Icon Specific Styles */ 
+
+.social-link {
+  margin: 5px 10px;
+
+svg {
+filter: invert(1);
+height: 40px;
+width: 40px;
+}}
+
+/* Footer Specific Styles */
+
+.footer-container {
+  background-color: var(--postbackground);
+    color: var(--darktext);
+    padding-bottom: 5px;
+
+    p {
+      width: 100%;
+      padding: 0px 0px 20px 0px;
+      margin: 0px;
+      text-align: center;
+      font-size: 0.825em;
+  }
+}
+
+.container-card {
+  border-radius: 12px;
+  background-color: var(--background);
+  margin: 0px 5px 5px 5px;
+
+}
+
+.social-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 300px;
+  border-radius: 12px;
+  background-color: var(--background);
+  margin: 0px 5px 5px 5px;
+  justify-content: center;
+  padding: 5px 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.grid-container {
+    padding: 48px 24px;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 32px;
+    width: calc(100% - 58px);
+    justify-items: center;
+
+    @media only screen and (min-width: 680px) {
+        grid-template-columns: 1fr 1fr;
+
+    }
+}
+
+.grid-item {
+  ul {
+    list-style: none;
+    padding-left: 5px;
+    line-height: 2em;
+}
+
+.svg-icon {
+    margin-bottom: -15px;
+    width: 40px;
+    height: auto;
+}
 }

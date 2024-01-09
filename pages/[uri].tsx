@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import Head from 'next/head'
+import PostBody from '../components/post-body'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
 import Header from '../components/header'
@@ -25,8 +26,14 @@ export default function Post({ page, preview }) {
           <>
           <article>
             <title>
+              
               {`${page.title} | Next.js Blog Example with ${CMS_NAME}`}
             </title>
+            <PostBody content={page.content} />
+            <footer>
+              <p>Hello World!</p>
+            </footer>
+
           </article>
           </>
         )}

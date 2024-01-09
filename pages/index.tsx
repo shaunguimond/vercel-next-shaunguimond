@@ -7,18 +7,26 @@ import Intro from '../components/intro'
 import Layout from '../components/layout'
 import { getAllPostsForHome } from '../lib/api'
 import { CMS_NAME } from '../lib/constants'
+import { useState } from 'react';
+import { LightDarkModeToggle } from '../lib/icons'
 
 export default function Index({ allPosts: { edges }, preview }) {
   const heroPost = edges[0]?.node
   const morePosts = edges.slice(1)
 
+  const [theme, setTheme] = useState("light");
+
   return (
-    <Layout preview={preview}>
+    <Layout preview={preview} theme={theme}>
       <Head>
         <title>{`Next.js Blog Example with ${CMS_NAME}`}</title>
       </Head>
       <Container>
+
         <Intro />
+        <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}> 
+        <LightDarkModeToggle/>
+      </button>
         {heroPost && (
           <HeroPost
             title={heroPost.title}
