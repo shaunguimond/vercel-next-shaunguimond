@@ -20,7 +20,6 @@ export default function Post({ page, preview }) {
   return (
     <Layout preview={preview}>
       <Container>
-        <Header />
         {router.isFallback ? (
           <title>Loading…</title>
         ) : (
@@ -31,10 +30,6 @@ export default function Post({ page, preview }) {
               {`${page.title} | Next.js Blog Example with ${CMS_NAME}`}
             </title>
             <PostBody content={page.content} />
-            <footer>
-              <p>Hello World!</p>
-            </footer>
-
           </article>
           </>
         )}
