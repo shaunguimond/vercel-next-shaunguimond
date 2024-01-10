@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Nav() {
     
     return(
-        <nav className="flex flex-row justify-around gap-10"> 
+        <nav className="hidden tablet:flex flex-row justify-around gap-10 "> 
             
             {navLinks.map((link, index) => {
             return (

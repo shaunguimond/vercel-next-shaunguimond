@@ -126,6 +126,23 @@ height: 40px;
 width: 40px;
 }}
 
+/* Navigation Specific Styles */
+
+.nav-fixed {
+  top: 5px;
+  -webkit-transition: padding 0.5s ease;
+  transition: padding 0.5s ease;
+  border-radius: 12px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  width: calc(100% - 10px);
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  
+}
+
 /* Footer Specific Styles */
 
 .footer-container {

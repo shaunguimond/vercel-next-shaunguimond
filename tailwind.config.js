@@ -7,6 +7,24 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        'mobile': '480px',
+        // => @media (min-width: 480px) { ... }
+        'sm': '640px',
+        // => @media (min-width: 640px) { ... }
+  
+        'tablet': '768px',
+        // => @media (min-width: 768px) { ... }
+  
+        'lg': '1024px',
+        // => @media (min-width: 1024px) { ... }
+  
+        'desktop': '1280px',
+        // => @media (min-width: 1280px) { ... }
+  
+        '2xl': '1536px',
+        // => @media (min-width: 1536px) { ... }
+      },
       colors: {
         'laccent-1': '#acb1dbb3',
         'daccent-1': '#242a3e',
