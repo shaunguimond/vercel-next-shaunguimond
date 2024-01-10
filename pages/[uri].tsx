@@ -8,6 +8,7 @@ import Header from '../components/header'
 import Layout from '../components/layout'
 import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
 import { CMS_NAME } from '../lib/constants'
+import { useState } from 'react';
 
 export default function Post({ page, preview }) {
   const router = useRouter()

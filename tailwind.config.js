@@ -4,9 +4,14 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
+        'laccent-1': '#acb1dbb3',
+        'daccent-1': '#242a3e',
+        'daccent-2': '#070a15cc',
+        'brand': '#17694b',
         'accent-1': '#FAFAFA',
         'accent-2': '#EAEAEA',
         'accent-7': '#333',
@@ -22,6 +27,12 @@ module.exports = {
       lineHeight: {
         tight: 1.2,
       },
+      fontFamily: {
+        QuicksandRegular: 'QuicksandRegular',
+        Gotu: ['Gotu'],
+        sans: ['QuicksandRegular', 'sans-serif'],
+        serif: ['Gotu', 'serif']
+      },
       fontSize: {
         '5xl': '2.5rem',
         '6xl': '2.75rem',
@@ -35,4 +46,7 @@ module.exports = {
     },
   },
   plugins: [],
+  corePlugins: {
+    fontFamily: true,
+  }
 }
