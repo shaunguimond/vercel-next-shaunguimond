@@ -26,13 +26,16 @@ export default function PostPreview({
         ></Link>
       </h3>
       <div className="text-lg mb-4">
-        <Date dateString={date} />
+        
       </div>
       <div
         className="text-lg leading-relaxed mb-4"
         dangerouslySetInnerHTML={{ __html: excerpt }}
       />
-      <Avatar author={author} />
+        <div className="flex flex-row items-center gap-10">
+          <Avatar author={author} />
+          <Date dateString={date} />
+        </div>
     </div>
   )
 }

@@ -28,7 +28,7 @@ export default function HeroPost({
             ></Link>
           </h3>
           <div className="mb-4 md:mb-0 text-lg">
-            <Date dateString={date} />
+            
           </div>
         </div>
         <div>
@@ -36,7 +36,10 @@ export default function HeroPost({
             className="text-lg leading-relaxed mb-4"
             dangerouslySetInnerHTML={{ __html: excerpt }}
           />
-          <Avatar author={author} />
+          <div className="flex flex-row items-center gap-10">
+            <Avatar author={author} />
+            <Date dateString={date} />
+          </div>
         </div>
       </div>
     </section>
