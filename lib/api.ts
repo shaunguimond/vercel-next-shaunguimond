@@ -211,6 +211,41 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
   return data
 }
 
+/*
+export async function getAllPostsByCategory(preview) {
+  const data = await fetchAPI(
+    `
+    query PostByCategory($id: ID = "") {
+      category(id: $id, idType: NAME) {
+        posts(first: 20) {
+          edges {
+            node {
+              date
+              slug
+              title
+              featuredImageId
+              excerpt
+              featuredImage {
+                node
+              }
+            }
+          }
+        }
+      }
+    }
+  `,
+    {
+      variables: {
+        onlyEnabled: !preview,
+        preview,
+      },
+    }
+  )
+
+  return data?.postsbycategory
+}
+*/
+
 export async function getPreviewPage(id, idType = 'DATABASE_ID') {
   const data = await fetchAPI(
     `

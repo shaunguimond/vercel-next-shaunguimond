@@ -4,6 +4,7 @@ import { LinkedIn } from '../lib/icons';
 import { Polywork } from '../lib/icons';
 import { Github } from '../lib/icons';
 import { Threads } from '../lib/icons';
+import SectionSeparator from './section-separator';
 
 /*
 export default function Footer() {
@@ -52,6 +53,7 @@ export default function Footer() {
           <div className="grid-container">
               <div className="grid-item">
                   <h4>Quick Links</h4>
+                  <hr className="mb-3"/>
                   <ul>
                       <li><a href="/category/projects">Projects</a></li>
                       <li><a href="/about-shaun">About</a></li>
@@ -61,7 +63,8 @@ export default function Footer() {
               </div>
 
               <div className="grid-item">
-                  <h4>Get in Touch</h4>
+                  <h4 >Get in Touch</h4>
+                  <hr className="mb-3"/>
                   <ul>
                       <li>
                           <svg arya-label="email address" className="svg-icon" viewBox="0 0 20 20"><title>Email</title>

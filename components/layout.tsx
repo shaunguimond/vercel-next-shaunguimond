@@ -10,7 +10,7 @@ export default function Layout({ preview, children}) {
       <div className="min-h-screen">
         <Alert preview={preview} />
         <Header />
-        <main className="pt-28 bg-laccent-1 dark:bg-daccent-1">{children}</main>
+        <main className="pt-28">{children}</main>
       </div>
       <Footer />
     </>

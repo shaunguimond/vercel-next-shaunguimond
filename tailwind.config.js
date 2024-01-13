@@ -27,9 +27,10 @@ module.exports = {
       },
       colors: {
         'laccent-1': '#acb1dbb3',
+        'laccent-2': '#d9dcf2b3',
         'daccent-1': '#242a3e',
         'daccent-2': '#070a15cc',
-        'brand': '#17694b',
+        'brand': 'rgba(23,105,75, .5)',
         'accent-1': '#FAFAFA',
         'accent-2': '#EAEAEA',
         'accent-7': '#333',
