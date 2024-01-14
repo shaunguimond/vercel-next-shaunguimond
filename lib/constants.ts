@@ -19,7 +19,7 @@ export const navLinks = [
   },
   {
     name: "Projects",
-    path: "category/projects/"
+    path: "/category/projects/"
   },
   {
     name: "About Shaun",

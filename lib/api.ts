@@ -211,22 +211,58 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
   return data
 }
 
-/*
-export async function getAllPostsByCategory(preview) {
+export async function getAllCategoriesWithSlug() {
+  const data = await fetchAPI(`
+  query getAllCategoriesWithSlug {
+    categories(first: 10) {
+      edges {
+        node {
+          slug
+          id
+          name
+          uri
+        }
+      }
+    }
+  }
+  `)
+
+  console.log('getAllCategoriesWithSlug data:', data);
+  return data?.categories
+}
+
+
+export async function getAllPostsByCategory( slug ) {
+
   const data = await fetchAPI(
     `
-    query PostByCategory($id: ID = "") {
-      category(id: $id, idType: NAME) {
+    query PostsByCategory($id: ID!) {
+      category(id: $id, idType: SLUG) {
+        name
+        slug
+        databaseId
         posts(first: 20) {
           edges {
             node {
-              date
-              slug
-              title
-              featuredImageId
               excerpt
+              slug
+              uri
+              title
               featuredImage {
-                node
+                node {
+                  sourceUrl
+                }
+              }
+              date
+              author {
+                node {
+                  name
+                  firstName
+                  lastName
+                  avatar {
+                    url
+                  }
+                }
               }
             }
           }
@@ -236,15 +272,13 @@ export async function getAllPostsByCategory(preview) {
   `,
     {
       variables: {
-        onlyEnabled: !preview,
-        preview,
+        id: slug,
       },
     }
   )
 
-  return data?.postsbycategory
+  return data?.category
 }
-*/
 
 export async function getPreviewPage(id, idType = 'DATABASE_ID') {
   const data = await fetchAPI(
@@ -338,7 +372,7 @@ export async function getPageAndMorePages(uri, preview, previewData) {
             : ''
         }
       }
-      pages(first: 3, where: { orderby: { field: DATE, order: DESC } }) {
+      pages(first: 10, where: { orderby: { field: DATE, order: DESC } }) {
         edges {
           node {
             ...PageFields
