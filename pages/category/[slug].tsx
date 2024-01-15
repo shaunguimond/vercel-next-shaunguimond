@@ -9,10 +9,10 @@ import Container from '../../components/container'
 
 
 
-export default function PostsByCategory({ posts, preview }) {
+export default function PostsByCategory({ category, preview }) {
     const router = useRouter()
 
-    if (!router.isFallback && !posts?.slug) {
+    if (!router.isFallback && !category?.slug) {
         return <ErrorPage statusCode={404} />
       }
 
@@ -21,12 +21,12 @@ export default function PostsByCategory({ posts, preview }) {
       <Container>
         <div>
             <h1 className="text-6xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight md:leading-none mb-12 text-center">
-                {posts.name}
-                
+                {category.name}
+
             </h1>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32">
-        {posts.posts.edges.map(({ node }) => (
+        {category.posts.edges.map(({ node }) => (
         <PostPreview
           key={node.databaseId}
           title={node.title}
@@ -43,14 +43,13 @@ export default function PostsByCategory({ posts, preview }) {
     )
 }
 
-export const getStaticProps: GetStaticProps = async ({ params, preview = false }) => {
+export const getStaticProps: GetStaticProps = async ({ params}) => {
     const data = await getAllPostsByCategory(params?.slug);
 
     
     return {
       props: {
-        preview,
-        posts: data || null,
+        category: data || [],
       },
       revalidate: 10,
     };
@@ -61,7 +60,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: allcategories.edges.map(({ node }) => `/category/${node.slug}`) || [],
-    fallback: true,
+    fallback: false,
   }
 }
 

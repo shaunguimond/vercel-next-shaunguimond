@@ -227,7 +227,6 @@ export async function getAllCategoriesWithSlug() {
   }
   `)
 
-  console.log('getAllCategoriesWithSlug data:', data);
   return data?.categories
 }
 
