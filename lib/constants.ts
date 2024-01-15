@@ -18,6 +18,10 @@ export const navLinks = [
     path: "/category/technology/"
   },
   {
+    name: "Personal",
+    path: "/category/personal/"
+  },
+  {
     name: "Projects",
     path: "/category/projects/"
   },

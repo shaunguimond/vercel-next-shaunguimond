@@ -1,15 +1,21 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes';
-import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
+import { MoonIcon, SunIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Nav from './nav';
+import MobileNav from './mobile-nav';
+import { useState } from 'react';
+
+
 
 
 
 export default function Header() {
 const { systemTheme, theme, setTheme } = useTheme();
+const [ nav, setNav ] = useState(false);
 
 const renderThemeChanger = () => {
   const currentTheme = theme === "system" ? systemTheme : theme;
+  
 
   if (currentTheme === "dark") 
     {
@@ -33,9 +39,20 @@ const renderThemeChanger = () => {
           Shaun Guimond
         </Link>
       </h2>
-      <Nav></Nav>
-      <div>{renderThemeChanger()}</div>
+      <Nav />
+        <div className="flex flex-row gap-5">
+          <div>{renderThemeChanger()}</div>
+          <div
+            onClick={() => setNav(!nav)}
+            className="cursor-pointer pr-4 z-10 text-gray-500 lg:hidden">
+            {nav ? <XMarkIcon className="w-8 h-8 text-accent-1" /> : <Bars3Icon className="w-8 h-8 text-accent-1" />}
+          </div>
 
+          {nav && (
+            <MobileNav />
+          )}
+
+        </div>
       </div>
     </div>
   )

@@ -33,6 +33,7 @@ module.exports = {
         'brand': 'rgba(23,105,75, .5)',
         'accent-1': '#FAFAFA',
         'accent-2': '#EAEAEA',
+        'accent-3': '#acb1db',
         'accent-7': '#333',
         success: '#0070f3',
         cyan: '#79FFE1',
