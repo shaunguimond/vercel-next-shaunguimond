@@ -17,7 +17,8 @@ export default function PostsByCategory({ category, preview }) {
       }
 
     return(
-        <Layout preview={preview}>
+
+    <Layout preview={preview}>
       <Container>
         <div>
             <h1 className="text-6xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight md:leading-none mb-12 text-center">
@@ -60,7 +61,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: allcategories.edges.map(({ node }) => `/category/${node.slug}`) || [],
-    fallback: false,
+    fallback: true,
   }
 }
 
