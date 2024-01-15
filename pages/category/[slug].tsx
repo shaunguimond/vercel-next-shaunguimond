@@ -61,7 +61,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: allcategories.edges.map(({ node }) => `/category/${node.slug}`) || [],
-    fallback: true,
+    fallback: false,
   }
 }
 
