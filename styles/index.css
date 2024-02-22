@@ -290,3 +290,21 @@
   width: 40px;
   height: auto;
 }
+
+/* Post styles */
+
+.post-body_content__ye_eq > * {
+  max-width: 48rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.post-body_content__ye_eq .alignwide {
+  max-width: 60rem;
+}
+
+.post-body_content__ye_eq .alignfull {
+  max-width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+}
