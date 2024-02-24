@@ -293,7 +293,7 @@
 
 /* Post styles */
 
-.wp-block-group__inner-container h2 {
+.wp-block-group__inner-container .wp-block-heading {
   margin-top: 0px;
 }
 
