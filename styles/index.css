@@ -331,6 +331,10 @@
   margin-top: 1.25rem;
 }
 
+.wp-block-button {
+  margin: auto;
+}
+
 .wp-block-button .wp-block-button__link {
     border-radius: 12px;
     background-color: rgba(23,105,75, .75);
@@ -346,3 +350,13 @@
 
 }
     
+.wp-block-table.aligncenter {
+  justify-content: center;
+  display: flex;
+}
+
+
+.wp-block-table table td {
+    border: 1px solid white;
+    padding: 0.25rem;
+}
