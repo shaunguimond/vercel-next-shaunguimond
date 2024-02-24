@@ -357,6 +357,14 @@
 
 
 .wp-block-table table td {
+  border: 1px solid #242a3e;
+  padding: 0.25rem;
+}
+
+/* Styling for Dark Mode in CSS.*/
+
+html.dark {
+  .wp-block-table table td {
     border: 1px solid white;
-    padding: 0.25rem;
+  }
 }
