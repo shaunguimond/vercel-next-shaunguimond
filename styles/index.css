@@ -310,3 +310,35 @@
   left: 0px;
   right: 0px;
 }
+
+
+.is-content-justification-center {
+  justify-content: center;
+
+}
+
+.is-layout-flex {
+  display: flex;
+
+}
+
+.wp-block-buttons {
+  padding: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.wp-block-button .wp-block-button__link {
+    border-radius: 12px;
+    background-color: rgba(23,105,75, .75);
+    padding: 1.25rem 1.25rem;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+
+}
+
+.wp-block-button .wp-block-button__link:hover {
+  background-color: rgba(23,105,75, .75);
+
+}
+    
