@@ -353,6 +353,7 @@
 .wp-block-table.aligncenter {
   justify-content: center;
   display: flex;
+  margin-bottom: 1.25rem;
 }
 
 
