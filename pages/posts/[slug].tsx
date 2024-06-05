@@ -15,6 +15,7 @@ import { getAllPostsWithSlug, getPostAndMorePosts } from '../../lib/api'
 import { CMS_NAME } from '../../lib/constants'
 import { useState } from 'react';
 
+// Used to generate `/posts/[slug]` posts from the Wordpress backend.
 export default function Post({ post, posts, preview }) {
   const router = useRouter()
   const morePosts = posts?.edges
@@ -59,6 +60,7 @@ export default function Post({ post, posts, preview }) {
   )
 }
 
+// Used for Static Site Generation (SSG) to pre-render pages at build time.
 export const getStaticProps: GetStaticProps = async ({
   params,
   preview = false,
@@ -72,6 +74,7 @@ export const getStaticProps: GetStaticProps = async ({
       post: data.post,
       posts: data.posts,
     },
+    //  For Incremental Static Regeneration (ISR), set the revalidate option to 10 seconds.
     revalidate: 10,
   }
 }

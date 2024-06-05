@@ -1,5 +1,6 @@
 const API_URL = process.env.WORDPRESS_API_URL
 
+// Function to fetch data from WPGraphQL API
 async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
   const headers = { 'Content-Type': 'application/json' }
 
@@ -27,6 +28,7 @@ async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
   return json.data
 }
 
+// function call to GraphQL API to get a preview post.
 export async function getPreviewPost(id, idType = 'DATABASE_ID') {
   const data = await fetchAPI(
     `
@@ -44,6 +46,7 @@ export async function getPreviewPost(id, idType = 'DATABASE_ID') {
   return data.post
 }
 
+// function call to GraphQL API to get all post's slug
 export async function getAllPostsWithSlug() {
   const data = await fetchAPI(`
     {
@@ -59,6 +62,7 @@ export async function getAllPostsWithSlug() {
   return data?.posts
 }
 
+// function call to GraphQL API to get 20 posts for the home page. 
 export async function getAllPostsForHome(preview) {
   const data = await fetchAPI(
     `
@@ -101,6 +105,7 @@ export async function getAllPostsForHome(preview) {
   return data?.posts
 }
 
+// Function call to GraphQL API to get a post and get related posts (3 other posts).
 export async function getPostAndMorePosts(slug, preview, previewData) {
   const postPreview = preview && previewData?.post
   // The slug may be the id of an unpublished post
@@ -211,6 +216,8 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
   return data
 }
 
+
+// Function call to GraphQL API to get all posts categories. 
 export async function getAllCategoriesWithSlug() {
   const data = await fetchAPI(`
   query getAllCategoriesWithSlug {
@@ -231,6 +238,7 @@ export async function getAllCategoriesWithSlug() {
 }
 
 
+// Function call to GraphQL API to get all posts based on category.
 export async function getAllPostsByCategory( slug ) {
 
   const data = await fetchAPI(
@@ -279,6 +287,7 @@ export async function getAllPostsByCategory( slug ) {
   return data?.category
 }
 
+// Function call to GraphQL API to get a preview page.
 export async function getPreviewPage(id, idType = 'DATABASE_ID') {
   const data = await fetchAPI(
     `
@@ -296,6 +305,7 @@ export async function getPreviewPage(id, idType = 'DATABASE_ID') {
   return data.page
 }
 
+// function call to GraphQL API to get all pages's uri
 export async function getAllPagesWithUri() {
   const data = await fetchAPI(`
     {
@@ -311,7 +321,7 @@ export async function getAllPagesWithUri() {
   return data?.pages
 }
 
-
+// function call to GraphQL API to get a page and more pages to be displayed if desired. 
 export async function getPageAndMorePages(uri, preview, previewData) {
   const pagePreview = preview && previewData?.page
   // The slug may be the id of an unpublished page

@@ -10,7 +10,7 @@ import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
 import { CMS_NAME } from '../lib/constants'
 import { useState } from 'react';
 
-export default function Post({ page, preview }) {
+export default function Page({ page, preview }) {
   const router = useRouter()
 
   if (!router.isFallback && !page?.uri) {
@@ -26,8 +26,7 @@ export default function Post({ page, preview }) {
           <>
           <article>
             <title>
-              
-              {`${page.title} | Next.js Blog Example with ${CMS_NAME}`}
+              {`${page.title} | Next.js Blog with ${CMS_NAME}`}
             </title>
             <PostBody content={page.content} />
           </article>
@@ -39,6 +38,7 @@ export default function Post({ page, preview }) {
 }
 
 
+// Used for Static Site Generation (SSG) to pre-render pages at build time.
 export const getStaticProps: GetStaticProps = async ({
   params,
   preview = false,
@@ -52,6 +52,7 @@ export const getStaticProps: GetStaticProps = async ({
       page: data.page,
       pages: data.pages,
     },
+    //  For Incremental Static Regeneration (ISR), set the revalidate option to 10 seconds.
     revalidate: 10,
   }
 }
