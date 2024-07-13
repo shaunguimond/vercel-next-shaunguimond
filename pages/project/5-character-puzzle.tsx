@@ -153,7 +153,7 @@ export default function WordGuesser({preview}) {
                     <form id="word-form">
                         <input type="text" maxLength={5} id="word-input" value={inputValue} onChange={(event) => setInputValue(event.target.value)}  />
                         {confirm5Letters() === true ?
-                        <button id="submit" aria-autocomplete="false" onClick={handleWordifySubmit}>Submit</button>
+                        <button id="submit" aria-autocomplete="none" onClick={handleWordifySubmit}>Submit</button>
                         :
                         <button id="submit" disabled>Submit</button>}
 
