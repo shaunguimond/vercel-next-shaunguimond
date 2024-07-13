@@ -366,3 +366,90 @@ html.dark {
     border: 1px solid white;
   }
 }
+.word-guesser {
+  width: 250px;
+}
+
+.word-guesser form {
+  display: flex;
+  flex-direction: column;
+}
+
+.you-win {
+  background: green;
+  padding: 15px 8px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: xx-large;
+}
+
+.you-lose {
+  background: red;
+  padding: 15px 8px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: xx-large;
+} 
+
+.correct-char {
+  background: rgba(0, 128, 0, 0.75);
+  backdrop-filter: blur(12px);
+}
+
+.incorrect-char {
+  background: rgba(255, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+}
+
+.wrong-index-char {
+  background-color: rgba(255, 255, 0, 0.75);
+  backdrop-filter: blur(12px);
+}
+
+#word-list {
+  width: 100%;
+  text-align: center;
+  text-transform: capitalize;
+  padding-left: 0px;
+  color: black;
+  font-weight: bold;
+}
+
+#word-list li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+}
+
+#word-list li span {
+  height: 40px;
+  width: 40px;
+  padding-top: 8px;
+  border-radius: 8px;
+}
+
+#word-form input {
+  font-family: monospace;
+  text-transform: uppercase;
+  color:black;
+  padding-left: 15px;
+  letter-spacing: 30px;
+  border: 0;
+  background-image: linear-gradient(to right, white 45px, transparent 1px);
+  background-color: transparent;
+  background-size: 50px 45px;
+  background-repeat: repeat-x;
+  width: calc(5ch + (4*36px) + 20px);
+  font-size: 35px;
+  outline: none;
+  caret-color: transparent;
+}
+
+#word-form button {
+  margin-top: 1.5rem;
+  background-color: rgba(23,105,75, .75);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem;
+  font-weight: bold;
+}

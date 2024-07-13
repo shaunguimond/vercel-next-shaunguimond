@@ -30,3 +30,12 @@ export const navLinks = [
     path: "/about-shaun/"
   }
 ];
+
+export const WORDS = new Map<string, string>([
+  ["EVERY", "VERYE"],
+  ["SHAUN", "NASHU"],
+  ["SCENE", "CENSE"],
+  ["GUILD", "GILUD"],
+  ["CACAO", "AACOC"],
+  ]
+);
