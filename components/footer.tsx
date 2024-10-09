@@ -1,10 +1,8 @@
-import Container from './container'
-import { EXAMPLE_PATH } from '../lib/constants'
+import Link from 'next/link';
 import { LinkedIn } from '../lib/icons';
 import { Polywork } from '../lib/icons';
 import { Github } from '../lib/icons';
 import { Threads } from '../lib/icons';
-import SectionSeparator from './section-separator';
 
 /*
 export default function Footer() {
@@ -55,9 +53,9 @@ export default function Footer() {
                   <h4>Quick Links</h4>
                   <hr className="mb-3"/>
                   <ul>
-                      <li><a href="/category/projects">Projects</a></li>
-                      <li><a href="/about-shaun">About</a></li>
-                      <li><a href="/privacy-policy">Privacy Policy</a></li>
+                      <li><Link href="/category/projects">Projects</Link></li>
+                      <li><Link href="/about-shaun">About</Link></li>
+                      <li><Link href="/privacy-policy">Privacy Policy</Link></li>
 
                   </ul>
               </div>

@@ -49,7 +49,7 @@ const renderThemeChanger = () => {
           </div>
 
           {nav && (
-            <MobileNav />
+            <MobileNav setNav={setNav}/>
           )}
 
         </div>

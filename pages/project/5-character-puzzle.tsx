@@ -38,7 +38,7 @@ export default function WordGuesser({preview}) {
      * @returns A random word.
      */
     function getRandomWord(collection: Map<string, string>): string {
-        let keys = Array.from(collection.keys());
+        const keys = Array.from(collection.keys());
         return keys[Math.floor(Math.random() * keys.length)];
     }
 
@@ -151,9 +151,9 @@ export default function WordGuesser({preview}) {
                     attempts >= 6 ? 
                     <div className="you-lose">You lost 🥺</div> :
                     <form id="word-form">
-                        <input type="text" maxLength={5} id="word-input" value={inputValue} onChange={(event) => setInputValue(event.target.value)}  />
+                        <input type="text" aria-autocomplete="none" maxLength={5} id="word-input" value={inputValue} onChange={(event) => setInputValue(event.target.value)}  />
                         {confirm5Letters() === true ?
-                        <button id="submit" aria-autocomplete="none" onClick={handleWordifySubmit}>Submit</button>
+                        <button id="submit" onClick={handleWordifySubmit}>Submit</button>
                         :
                         <button id="submit" disabled>Submit</button>}
 

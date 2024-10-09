@@ -1,14 +1,11 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
-import Head from 'next/head'
 import PostBody from '../components/post-body'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
-import Header from '../components/header'
 import Layout from '../components/layout'
 import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
 import { CMS_NAME } from '../lib/constants'
-import { useState } from 'react';
 
 export default function Page({ page, preview }) {
   const router = useRouter()
@@ -21,7 +18,7 @@ export default function Page({ page, preview }) {
     <Layout preview={preview}>
       <Container>
         {router.isFallback ? (
-          <title>Loading…</title>
+            <title>Loading…</title>
         ) : (
           <>
           <article>
