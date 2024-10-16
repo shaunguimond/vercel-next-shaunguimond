@@ -90,6 +90,10 @@
 
 /* Your own custom utilities */
 
+.bg-sg-multicolour {
+  background: linear-gradient(235deg, #0daeab12 60%, #9113b725 60%), linear-gradient(500deg, #0daeab45 60%, #9113b720 60%);
+}
+
 .alignfull {
 
   left: 50%;
@@ -223,25 +227,12 @@ figure.wp-block-gallery {
 
 
 /* Footer Specific Styles */
-
-.footer-container {
-    padding-bottom: 5px;
-
-    
-}
-
 .footer-container p {
   width: 100%;
   padding: 0px 0px 20px 0px;
   margin: 0px;
   text-align: center;
   font-size: 0.825em;
-}
-
-.container-card {
-  border-radius: 12px;
-  margin: 0px 5px 5px 5px;
-
 }
 
 .social-container {

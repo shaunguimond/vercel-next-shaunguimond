@@ -12,14 +12,14 @@ export default function PostPreview({
   slug,
 }) {
   return (
-    <article className='shadow-small rounded-2xl container-card bg-laccent-2 h-fit 
-    dark:bg-daccent-2 hover:shadow-medium transition-shadow duration-200'>
-      <div className="mb-5">
+    <article className='shadow-small rounded-2xl h-fit 
+    bg-sg-multicolour hover:shadow-medium transition-shadow duration-200'>
+      <div className='mb-0'>
         {coverImage && (
           <CoverImage title={title} coverImage={coverImage} slug={slug} />
         )}
       </div>
-      <div className="px-5">
+      <div className="p-5 backdrop-blur-xl rounded-2xl">
         <h3 className="text-3xl mb-3 leading-snug">
           <Link
             href={`/posts/${slug}`}
@@ -31,7 +31,7 @@ export default function PostPreview({
           className="text-lg leading-relaxed mb-4 post-excerpt"
           dangerouslySetInnerHTML={{ __html: excerpt }}
         />
-          <div className="flex flex-row items-center gap-10 mb-4">
+          <div className="flex flex-row items-center gap-10">
             <Avatar author={author} />
             <Date dateString={date} />
           </div>
