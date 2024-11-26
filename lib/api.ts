@@ -158,6 +158,9 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
     query PostBySlug($id: ID!, $idType: PostIdType!) {
       post(id: $id, idType: $idType) {
         ...PostFields
+        extraPostInfo {
+          blueskyPostUrl
+        }
         content
         ${
           // Only some of the fields of a revision are considered as there are some inconsistencies
