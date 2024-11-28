@@ -6,6 +6,7 @@ import HeroPost from '../components/hero-post'
 import Layout from '../components/layout'
 import { getAllPostsForHome } from '../lib/api'
 import { CMS_NAME } from '../lib/constants'
+import BskySectionRecentPosts from '../components/Bluesky/bsky-section-recent-posts'
 
 export default function Index({ allPosts: { edges }, preview }) {
   // Gets the first post from the allPosts data. The first post is the hero post.
@@ -16,7 +17,7 @@ export default function Index({ allPosts: { edges }, preview }) {
   return (
     <Layout preview={preview}>
       <Head>
-        <title>{`Next.js Blog Example with ${CMS_NAME}`}</title>
+        <title>{`Next.js Blog with ${CMS_NAME}`}</title>
       </Head>
       <Container>
         {heroPost && (
@@ -30,18 +31,18 @@ export default function Index({ allPosts: { edges }, preview }) {
           />
         )}
         {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+
+        <BskySectionRecentPosts />
+
       </Container>
+
     </Layout>
   )
 }
 
 // Used for Static Site Generation (SSG) to pre-render pages at build time.
 export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-  const allPosts = await getAllPostsForHome(preview)
-
-  return {
-    props: { allPosts, preview },
-    //  For Incremental Static Regeneration (ISR), set the revalidate option to 10 seconds.
-    revalidate: 10,
-  }
-}
+  const allPosts = await getAllPostsForHome(preview);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  return { props: { allPosts, preview }, revalidate: 10, };
+};

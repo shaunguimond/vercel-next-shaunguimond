@@ -52,10 +52,6 @@ export const CommentSection = ({ uri }) => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(3);
 
-  console.log("thread: ", thread);
-  console.log("error", error);
-  console.log("visibleCount", visibleCount);
-
   useEffect(() => {
     fetchThreadData(uri, setThread, setError);
   }, [uri]);
@@ -75,7 +71,6 @@ export const CommentSection = ({ uri }) => {
   const showMore = () => {
     setVisibleCount((prevCount) => prevCount + 5);
   };
-  console.log("thread: ", thread.post);
 
   const sortedReplies = thread.replies.sort(sortByLikes);
 
@@ -215,8 +210,6 @@ const getPostThread = async (uri: string) => {
 
   const paramtype = typeof params;
 
-  console.error(paramtype)
-
   const res = await fetch(
     "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?" +
     params.toString(),
@@ -235,12 +228,10 @@ const getPostThread = async (uri: string) => {
   }
 
   const data = (await res.json()) as AppBskyFeedGetPostThread.OutputSchema;
-  console.log(data)
 
   if (!AppBskyFeedDefs.isThreadViewPost(data.thread)) {
     throw new Error("Could not find thread");
   }
-  console.log(data.thread)
   return data.thread;
 };
 
