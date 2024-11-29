@@ -16,7 +16,7 @@ export default function BskySectionRecentPosts() {
     return (
         <section className='mx-1'>
             <h1 className="font-bold text-3xl my-8 text-center">Posts from Bluesky</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32">
+            <div className="masonry sm:masonry-sm mb-32">
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
                         const date = new Date(data.post.record.createdAt);
@@ -30,7 +30,7 @@ export default function BskySectionRecentPosts() {
                         const postLink = `https://bsky.app/profile/${data.post.author.handle}/post/${data.post.uri.split("/")[4]}`;
 
                         return (
-                            <article key={index} className="shadow-small rounded-2xl h-fit bg-sg-multicolour hover:shadow-medium transition-shadow duration-200">
+                            <article key={index} className="break-inside mb-5 shadow-small rounded-2xl h-fit bg-sg-multicolour hover:shadow-medium transition-shadow duration-200">
                                 <div className="mb-0 backdrop-blur-xl rounded-2xl">
 
                                     {/* This should be moved to a separate component */}
@@ -117,7 +117,7 @@ const ImageEmbed = ({ images }) => {
     return (
         <div className={hasMultiImages ? "grid grid-cols-2 gap-2 py-3 row-auto" : "py-3"}>
             {images.map((image, index) => (
-                <img className="rounded-2xl" key={index} src={image.thumb} alt={`image-${index}`} />
+                <img className="rounded-2xl w-full max-h-600 h-content object-cover" key={index} src={image.thumb} alt={`image-${index}`} />
             ))}
         </div>
     );

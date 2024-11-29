@@ -5,7 +5,6 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
 import Layout from '../components/layout'
 import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
-import { CMS_NAME } from '../lib/constants'
 
 export default function Page({ page, preview }) {
   const router = useRouter()
@@ -18,15 +17,15 @@ export default function Page({ page, preview }) {
     <Layout preview={preview}>
       <Container>
         {router.isFallback ? (
-            <title>Loading…</title>
+          <title>Loading…</title>
         ) : (
           <>
-          <article>
-            <title>
-              {`${page.title} | Next.js Blog with ${CMS_NAME}`}
-            </title>
-            <PostBody content={page.content} />
-          </article>
+            <article>
+              <title>
+                {`${page.title} | Next.js Blog with WordPress`}
+              </title>
+              <PostBody content={page.content} />
+            </article>
           </>
         )}
       </Container>
