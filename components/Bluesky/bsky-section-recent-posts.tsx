@@ -71,13 +71,13 @@ export default function BskySectionRecentPosts() {
 
                                     {/* This should be moved to a separate component */}
                                     <div className="flex flex-row justify-between w-11/12 mx-auto pb-4">
-                                        <a href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" /><span className="self-center ml-2">{data.post.likeCount}</span></a>
-                                        <a href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" /><span className="self-center ml-2">{data.post.repostCount + data.post.quoteCount}</span></a>
-                                        <a href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" /><span className="self-center ml-2">{data.post.replyCount}</span></a>
+                                        <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" /><span className="self-center ml-2">{data.post.likeCount}</span></a>
+                                        <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" /><span className="self-center ml-2">{data.post.repostCount + data.post.quoteCount}</span></a>
+                                        <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" /><span className="self-center ml-2">{data.post.replyCount}</span></a>
                                     </div>
 
                                     <div className="py-3 px-5 w-full">
-                                        <a href={postLink} className="bg-brand block text-center hover:shadow-medium w-full transition-shadow duration-200 text-white font-bold text-lg py-2 px-4 rounded">
+                                        <a target="_blank" href={postLink} className="bg-brand block text-center hover:shadow-medium w-full transition-shadow duration-200 text-white font-bold text-lg py-2 px-4 rounded">
                                             View post on BlueSky
                                         </a>
                                     </div>
@@ -126,7 +126,7 @@ const ImageEmbed = ({ images }) => {
 const ExternalView = ({ embed }) => {
     return (
         <div className=" rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200m my-2">
-            <a href={embed.external.uri}>
+            <a target="_blank" href={embed.external.uri}>
                 <img className="rounded-t-2xl" src={embed.external.thumb} />
                 <div className="px-2 pb-3 border-x border-b rounded-b-2xl">
                     <p className="text-md font-bold">{embed.external.title}</p>
@@ -152,7 +152,7 @@ const ViewRecord = ({ record }) => {
     const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 border">
-            <a href={postLink} className="mb-0 backdrop-blur-xl rounded-2xl">
+            <a target="_blank" href={postLink} className="mb-0 backdrop-blur-xl rounded-2xl">
 
                 {/* This should be moved to a separate component */}
                 <div className="pb-4"></div>
