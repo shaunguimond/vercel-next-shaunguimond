@@ -5,7 +5,6 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
 import Layout from '../components/layout'
 import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
-import { CMS_NAME } from '../lib/constants'
 
 export default function Page({ page, preview }) {
   const router = useRouter()

@@ -10,7 +10,6 @@ import Layout from '../../components/layout'
 import PostTitle from '../../components/post-title'
 import Tags from '../../components/tags'
 import { getAllPostsWithSlug, getPostAndMorePosts } from '../../lib/api'
-import { CMS_NAME } from '../../lib/constants'
 import { CommentSection } from '../../components/Bluesky/bsky-comments'
 
 // Used to generate `/posts/[slug]` posts from the Wordpress backend.
