@@ -17,7 +17,7 @@ export default function Index({ allPosts: { edges }, preview }) {
   return (
     <Layout preview={preview}>
       <Head>
-        <title>{`Next.js Blog with ${CMS_NAME}`}</title>
+        <title>{`Next.js Blog with WordPress`}</title>
       </Head>
       <Container>
         {heroPost && (

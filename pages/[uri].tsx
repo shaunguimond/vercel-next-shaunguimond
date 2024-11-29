@@ -18,15 +18,15 @@ export default function Page({ page, preview }) {
     <Layout preview={preview}>
       <Container>
         {router.isFallback ? (
-            <title>Loading…</title>
+          <title>Loading…</title>
         ) : (
           <>
-          <article>
-            <title>
-              {`${page.title} | Next.js Blog with ${CMS_NAME}`}
-            </title>
-            <PostBody content={page.content} />
-          </article>
+            <article>
+              <title>
+                {`${page.title} | Next.js Blog with WordPress`}
+              </title>
+              <PostBody content={page.content} />
+            </article>
           </>
         )}
       </Container>
