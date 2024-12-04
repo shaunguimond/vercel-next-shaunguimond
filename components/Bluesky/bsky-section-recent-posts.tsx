@@ -25,36 +25,13 @@ export default function BskySectionRecentPosts() {
                         const daysAgo = Math.floor((currentDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
                         const renderTimeFromPost = daysAgo === 0 ?
                             "Today" :
-                            daysAgo >= 7 ?
+                            daysAgo > 14 ?
                                 `${daysAgo % 7} weeks ago` :
                                 `${daysAgo} days ago`;
                         const isReposted = data.reason !== undefined && data.reason.$type === "app.bsky.feed.defs#reasonRepost";
                         const postLink = `https://bsky.app/profile/${data.post.author.handle}/post/${data.post.uri.split("/")[4]}`;
-                        // let sanitizedContent = sanitizeHtml(data.post.record.text, {
-                        //     allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], // Allowed HTML tags
-                        //     allowedAttributes: {
-                        //         'a': ['href']
-                        //     }
-
-                        // });
-
-                        // if (data?.post?.record?.facets !== undefined) {
-                        //     data?.post?.record?.facets.map((facet, index) => {
-                        //         facet.features.map((feature, index) => {
-                        //             if (feature.$type === "app.bsky.richtext.facet#link") {
-                        //                 const byteStart = facet.index.byteStart - 1;
-                        //                 const byteEnd = facet.index.byteEnd;
-                        //                 const externalLink = `<a href="${feature.uri}" target="_blank" >`;
-
-                        //                 sanitizedContent = sanitizedContent.slice(0, byteStart) + externalLink + sanitizedContent.slice(byteStart, byteEnd) + '</a>' + sanitizedContent.slice(byteEnd);
-
-                        //             }
-                        //         })
-                        //     })
-                        // }
-                        // let formattedContent = sanitizedContent.replace(/\n/g, '<br>');
-
                         const formattedContent = getFormattedText(data.post);
+
                         return (
                             <article key={index} className="break-inside mb-5 shadow-small rounded-2xl h-fit bg-sg-multicolour hover:shadow-medium transition-shadow duration-200">
                                 <div className="mb-0 backdrop-blur-xl rounded-2xl">
@@ -176,7 +153,7 @@ const ViewRecord = ({ record }) => {
     const daysAgo = Math.floor((currentDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
     const renderTimeFromPost = daysAgo === 0 ?
         "Today" :
-        daysAgo >= 7 ?
+        daysAgo > 14 ?
             `${daysAgo % 7} weeks ago` :
             `${daysAgo} days ago`;
     const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
