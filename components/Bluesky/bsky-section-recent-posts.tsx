@@ -259,7 +259,7 @@ function getFormattedTextForRecord(record) {
         record?.value?.facets.map((facet, index) => {
             facet.features.map((feature, index) => {
                 if (feature.$type === "app.bsky.richtext.facet#link") {
-                    const byteStart = facet.index.byteStart - 1;
+                    const byteStart = facet.index.byteStart;
                     const byteEnd = facet.index.byteEnd;
                     const externalLink = `<a style="text-decoration: underline;" href="${feature.uri}" target="_blank" >`;
 
