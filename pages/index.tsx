@@ -13,6 +13,7 @@ export default function Index({ allPosts: { edges }, preview }) {
   // Gets the rest of the posts data.
   const morePosts = edges.slice(1)
 
+
   return (
     <Layout preview={preview}>
       <Head>

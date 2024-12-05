@@ -11,6 +11,24 @@ export default function HeroPost({
   author,
   slug,
 }) {
+  const parser = new DOMParser();
+  const htmlString = excerpt;
+  const doc = parser.parseFromString(htmlString, 'text/html');
+
+
+  const aTag = doc.querySelector('a.more-link');
+
+  if (aTag) {
+    aTag.parentNode.removeChild(aTag);
+  }
+
+  const pTag = doc.querySelector('p');
+  if (pTag) {
+    pTag.innerHTML += '...';
+  }
+
+  const sanitizedHTML = doc.body.innerHTML
+
   return (
     <article className='shadow-small rounded-2xl bg-sg-multicolour hover:shadow-medium transition-shadow duration-200'>
 
@@ -29,13 +47,13 @@ export default function HeroPost({
             ></Link>
           </h3>
           <div className="mb-4 md:mb-0 text-lg">
-            
+
           </div>
         </div>
         <div>
           <div
             className="text-lg leading-relaxed mb-4 post-excerpt"
-            dangerouslySetInnerHTML={{ __html: excerpt }}
+            dangerouslySetInnerHTML={{ __html: sanitizedHTML }}
           />
           <div className="flex flex-row items-center gap-10">
             <Avatar author={author} />
