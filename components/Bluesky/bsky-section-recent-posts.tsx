@@ -6,10 +6,14 @@ import { BSKY_AUTHOR_FEED } from "../../lib/constants";
 import { Reposted, Likes, Comments } from "../../lib/icons";
 import sanitizeHtml from 'sanitize-html';
 import React from 'react';
+import { useTheme } from 'next-themes';
 
 export default function BskySectionRecentPosts() {
     const [feedData, setFeedData] = useState([]);
-    const currentDate = new Date();
+    const { systemTheme, theme } = useTheme();
+
+    const currentTheme = theme === "system" ? systemTheme : theme;
+    const fillColor = currentTheme === "dark" ? "white" : "black";
 
     useEffect(() => {
         getAuthorFeed().then(data => setFeedData(data.feed));
@@ -21,15 +25,10 @@ export default function BskySectionRecentPosts() {
             <div className="masonry sm:masonry-sm mb-32">
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
-                        const date = new Date(data.post.record.createdAt);
-                        const daysAgo = Math.floor((currentDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-                        const renderTimeFromPost = daysAgo === 0 ?
-                            "Today" :
-                            daysAgo > 14 ?
-                                `${daysAgo % 7} weeks ago` :
-                                `${daysAgo} days ago`;
+                        const renderTimeFromPost = getRenderTimeFromPost(data.post.record.createdAt)
                         const isReposted = data.reason !== undefined && data.reason.$type === "app.bsky.feed.defs#reasonRepost";
                         const postLink = `https://bsky.app/profile/${data.post.author.handle}/post/${data.post.uri.split("/")[4]}`;
+                        const handleLink = `https://bsky.app/profile/${data.post.author.handle}`;
                         const formattedContent = getFormattedText(data.post);
 
                         return (
@@ -38,13 +37,15 @@ export default function BskySectionRecentPosts() {
 
                                     {/* This should be moved to a separate component */}
                                     <div className="pb-4"></div>
-                                    {isReposted ? <span className="flex flex-row ml-20 mt-0 items-center gap-2"> <Reposted height="18px" width="18px" /> Reposted by me</span> : ""}
+                                    {isReposted ? <span className="flex flex-row ml-20 mt-0 items-center gap-2"> <Reposted height="16px" width="16px" color={fillColor} /> Reposted by me</span> : ""}
                                     <div className="flex flex-row justify-between">
                                         <div className="flex gap-4 gap-y-4 rounded-2xl">
-                                            <img className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5" src={data.post.author.avatar} />
-                                            <p className="line-clamp-1 text-lg self-center flex flex-col">
+                                            <a target="_blank" href={handleLink}>
+                                                <img className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5" src={data.post.author.avatar} />
+                                            </a>
+                                            <p className="line-clamp-1 text-lg font-bold self-center flex flex-col">
                                                 {data.post.author.displayName ?? data.post.author.handle}{" "}
-                                                <span className="text-gray-500 font-bold text-sm">@{data.post.author.handle}</span>
+                                                <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{data.post.author.handle}</a>
                                             </p>
                                         </div>
                                         <p className="self-center mr-5 text-sm">{renderTimeFromPost}
@@ -77,9 +78,9 @@ export default function BskySectionRecentPosts() {
 
                                         {/* This should be moved to a separate component */}
                                         <div className="flex flex-row justify-between w-11/12 mx-auto pb-4">
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" /><span className="self-center ml-2">{data.post.likeCount}</span></a>
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" /><span className="self-center ml-2">{data.post.repostCount + data.post.quoteCount}</span></a>
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" /><span className="self-center ml-2">{data.post.replyCount}</span></a>
+                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.likeCount}</span></a>
+                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.repostCount + data.post.quoteCount}</span></a>
+                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.replyCount}</span></a>
                                         </div>
 
                                         <div className="py-3 px-5 w-full">
@@ -148,47 +149,43 @@ const ExternalView = ({ embed }) => {
 }
 
 const ViewRecord = ({ record }) => {
-    const date = new Date(record.value.createdAt);
-    const currentDate = new Date();
-    const daysAgo = Math.floor((currentDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    const renderTimeFromPost = daysAgo === 0 ?
-        "Today" :
-        daysAgo > 14 ?
-            `${daysAgo % 7} weeks ago` :
-            `${daysAgo} days ago`;
-    const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
+    const renderTimeFromPost = getRenderTimeFromPost(record.value.createdAt)
+    // const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
+    const handleLink = `https://bsky.app/profile/${record.author.handle}`;
 
     const formattedContent = getFormattedTextForRecord(record);
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 border mb-5">
-            <a target="_blank" href={postLink} className="mb-0 backdrop-blur-xl rounded-2xl">
+            {/* <a target="_blank" href={postLink} className="mb-0 backdrop-blur-xl rounded-2xl"> */}
 
-                {/* This should be moved to a separate component */}
-                <div className="pb-4"></div>
-                <div className="flex flex-row justify-between">
-                    <div className="flex gap-4 gap-y-4 rounded-2xl">
+            {/* This should be moved to a separate component */}
+            <div className="pb-4"></div>
+            <div className="flex flex-row justify-between">
+                <div className="flex gap-4 gap-y-4 rounded-2xl">
+                    <a target="_blank" href={handleLink}>
                         <img className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5" src={record.author.avatar} />
-                        <p className="line-clamp-1 text-lg self-center flex flex-col">
-                            {record?.author?.displayName ?? record?.post?.author?.handle}{" "}
-                            <span className="text-gray-500 text-md">@{record.author.handle}</span>
-                        </p>
-                    </div>
-                    <p className="self-center mr-5 text-sm">{renderTimeFromPost}
+                    </a>
+                    <p className="line-clamp-1 text-lg self-center flex flex-col">
+                        {record?.author?.displayName ?? record?.post?.author?.handle}{" "}
+                        <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{record.author.handle}</a>
                     </p>
                 </div>
-                {/* This should be moved to a separate component */}
-                <div className="py-3 px-5">
-                    <p className="text-lg" dangerouslySetInnerHTML={{ __html: formattedContent }}></p>
+                <p className="self-center mr-5 text-sm">{renderTimeFromPost}
+                </p>
+            </div>
+            {/* This should be moved to a separate component */}
+            <div className="py-3 px-5">
+                <p className="text-lg" dangerouslySetInnerHTML={{ __html: formattedContent }}></p>
 
-                    {record?.embeds[0].$type === "app.bsky.embed.images#view" ?
-                        <ImageEmbed images={record?.embeds[0].images} /> : ""}
+                {record?.embeds[0].$type === "app.bsky.embed.images#view" ?
+                    <ImageEmbed images={record?.embeds[0].images} /> : ""}
 
-                    {record?.embeds[0].$type === "app.bsky.embed.external#view" ?
-                        <ExternalView embed={record?.embeds[0]} /> : ""}
+                {record?.embeds[0].$type === "app.bsky.embed.external#view" ?
+                    <ExternalView embed={record?.embeds[0]} /> : ""}
 
-                </div>
+            </div>
 
-            </a>
+            {/* </a> */}
         </div>
 
     )
@@ -249,4 +246,30 @@ function getFormattedTextForRecord(record) {
     const formattedContent = sanitizedContent.replace(/\n/g, '<br>');
 
     return formattedContent
+}
+
+
+function getRenderTimeFromPost(date) {
+    const postDate = new Date(date);
+    const currentDate = new Date();
+    const daysAgo = Math.floor((currentDate.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysAgo === 0) {
+        const hoursAgo = Math.floor((currentDate.getTime() - postDate.getTime()) / (1000 * 60 * 60));
+        if (hoursAgo === 0) {
+            const minutesAgo = Math.floor((currentDate.getTime() - postDate.getTime()) / (1000 * 60));
+            return `${minutesAgo} minutes ago`;
+        } else {
+            return `${hoursAgo} hours ago`;
+        }
+
+    } else if (daysAgo < 10) {
+        return `${daysAgo} days ago`;
+
+    } else if (daysAgo < 365) {
+        return `${Math.floor(daysAgo / 7)} weeks ago`;
+
+    } else {
+        return `${Math.floor(daysAgo / 365)} years ago`;
+    }
 }

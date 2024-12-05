@@ -31,11 +31,11 @@ export default function PostPreview({
           className="text-lg leading-relaxed mb-4 post-excerpt"
           dangerouslySetInnerHTML={{ __html: excerpt }}
         />
-          <div className="flex flex-row items-center gap-10">
-            <Avatar author={author} />
-            <Date dateString={date} />
-          </div>
+        <div className="flex flex-row items-center gap-10">
+          <Avatar author={author} />
+          <Date dateString={date} />
         </div>
+      </div>
     </article>
   )
 }

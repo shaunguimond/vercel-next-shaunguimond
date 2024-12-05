@@ -116,7 +116,7 @@
 /* Your own custom utilities */
 
 .bg-sg-multicolour {
-  background: linear-gradient(235deg, #0daeab12 60%, #9113b725 60%), linear-gradient(500deg, #0daeab45 60%, #9113b720 60%);
+  background: linear-gradient(235deg, #0daeab19 60%, #9113b719 60%), linear-gradient(500deg, #0daeab19 60%, #9113b719 60%);
 }
 
 .alignfull {
@@ -240,17 +240,6 @@ figure.wp-block-gallery {
   flex-direction: column;
   gap: 10px;
 }
-
-.post-excerpt p a {
-  border-radius: 12px;
-  background: rgba(23, 105, 75, .75);
-  padding: 2px 10px;
-  text-align: center;
-  margin: 0.5rem 0.2rem;
-  color: white;
-  font-weight: bold;
-}
-
 
 /* Footer Specific Styles */
 .footer-container p {
