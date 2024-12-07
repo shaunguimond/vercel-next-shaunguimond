@@ -156,7 +156,6 @@ const ViewRecord = ({ record }) => {
     const formattedContent = getFormattedTextForRecord(record);
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 border mb-5">
-            {/* <a target="_blank" href={postLink} className="mb-0 backdrop-blur-xl rounded-2xl"> */}
 
             {/* This should be moved to a separate component */}
             <div className="pb-4"></div>
@@ -177,15 +176,13 @@ const ViewRecord = ({ record }) => {
             <div className="py-3 px-5">
                 <p className="text-lg" dangerouslySetInnerHTML={{ __html: formattedContent }}></p>
 
-                {record?.embeds[0].$type === "app.bsky.embed.images#view" ?
+                {record?.embeds.length !== 0 && record?.embeds[0].$type === "app.bsky.embed.images#view" ?
                     <ImageEmbed images={record?.embeds[0].images} /> : ""}
 
-                {record?.embeds[0].$type === "app.bsky.embed.external#view" ?
+                {record?.embeds.length !== 0 && record?.embeds[0].$type === "app.bsky.embed.external#view" ?
                     <ExternalView embed={record?.embeds[0]} /> : ""}
 
             </div>
-
-            {/* </a> */}
         </div>
 
     )
