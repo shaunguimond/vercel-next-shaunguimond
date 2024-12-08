@@ -27,7 +27,7 @@ export default function Post({ post, posts, preview }) {
         <PostTitle>Loading…</PostTitle>
       ) : (
         <>
-          <article>
+          <article className="mx-3">
             <Head>
               <title>
                 {`${post.title} | Next.js Blog with WordPress`}
@@ -44,7 +44,7 @@ export default function Post({ post, posts, preview }) {
               categories={post.categories}
             />
             <PostBody content={post.content} />
-            <footer>
+            <footer className="mx-3">
               {post.tags.edges.length > 0 && <Tags tags={post.tags} />}
             </footer>
           </article>
