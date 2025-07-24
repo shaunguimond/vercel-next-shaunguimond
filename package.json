@@ -6,6 +6,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": ">=20.x"
+  },
   "dependencies": {
     "@atproto/api": "^0.13.18",
     "@heroicons/react": "^2.2.0",
