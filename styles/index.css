@@ -299,6 +299,10 @@ figure.wp-block-gallery {
 
 /* Post styles */
 
+.container-card {
+  margin-bottom: 1rem;
+}
+
 .wp-block-group__inner-container .wp-block-heading {
   margin-top: 0px;
 }
