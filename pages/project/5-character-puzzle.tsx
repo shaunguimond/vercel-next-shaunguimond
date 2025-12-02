@@ -13,7 +13,7 @@ export default function WordGuesser({preview}) {
     const [isClient, setIsClient] = useState(false);
     const [inputValue, setInputValue] = useState(""); // User input value
     const [wordList, setWordList] = useState<string[]>([]); // List of entered words
-    const [enteredWord, setEnteredWord] = useState<JSX.Element | undefined>(undefined); // Display of entered words
+    const [enteredWord, setEnteredWord] = useState<React.ReactElement | undefined>(undefined); // Display of entered words
     const [wordOfTheDay, setWordOfTheDay] = useState<string>(""); // Word of the day
     const [wordifiedWord, setWordifiedWord] = useState<string>(""); // Word of the day with hints
     const [win, setWin] = useState<boolean>(false); // Flag for winning state
@@ -84,7 +84,7 @@ export default function WordGuesser({preview}) {
      * @param listOfWords - The list of entered words.
      * @returns JSX element displaying the entered words.
      */
-    function breakOutInput(listOfWords: string[]): JSX.Element {
+    function breakOutInput(listOfWords: string[]): React.ReactElement {
         return (
             <React.Fragment>
                 {listOfWords.map((item: string, index) => (

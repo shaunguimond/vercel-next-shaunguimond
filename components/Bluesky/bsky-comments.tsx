@@ -14,23 +14,7 @@ interface Props {
   uri?: string;
 }
 
-type Reply = {
-  post: {
-    uri: string;
-    likeCount?: number;
-    repostCount?: number;
-    replyCount?: number,
-  };
-};
-
-type Thread = {
-  replies: Reply[];
-  post: {
-    likeCount?: number;
-    repostCount?: number;
-    replyCount?: number;
-  };
-};
+type Thread = AppBskyFeedDefs.ThreadViewPost;
 
 
 // Function to fetch the thread data
@@ -73,7 +57,10 @@ export const CommentSection = ({ uri }) => {
     setVisibleCount((prevCount) => prevCount + 5);
   };
 
-  const sortedReplies = thread.replies.sort(sortByLikes);
+  const sortedReplies = (thread.replies || [])
+    .filter((reply) => AppBskyFeedDefs.isThreadViewPost(reply))
+    .map((reply) => reply as AppBskyFeedDefs.ThreadViewPost)
+    .sort(sortByLikes);
 
   return (
     <Container>
@@ -120,7 +107,6 @@ export const CommentSection = ({ uri }) => {
         <hr className="mt-2" />
         <div className="mt-2 space-y-8">
           {sortedReplies.slice(0, visibleCount).map((reply) => {
-            if (!AppBskyFeedDefs.isThreadViewPost(reply)) return null;
             return <Comment key={reply.post.uri} comment={reply} />;
           })}
           {visibleCount < sortedReplies.length && (
@@ -140,6 +126,8 @@ const Comment = ({ comment }: { comment: AppBskyFeedDefs.ThreadViewPost }) => {
   const avatarClassName = "h-10 w-10 shrink-0 rounded-full bg-gray-300";
 
   if (!AppBskyFeedPost.isRecord(comment.post.record)) return null;
+  
+  const record = comment.post.record;
 
   return (
     <div className="my-4 text-md sm:mx-10 mx-0">
@@ -169,16 +157,19 @@ const Comment = ({ comment }: { comment: AppBskyFeedDefs.ThreadViewPost }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <p>{comment.post.record.text}</p>
+          <p>{record.text as string}</p>
           <Actions post={comment.post} />
         </Link>
       </div>
       {comment.replies && comment.replies.length > 0 && (
         <div className="border-l-2 border-neutral-600 pl-2">
-          {comment.replies.sort(sortByLikes).map((reply) => {
-            if (!AppBskyFeedDefs.isThreadViewPost(reply)) return null;
-            return <Comment key={reply.post.uri} comment={reply} />;
-          })}
+          {comment.replies
+            .filter((reply) => AppBskyFeedDefs.isThreadViewPost(reply))
+            .map((reply) => reply as AppBskyFeedDefs.ThreadViewPost)
+            .sort(sortByLikes)
+            .map((reply) => {
+              return <Comment key={reply.post.uri} comment={reply} />;
+            })}
         </div>
       )}
     </div>
@@ -245,5 +236,5 @@ const sortByLikes = (a: unknown, b: unknown) => {
   ) {
     return 0;
   }
-  return (b.post.likeCount ?? 0) - (a.post.likeCount ?? 0);
+  return ((b as AppBskyFeedDefs.ThreadViewPost).post.likeCount ?? 0) - ((a as AppBskyFeedDefs.ThreadViewPost).post.likeCount ?? 0);
 };
