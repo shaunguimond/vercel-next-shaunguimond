@@ -1,39 +1,90 @@
-@tailwind base;
+@import "tailwindcss";
 
-/* Write your own custom base styles here */
+/* Define dark mode variant for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* Start purging... */
-@tailwind components;
-/* Stop purging. */
+/* Theme transition for smooth light/dark mode switching */
+@layer base {
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.5;
+    font-family: QuicksandRegular, sans-serif;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+  }
+  
+  body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: QuicksandRegular, sans-serif;
+  }
+  
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  /* Disable transitions for media elements that shouldn't animate */
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object,
+  picture {
+    transition: none;
+  }
+}
 
-/* Write you own custom component styles here */
-
-/* Start purging... */
-@tailwind utilities;
-/* Stop purging. */
-
+@theme {
+  /* Max Height */
+  --max-height-600: 600px;
+  
+  /* Custom Colors */
+  --color-laccent-1: #acb1dbb3;
+  --color-laccent-2: #d9dcf2b3;
+  --color-daccent-1: #242a3e;
+  --color-daccent-2: #070a15cc;
+  --color-brand: rgba(23,105,75, .5);
+  --color-accent-1: #FAFAFA;
+  --color-accent-2: #EAEAEA;
+  --color-accent-3: #acb1db;
+  --color-accent-7: #333;
+  --color-success: #0070f3;
+  --color-cyan: #79FFE1;
+  
+  /* Custom Spacing */
+  --spacing-28: 7rem;
+  
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.04em;
+  
+  /* Line Height */
+  --line-height-tight: 1.2;
+  
+  /* Font Families */
+  --font-sans: QuicksandRegular, sans-serif;
+  --font-serif: Gotu, serif;
+  
+  /* Font Sizes */
+  --font-size-5xl: 2.5rem;
+  --font-size-6xl: 2.75rem;
+  --font-size-7xl: 4.5rem;
+  --font-size-8xl: 6.25rem;
+  
+  /* Box Shadows */
+  --box-shadow-small: 0 5px 10px rgba(0, 0, 0, 0.12);
+  --box-shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+  
+  /* Breakpoints */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1280px;
+}
 
 @layer utilities {
-  @variants responsive {
-    .masonry {
-      column-gap: 1.5em;
-      column-count: 1;
-    }
-
-    .masonry-sm {
-      column-gap: 1.5em;
-      column-count: 2;
-    }
-
-    .masonry-md {
-      column-gap: 1.5em;
-      column-count: 3;
-    }
-
-    .break-inside {
-      break-inside: avoid;
-    }
-
+  .break-inside {
+    break-inside: avoid;
   }
 }
 
@@ -307,17 +358,17 @@ figure.wp-block-gallery {
   margin-top: 0px;
 }
 
-.post-body_content__ye_eq>* {
+.post-body-module__DJwBZq__content>* {
   max-width: 48rem;
   margin-right: auto;
   margin-left: auto;
 }
 
-.post-body_content__ye_eq .alignwide {
+.post-body-module__DJwBZq__content .alignwide {
   max-width: 60rem;
 }
 
-.post-body_content__ye_eq .alignfull {
+.post-body-module__DJwBZq__content .alignfull {
   max-width: 100%;
   margin-right: 0;
   margin-left: 0;

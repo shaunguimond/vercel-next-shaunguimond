@@ -6,7 +6,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-      <div className="footer-container bg-laccent-1 dark:bg-daccent-1 text-accent-1">
+      <div className="footer-container bg-daccent-1 text-accent-1">
           <div className="bg-daccent-2 mx-0">
               <div className="social-container bg-daccent-2">
                   <LinkedIn />

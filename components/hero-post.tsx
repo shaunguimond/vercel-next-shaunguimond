@@ -26,7 +26,7 @@ export default function HeroPost({
       </div>
       <div className="mb-20 md:mb-28 flex flex-col p-5 backdrop-blur-xl rounded-2xl">
         <div>
-          <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">
+          <h3 className="mb-4 text-4xl leading-tight">
             <Link
               href={`/posts/${slug}`}
               className="hover:underline"

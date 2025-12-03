@@ -1,3 +1,5 @@
+@reference "tailwindcss";
+
 .content {
   @apply text-lg leading-relaxed;
 }

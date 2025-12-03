@@ -22,7 +22,7 @@ export default function BskySectionRecentPosts() {
     return (
         <section className='mx-1'>
             <h1 className="font-bold text-3xl my-8 text-center">Posts from Bluesky</h1>
-            <div className="masonry sm:masonry-sm mb-32">
+            <div className="columns-1 sm:columns-2 gap-6 mb-32">
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
                         const renderTimeFromPost = getRenderTimeFromPost(data.post.record.createdAt)

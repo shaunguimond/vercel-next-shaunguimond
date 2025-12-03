@@ -8,7 +8,7 @@ export default function Layout({ preview, children}) {
   return (
     <>
       <Meta />
-      <div className="min-h-screen">
+      <div className="min-h-screen transition-colors duration-300">
         <Alert preview={preview} />
         <Header />
         <main className="pt-28">{children}</main>
