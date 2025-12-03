@@ -481,6 +481,28 @@ figure.wp-block-gallery {
     display: flex;
 }
 
+.wp-block-columns-is-layout-flex > * {
+    flex: 0 0 50%;
+}
+
+.wp-block-column.is-layout-flow.wp-block-column-is-layout-flow
+    .wp-block-image
+    > figure
+    > a,
+.wp-block-column.is-layout-flow.wp-block-column-is-layout-flow
+    .wp-block-image
+    > figure
+    > img {
+    align-self: center;
+}
+
+.wp-block-column.is-layout-flow.wp-block-column-is-layout-flow
+    .wp-block-image
+    figcaption {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
 .wp-block-buttons {
     padding: 1.25rem;
     margin-top: 1.25rem;
