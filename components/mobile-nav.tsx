@@ -19,7 +19,7 @@ export default function MobileNav({ setNav }: MobileNavProps) {
                 {navLinks.map((link, index) => {
                 return (
                         <li key={index} className="my-3 ">
-                            <Link key={`link-${index}`} className="text-black dark:text-accent-1 my-6 cursor-pointer capitalize text-3xl" href={link.path} onClick={handleClick}>{link.name}</Link>
+                            <Link className="text-black dark:text-accent-1 my-6 cursor-pointer capitalize text-3xl" href={link.path} onClick={handleClick}>{link.name}</Link>
                         </li>
                 );
                 })}

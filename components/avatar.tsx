@@ -14,7 +14,7 @@ export default function Avatar({ author }) {
           className="rounded-full"
           alt={name}
           fill
-          sizes="100vw" />
+          sizes="36px" />
       </div>
       <div className="text-xl font-bold">{name}</div>
     </div>

@@ -21,10 +21,6 @@ module.exports = {
         protocol: "https",
         hostname: "secure.gravatar.com",
       },
-      
     ],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 }

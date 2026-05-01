@@ -3,7 +3,7 @@ import { useTheme } from 'next-themes';
 import { MoonIcon, SunIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Nav from './nav';
 import MobileNav from './mobile-nav';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 
 
@@ -12,8 +12,14 @@ import { useState } from 'react';
 export default function Header() {
 const { systemTheme, theme, setTheme } = useTheme();
 const [ nav, setNav ] = useState(false);
+const [ mounted, setMounted ] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
 
 const renderThemeChanger = () => {
+  if (!mounted) return null;
   const currentTheme = theme === "system" ? systemTheme : theme;
   
 
