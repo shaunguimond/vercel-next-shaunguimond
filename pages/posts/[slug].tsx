@@ -27,7 +27,7 @@ export default function Post({ post, posts, preview }) {
         <PostTitle>Loading…</PostTitle>
       ) : (
         <>
-          <article className="mx-3">
+          <article className="mx-auto max-w-3xl px-5">
             <Head>
               <title>
                 {`${post.title} | Next.js Blog with WordPress`}
