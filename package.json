@@ -10,28 +10,28 @@
     "node": ">=20.x"
   },
   "dependencies": {
-    "@atproto/api": "^0.19.11",
+    "@atproto/api": "^0.20.38",
     "@heroicons/react": "^2.2.0",
-    "@types/node": "^25.6.0",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@vercel/analytics": "^2.0.1",
     "classnames": "^2.5.1",
-    "date-fns": "^4.1.0",
-    "next": "^16.2.4",
+    "date-fns": "^4.4.0",
+    "next": "^16.3.0",
     "next-themes": "^0.4.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "sanitize-html": "^2.17.0",
-    "typescript": "^6.0.3"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sanitize-html": "^2.17.6",
+    "typescript": "^7.0.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^10.2.1",
-    "eslint-config-next": "^16.2.4",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.0"
+    "@tailwindcss/postcss": "^4.3.3",
+    "autoprefixer": "^10.5.4",
+    "eslint": "^10.8.0",
+    "eslint-config-next": "^16.3.0",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^4.3.3"
   },
   "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4",
   "overrides": {
