@@ -31,5 +31,6 @@ Configuration lives in `.env` (committed on purpose — every value in it is eit
 | `pnpm dev` | Start the development server. |
 | `pnpm build` | Production build (also runs the TypeScript check). |
 | `pnpm start` | Serve the production build. |
-| `pnpm lint` | Run ESLint (flat config in `eslint.config.mjs`). |
+
+> Note: there is no lint script. Next 16 removed `next lint`, and `typescript-eslint` does not support TypeScript 7 yet (see [typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)). TypeScript type-checking still runs during `pnpm build`.
 
