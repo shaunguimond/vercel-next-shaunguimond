@@ -5,6 +5,7 @@ import MoreStories from '../components/more-stories'
 import HeroPost from '../components/hero-post'
 import Layout from '../components/layout'
 import { getAllPostsForHome } from '../lib/api'
+import { HOME_OG_IMAGE_URL } from '../lib/constants'
 import BskySectionRecentPosts from '../components/Bluesky/bsky-section-recent-posts'
 
 export default function Index({ allPosts: { edges }, preview }) {
@@ -18,6 +19,7 @@ export default function Index({ allPosts: { edges }, preview }) {
     <Layout preview={preview}>
       <Head>
         <title>{`Next.js Blog with WordPress`}</title>
+        <meta property="og:image" content={HOME_OG_IMAGE_URL} />
       </Head>
       <Container>
         {heroPost && (
