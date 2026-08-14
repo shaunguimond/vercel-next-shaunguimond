@@ -10,10 +10,11 @@ import Layout from '../../components/layout'
 import PostTitle from '../../components/post-title'
 import Tags from '../../components/tags'
 import { getAllPostsWithSlug, getPostAndMorePosts } from '../../lib/api'
+import { getStandardDocumentUri } from '../../lib/pds'
 import { CommentSection } from '../../components/Bluesky/bsky-comments'
 
 // Used to generate `/posts/[slug]` posts from the Wordpress backend.
-export default function Post({ post, posts, preview }) {
+export default function Post({ post, posts, preview, standardDocumentUri }) {
   const router = useRouter()
   const morePosts = posts?.edges
 
@@ -36,6 +37,15 @@ export default function Post({ post, posts, preview }) {
                 property="og:image"
                 content={post.featuredImage?.node.sourceUrl}
               />
+              {standardDocumentUri && (
+                <>
+                  <link rel="alternate" href={standardDocumentUri} />
+                  <link
+                    rel="site.standard.document"
+                    href={standardDocumentUri}
+                  />
+                </>
+              )}
             </Head>
             <PostHeader
               title={post.title}
@@ -67,13 +77,18 @@ export const getStaticProps: GetStaticProps = async ({
   preview = false,
   previewData,
 }) => {
-  const data = await getPostAndMorePosts(params?.slug, preview, previewData)
+  const postSlug = typeof params?.slug === 'string' ? params.slug : null
+  const data = await getPostAndMorePosts(postSlug, preview, previewData)
+  const standardDocumentUri = postSlug
+    ? await getStandardDocumentUri(postSlug)
+    : null
 
   return {
     props: {
       preview,
       post: data.post,
       posts: data.posts,
+      standardDocumentUri,
     },
     //  For Incremental Static Regeneration (ISR), set the revalidate option to 10 seconds.
     revalidate: 10,
