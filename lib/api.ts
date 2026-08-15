@@ -7,10 +7,17 @@ const API_URL = process.env.WORDPRESS_API_URL as string
 const API_TIMEOUT_MS = 15_000
 
 // Function to fetch data from WPGraphQL API
-async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
+async function fetchAPI(
+  query = '',
+  { variables, useAuth = false }: Record<string, any> = {}
+) {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
-  if (process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
+  // The auth header is only sent for preview/draft fetches. Build-time
+  // fetches of published content must not depend on the JWT: an expired
+  // token makes WPGraphQL fail every query with a generic
+  // "Internal server error", which fails the whole build.
+  if (useAuth && process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
     headers[
       'Authorization'
     ] = `Bearer ${process.env.WORDPRESS_AUTH_REFRESH_TOKEN}`
@@ -63,6 +70,7 @@ export async function getPreviewPost(id, idType = 'DATABASE_ID') {
     }`,
     {
       variables: { id, idType },
+      useAuth: true,
     }
   )
   return data.post
@@ -115,7 +123,9 @@ export async function getAllPostsForHome(preview) {
         }
       }
     }
-  `)
+  `,
+    { useAuth: !!preview }
+  )
 
   return data?.posts
 }
@@ -213,6 +223,7 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
         id: isDraft ? postPreview.id : slug,
         idType: isDraft ? 'DATABASE_ID' : 'SLUG',
       },
+      useAuth: !!preview,
     }
   )
 
@@ -318,6 +329,7 @@ export async function getPreviewPage(id, idType = 'DATABASE_ID') {
     }`,
     {
       variables: { id, idType },
+      useAuth: true,
     }
   )
   return data.page
@@ -413,6 +425,7 @@ export async function getPageAndMorePages(uri, preview, previewData) {
         pageid: isDraftPage ? pagePreview.id : uri,
         pageidType: isDraftPage ? 'DATABASE_ID' : 'URI',
       },
+      useAuth: !!preview,
     }
   )
 
