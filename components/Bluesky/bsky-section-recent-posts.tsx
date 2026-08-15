@@ -7,6 +7,7 @@ import {
     AppBskyEmbedRecordWithMedia,
     AppBskyFeedDefs,
     AppBskyFeedGetAuthorFeed,
+    AppBskyRichtextFacet,
 } from "@atproto/api";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -231,60 +232,104 @@ const ViewRecord = ({ record }) => {
 }
 
 
-function getFormattedText(post) {
-    let sanitizedContent = sanitizeHtml(post.record.text, {
-        allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], // Allowed HTML tags
-        allowedAttributes: {
-            'a': ['href']
-        }
+// Bluesky rich text formatting.
+//
+// Facet link URIs are attacker-influenced (anyone can link to anything from
+// Bluesky). The raw post text is HTML-escaped before any anchor is spliced
+// in, so post text can never be interpreted as HTML. Link URIs are
+// restricted to http(s) before wrapping. The combined string still runs
+// through sanitize-html, which enforces the tag/attribute/class/scheme
+// allowlist as a second layer.
 
-    });
+const BLUESKY_TEXT_SANITIZE_OPTIONS = {
+    allowedTags: ['a', 'b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'],
+    allowedAttributes: {
+        a: ['href', 'target', 'rel', 'class'],
+    },
+    allowedClasses: {
+        a: ['underline'],
+    },
+    allowedSchemes: ['http', 'https'],
+};
 
-    if (post.record?.facets !== undefined) {
-        post.record?.facets.map((facet, index) => {
-            facet.features.map((feature, index) => {
-                if (feature.$type === "app.bsky.richtext.facet#link") {
-                    const byteStart = facet.index.byteStart;
-                    const byteEnd = facet.index.byteEnd;
-                    const externalLink = `<a style="text-decoration: underline;" href="${feature.uri}" target="_blank" >`;
-
-                    sanitizedContent = sanitizedContent.slice(0, byteStart) + externalLink + sanitizedContent.slice(byteStart, byteEnd) + '</a>' + sanitizedContent.slice(byteEnd);
-
-                }
-            })
-        })
+// Only http(s) link URIs are allowed. Everything else is dropped.
+function isSafeLinkUri(uri: string): boolean {
+    try {
+        const url = new URL(uri);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+        return false;
     }
-    const formattedContent = sanitizedContent.replace(/\n/g, '<br>');
+}
 
-    return formattedContent
+// Facet indices are UTF-8 byte offsets. Convert one to a JavaScript string
+// index (UTF-16 code units). JS slice indices only match byte offsets for
+// pure ASCII text, so this mapping is required for non-ASCII posts.
+function byteOffsetToCodeUnitIndex(text: string, byteOffset: number): number {
+    let bytes = 0;
+    for (let i = 0; i < text.length; ) {
+        const code = text.codePointAt(i) ?? 0;
+        const byteLength = code < 0x80 ? 1 : code < 0x800 ? 2 : code < 0x10000 ? 3 : 4;
+        if (bytes + byteLength > byteOffset) return i;
+        bytes += byteLength;
+        i += code > 0xffff ? 2 : 1;
+    }
+    return text.length;
+}
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+const LINK_OPEN_TAG = (uri: string) =>
+    `<a class="underline" href="${escapeHtml(uri)}" target="_blank" rel="noopener noreferrer">`;
+
+// Escapes the post text and wraps each link facet range in an <a> tag.
+// The character walk keeps the escaped text and the spliced anchors aligned
+// even for non-ASCII text and for posts with multiple links.
+function wrapFacetLinks(text: string, facets?: AppBskyRichtextFacet.Main[]): string {
+    const linkByIndex: (string | null)[] = new Array(text.length).fill(null);
+    for (const facet of facets ?? []) {
+        const link = facet.features.find(AppBskyRichtextFacet.isLink);
+        if (!link || !isSafeLinkUri(link.uri)) continue;
+        const start = byteOffsetToCodeUnitIndex(text, facet.index.byteStart);
+        const end = byteOffsetToCodeUnitIndex(text, facet.index.byteEnd);
+        for (let i = start; i < end && i < text.length; i++) {
+            linkByIndex[i] = link.uri;
+        }
+    }
+
+    let out = '';
+    let currentUri: string | null = null;
+    for (let i = 0; i < text.length; i++) {
+        const uri = linkByIndex[i];
+        if (uri !== currentUri) {
+            if (currentUri !== null) out += '</a>';
+            if (uri !== null) out += LINK_OPEN_TAG(uri);
+            currentUri = uri;
+        }
+        out += escapeHtml(text[i]);
+    }
+    if (currentUri !== null) out += '</a>';
+    return out;
+}
+
+function formatPostText(text: string | undefined, facets?: AppBskyRichtextFacet.Main[]): string {
+    const withLinks = wrapFacetLinks(text ?? '', facets);
+    const withLineBreaks = withLinks.replace(/\n/g, '<br>');
+    return sanitizeHtml(withLineBreaks, BLUESKY_TEXT_SANITIZE_OPTIONS);
+}
+
+function getFormattedText(post) {
+    return formatPostText(post.record?.text, post.record?.facets);
 }
 
 function getFormattedTextForRecord(record) {
-    let sanitizedContent = sanitizeHtml(record.value.text, {
-        allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], // Allowed HTML tags
-        allowedAttributes: {
-            'a': ['href']
-        }
-
-    });
-
-    if (record?.value?.facets !== undefined) {
-        record?.value?.facets.map((facet, index) => {
-            facet.features.map((feature, index) => {
-                if (feature.$type === "app.bsky.richtext.facet#link") {
-                    const byteStart = facet.index.byteStart;
-                    const byteEnd = facet.index.byteEnd;
-                    const externalLink = `<a style="text-decoration: underline;" href="${feature.uri}" target="_blank" >`;
-
-                    sanitizedContent = sanitizedContent.slice(0, byteStart) + externalLink + sanitizedContent.slice(byteStart, byteEnd) + '</a>' + sanitizedContent.slice(byteEnd);
-
-                }
-            })
-        })
-    }
-    const formattedContent = sanitizedContent.replace(/\n/g, '<br>');
-
-    return formattedContent
+    return formatPostText(record?.value?.text, record?.value?.facets);
 }
 
 
