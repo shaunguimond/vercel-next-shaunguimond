@@ -1,4 +1,6 @@
-const API_URL = process.env.WORDPRESS_API_URL
+// Validated at build/startup by next.config.js (which throws if it is
+// missing or not a valid URL).
+const API_URL = process.env.WORDPRESS_API_URL as string
 
 // Timeout so a slow/hung WPGraphQL API can't stall page regeneration
 // (each stalled fetch pins a serverless function instance).
@@ -6,7 +8,7 @@ const API_TIMEOUT_MS = 15_000
 
 // Function to fetch data from WPGraphQL API
 async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
-  const headers = { 'Content-Type': 'application/json' }
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
   if (process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
     headers[
@@ -113,14 +115,7 @@ export async function getAllPostsForHome(preview) {
         }
       }
     }
-  `,
-    {
-      variables: {
-        onlyEnabled: !preview,
-        preview,
-      },
-    }
-  )
+  `)
 
   return data?.posts
 }

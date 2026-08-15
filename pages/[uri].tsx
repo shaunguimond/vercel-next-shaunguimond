@@ -46,7 +46,6 @@ export const getStaticProps: GetStaticProps = async ({
     props: {
       preview,
       page: data.page,
-      pages: data.pages,
     },
     //  For Incremental Static Regeneration (ISR), set the revalidate option to 60 seconds.
     revalidate: 60,
