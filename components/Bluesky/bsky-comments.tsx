@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 import {
@@ -144,15 +144,16 @@ const Comment = ({ comment }: { comment: AppBskyFeedDefs.ThreadViewPost }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          {author.avatar ? (
-            <img
-              src={comment.post.author.avatar}
-              alt="avatar"
-              className={avatarClassName}
-            />
-          ) : (
-            <div className={avatarClassName} />
-          )}
+          <div className={`${avatarClassName} relative`}>
+            {author.avatar && (
+              <Image
+                src={author.avatar}
+                alt="avatar"
+                fill
+                className="rounded-full"
+              />
+            )}
+          </div>
           <p className="line-clamp-1">
             {author.displayName ?? author.handle}{" "}
             <span className="text-gray-500">@{author.handle}</span>

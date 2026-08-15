@@ -1,6 +1,9 @@
 const PDS_URL = process.env.PDS_URL
 const PDS_DID = process.env.PDS_DID
 
+// Keep a hung PDS from stalling ISR regeneration.
+const PDS_TIMEOUT_MS = 10_000
+
 interface StandardDocument {
   uri: string
   value: {
@@ -39,9 +42,20 @@ async function fetchStandardDocuments(): Promise<StandardDocument[]> {
     })
     if (cursor) params.set('cursor', cursor)
 
-    const res = await fetch(
-      `${PDS_URL}/xrpc/com.atproto.repo.listRecords?${params}`
-    )
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), PDS_TIMEOUT_MS)
+    let res: Response
+    try {
+      res = await fetch(
+        `${PDS_URL}/xrpc/com.atproto.repo.listRecords?${params}`,
+        { signal: controller.signal }
+      )
+    } catch {
+      // Network error or timeout — return whatever we have so far.
+      return allRecords
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!res.ok) {
       return allRecords

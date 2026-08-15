@@ -2,6 +2,7 @@
 
 import { AppBskyFeedGetAuthorFeed } from "@atproto/api";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { BSKY_AUTHOR_FEED } from "../../lib/constants";
 import { Reposted, Likes, Comments } from "../../lib/icons";
 import sanitizeHtml from 'sanitize-html';
@@ -10,19 +11,27 @@ import { useTheme } from 'next-themes';
 
 export default function BskySectionRecentPosts() {
     const [feedData, setFeedData] = useState([]);
+    const [feedError, setFeedError] = useState(false);
     const { systemTheme, theme } = useTheme();
 
     const currentTheme = theme === "system" ? systemTheme : theme;
     const fillColor = currentTheme === "dark" ? "white" : "black";
 
     useEffect(() => {
-        getAuthorFeed().then(data => setFeedData(data.feed));
+        const controller = new AbortController();
+        getAuthorFeed(controller.signal)
+            .then(data => setFeedData(data.feed))
+            .catch(() => setFeedError(true));
+        return () => controller.abort();
     }, []);
 
     return (
         <section className='mx-1'>
             <h1 className="font-bold text-3xl my-8 text-center">Posts from Bluesky</h1>
             <div className="columns-1 sm:columns-2 gap-6 mb-32">
+                {feedError && (
+                    <p className="text-center text-gray-500">Could not load posts from Bluesky.</p>
+                )}
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
                         const renderTimeFromPost = getRenderTimeFromPost(data.post.record.createdAt)
@@ -41,7 +50,11 @@ export default function BskySectionRecentPosts() {
                                     <div className="flex flex-row justify-between">
                                         <div className="flex gap-4 gap-y-4 rounded-2xl">
                                             <a target="_blank" href={handleLink}>
-                                                <img className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5" src={data.post.author.avatar} />
+                                                <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
+                                                    {data.post.author.avatar && (
+                                                        <Image src={data.post.author.avatar} alt="" fill className="rounded-full" />
+                                                    )}
+                                                </div>
                                             </a>
                                             <p className="line-clamp-1 text-lg font-bold self-center flex flex-col">
                                                 {data.post.author.displayName ?? data.post.author.handle}{" "}
@@ -98,7 +111,7 @@ export default function BskySectionRecentPosts() {
         </section>
     );
 }
-const getAuthorFeed = async () => {
+const getAuthorFeed = async (signal?: AbortSignal) => {
     const res = await fetch(
         BSKY_AUTHOR_FEED,
         {
@@ -107,6 +120,7 @@ const getAuthorFeed = async () => {
                 "Accept": "application/json",
             },
             cache: "no-store",
+            signal,
         },
     );
 
@@ -124,9 +138,17 @@ const ImageEmbed = ({ images }) => {
     const safeImages = Array.isArray(images) ? images : [];
     const hasMultiImages = safeImages.length > 1;
     return (
-        <div className={hasMultiImages ? "grid grid-cols-2 gap-2 row-auto mb-5" : "mb-5"}>
+        <div className={hasMultiImages ? "grid grid-cols-2 gap-2 mb-5" : "mb-5"}>
             {safeImages.map((image, index) => (
-                <img className="rounded-2xl w-full max-h-600 h-content object-cover" key={index} src={image.thumb} alt={`image-${index}`} />
+                <div key={index} className="relative aspect-square">
+                    <Image
+                        src={image.thumb}
+                        alt={`image-${index}`}
+                        fill
+                        className="rounded-2xl object-cover"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                    />
+                </div>
             ))}
         </div>
     );
@@ -137,7 +159,10 @@ const ExternalView = ({ embed }) => {
     return (
         <div className=" rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200m my-5">
             <a target="_blank" href={embed.external.uri}>
-                <img className="rounded-t-2xl" src={embed.external.thumb} />
+                {/* Raw <img> on purpose: external thumbnails can point at any
+                    third-party host, and next/image would need a wildcard
+                    remotePattern (open image proxy) to handle those. */}
+                <img className="rounded-t-2xl" loading="lazy" src={embed.external.thumb} alt="" />
                 <div className={hasThumbnail ? "px-2 pb-3 border-x border-b rounded-b-2xl" : "px-2 py-2 border-x border-y rounded-2xl"}>
                     <p className="text-md font-bold">{embed.external.title}</p>
                     <p className="text-sm pb-1">{embed.external.description}</p>
@@ -168,7 +193,11 @@ const ViewRecord = ({ record }) => {
             <div className="flex flex-row justify-between">
                 <div className="flex gap-4 gap-y-4 rounded-2xl">
                     <a target="_blank" href={handleLink}>
-                        <img className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5" src={record.author.avatar} />
+                        <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
+                            {record.author.avatar && (
+                                <Image src={record.author.avatar} alt="" fill className="rounded-full" />
+                            )}
+                        </div>
                     </a>
                     <p className="line-clamp-1 text-lg self-center flex flex-col">
                         {record?.author?.displayName ?? record?.post?.author?.handle}{" "}

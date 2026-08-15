@@ -81,10 +81,11 @@ export const getStaticProps: GetStaticProps = async ({
   previewData,
 }) => {
   const postSlug = typeof params?.slug === 'string' ? params.slug : null
-  const data = await getPostAndMorePosts(postSlug, preview, previewData)
-  const standardDocumentUri = postSlug
-    ? await getStandardDocumentUri(postSlug)
-    : null
+  // Fetch the post and its standard-site URI concurrently.
+  const [data, standardDocumentUri] = await Promise.all([
+    getPostAndMorePosts(postSlug, preview, previewData),
+    postSlug ? getStandardDocumentUri(postSlug) : Promise.resolve(null),
+  ])
 
   return {
     props: {
@@ -93,8 +94,8 @@ export const getStaticProps: GetStaticProps = async ({
       posts: data.posts,
       standardDocumentUri,
     },
-    //  For Incremental Static Regeneration (ISR), set the revalidate option to 10 seconds.
-    revalidate: 10,
+    //  For Incremental Static Regeneration (ISR), set the revalidate option to 60 seconds.
+    revalidate: 60,
   }
 }
 

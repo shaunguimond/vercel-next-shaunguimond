@@ -1,5 +1,9 @@
 const API_URL = process.env.WORDPRESS_API_URL
 
+// Timeout so a slow/hung WPGraphQL API can't stall page regeneration
+// (each stalled fetch pins a serverless function instance).
+const API_TIMEOUT_MS = 15_000
+
 // Function to fetch data from WPGraphQL API
 async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
   const headers = { 'Content-Type': 'application/json' }
@@ -11,14 +15,30 @@ async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
   }
 
   // WPGraphQL Plugin must be enabled
-  const res = await fetch(API_URL, {
-    headers,
-    method: 'POST',
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS)
+  let res: Response
+  try {
+    res = await fetch(API_URL, {
+      headers,
+      method: 'POST',
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+      signal: controller.signal,
+    })
+  } catch (err) {
+    // Re-throw with context; callers already treat failures as "data
+    // unavailable" (preview returns null, ISR serves the stale copy).
+    throw new Error(
+      `Failed to fetch from ${API_URL}: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    )
+  } finally {
+    clearTimeout(timeout)
+  }
 
   const json = await res.json()
   if (json.errors) {

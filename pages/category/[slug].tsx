@@ -52,7 +52,7 @@ export const getStaticProps: GetStaticProps = async ({ params}) => {
       props: {
         category: data || [],
       },
-      revalidate: 10,
+      revalidate: 60,
     };
   };
 

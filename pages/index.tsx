@@ -45,6 +45,8 @@ export default function Index({ allPosts: { edges }, preview }) {
 // Used for Static Site Generation (SSG) to pre-render pages at build time.
 export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   const allPosts = await getAllPostsForHome(preview);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-  return { props: { allPosts, preview }, revalidate: 10, };
+  return {
+    props: { allPosts, preview },
+    revalidate: 60,
+  };
 };

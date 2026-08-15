@@ -25,6 +25,22 @@ module.exports = {
         protocol: "https",
         hostname: "**.smushcdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.bsky.app",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.bsky.app",
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.bsky.app",
+      },
+      {
+        protocol: "https",
+        hostname: "atp.shaunguimond.com",
+      },
     ],
   },
 }
