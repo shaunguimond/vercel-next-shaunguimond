@@ -25,10 +25,6 @@ module.exports = {
         protocol: "https",
         hostname: "**.smushcdn.com",
       },
-      // Bluesky CDN hosts (user avatars and embedded images).
-      // cdn.bsky.app is where avatar/image blobs are actually served from
-      // (e.g. /img/avatar/plain/... and /img/feed/plain/...); the others are
-      // kept for the PDS avatar proxy.
       {
         protocol: "https",
         hostname: "cdn.bsky.app",
@@ -41,7 +37,6 @@ module.exports = {
         protocol: "https",
         hostname: "pbs.bsky.app",
       },
-      // This site's own PDS (avatars/images for accounts hosted on it).
       {
         protocol: "https",
         hostname: "atp.shaunguimond.com",
