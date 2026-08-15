@@ -47,7 +47,6 @@ export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   const allPosts = await getAllPostsForHome(preview);
   return {
     props: { allPosts, preview },
-    // 60s is plenty for a personal blog; 10s hammered the WP API for no visible gain.
     revalidate: 60,
   };
 };

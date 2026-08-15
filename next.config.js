@@ -24,7 +24,10 @@ module.exports = {
         protocol: "https",
         hostname: "**.smushcdn.com",
       },
-      // Bluesky CDN hosts (user avatars and embedded images).
+      {
+        protocol: "https",
+        hostname: "cdn.bsky.app",
+      },
       {
         protocol: "https",
         hostname: "avatars.bsky.app",
@@ -32,6 +35,10 @@ module.exports = {
       {
         protocol: "https",
         hostname: "pbs.bsky.app",
+      },
+      {
+        protocol: "https",
+        hostname: "atp.shaunguimond.com",
       },
     ],
   },
