@@ -2,6 +2,7 @@ import Avatar from './avatar'
 import Date from './date'
 import CoverImage from './cover-image'
 import Link from 'next/link'
+import { sanitizeWpText } from '../lib/sanitize'
 
 export default function PostPreview({
   title,
@@ -24,12 +25,12 @@ export default function PostPreview({
           <Link
             href={`/posts/${slug}`}
             className="hover:underline"
-            dangerouslySetInnerHTML={{ __html: title }}
+            dangerouslySetInnerHTML={{ __html: sanitizeWpText(title) }}
           ></Link>
         </h3>
         <div
           className="text-lg leading-relaxed mb-4 post-excerpt"
-          dangerouslySetInnerHTML={{ __html: excerpt }}
+          dangerouslySetInnerHTML={{ __html: sanitizeWpText(excerpt) }}
         />
         <div className="flex flex-row items-center gap-10">
           <Avatar author={author} />
