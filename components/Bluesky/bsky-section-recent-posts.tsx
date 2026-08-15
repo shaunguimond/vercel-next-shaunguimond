@@ -121,10 +121,11 @@ const getAuthorFeed = async () => {
 
 // components/ImageEmbed.js
 const ImageEmbed = ({ images }) => {
-    const hasMultiImages = images.length > 1;
+    const safeImages = Array.isArray(images) ? images : [];
+    const hasMultiImages = safeImages.length > 1;
     return (
         <div className={hasMultiImages ? "grid grid-cols-2 gap-2 row-auto mb-5" : "mb-5"}>
-            {images.map((image, index) => (
+            {safeImages.map((image, index) => (
                 <img className="rounded-2xl w-full max-h-600 h-content object-cover" key={index} src={image.thumb} alt={`image-${index}`} />
             ))}
         </div>
@@ -149,6 +150,11 @@ const ExternalView = ({ embed }) => {
 }
 
 const ViewRecord = ({ record }) => {
+    // Some embedded records may not resolve to a full record view.
+    if (!record?.value || !record?.author) return null;
+
+    const embeds = Array.isArray(record?.embeds) ? record.embeds : [];
+    const firstEmbed = embeds[0];
     const renderTimeFromPost = getRenderTimeFromPost(record.value.createdAt)
     // const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
     const handleLink = `https://bsky.app/profile/${record.author.handle}`;
@@ -176,11 +182,11 @@ const ViewRecord = ({ record }) => {
             <div className="py-3 px-5">
                 <p className="text-lg" dangerouslySetInnerHTML={{ __html: formattedContent }}></p>
 
-                {record?.embeds.length !== 0 && record?.embeds[0].$type === "app.bsky.embed.images#view" ?
-                    <ImageEmbed images={record?.embeds[0].images} /> : ""}
+                {firstEmbed?.$type === "app.bsky.embed.images#view" ?
+                    <ImageEmbed images={firstEmbed?.images} /> : ""}
 
-                {record?.embeds.length !== 0 && record?.embeds[0].$type === "app.bsky.embed.external#view" ?
-                    <ExternalView embed={record?.embeds[0]} /> : ""}
+                {firstEmbed?.$type === "app.bsky.embed.external#view" ?
+                    <ExternalView embed={firstEmbed} /> : ""}
 
             </div>
         </div>

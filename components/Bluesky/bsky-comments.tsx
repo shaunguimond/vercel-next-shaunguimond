@@ -18,28 +18,34 @@ type Thread = AppBskyFeedDefs.ThreadViewPost;
 
 
 // Function to fetch the thread data
-const fetchThreadData = async (uri, setThread, setError) => {
+const fetchThreadData = async (uri, setThread, setError, signal) => {
   try {
-    const thread = await getPostThread(uri);
+    const thread = await getPostThread(uri, signal);
     setThread(thread);
   } catch (err) {
+    // Ignore aborted requests (e.g. the component unmounted).
+    if (err instanceof DOMException && err.name === 'AbortError') return;
     setError('Error loading comments');
   }
 };
 
 export const CommentSection = ({ uri }) => {
-  if (!uri) return <div />;
-
-  const [, , did, _, rkey] = uri.split("/");
-  const postUrl = `https://bsky.app/profile/${did}/post/${rkey}`;
-
   const [thread, setThread] = useState<Thread | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
-    fetchThreadData(uri, setThread, setError);
+    if (!uri) return;
+    const controller = new AbortController();
+    fetchThreadData(uri, setThread, setError, controller.signal);
+    return () => controller.abort();
   }, [uri]);
+
+  // Hooks must run unconditionally, so this guard comes after them.
+  if (!uri) return <div />;
+
+  const [, , did, _, rkey] = uri.split("/");
+  const postUrl = `https://bsky.app/profile/${did}/post/${rkey}`;
 
   if (error) {
     return <p className="text-center">{error}</p>;
@@ -199,10 +205,8 @@ const Actions = ({ post }: { post: AppBskyFeedDefs.PostView }) => (
   </div>
 );
 
-const getPostThread = async (uri: string) => {
+const getPostThread = async (uri: string, signal?: AbortSignal) => {
   const params = new URLSearchParams({ uri });
-
-  const paramtype = typeof params;
 
   const res = await fetch(
     "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?" +
@@ -213,6 +217,7 @@ const getPostThread = async (uri: string) => {
         "Accept": "application/json",
       },
       cache: "no-store",
+      signal,
     },
   );
 
