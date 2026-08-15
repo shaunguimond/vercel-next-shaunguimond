@@ -18,7 +18,7 @@ export default function Index({ allPosts: { edges }, preview }) {
   return (
     <Layout preview={preview}>
       <Head>
-        <title>{`Next.js Blog with WordPress`}</title>
+        <title>Shaun Guimond</title>
         <meta property="og:image" content={HOME_OG_IMAGE_URL} />
       </Head>
       <Container>

@@ -34,7 +34,7 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
           <article className="mx-auto max-w-3xl px-5">
             <Head>
               <title>
-                {`${post.title} | Next.js Blog with WordPress`}
+                {`${post.title} | Shaun Guimond`}
               </title>
               <meta
                 property="og:image"

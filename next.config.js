@@ -5,9 +5,8 @@ if (!URL.canParse(process.env.WORDPRESS_API_URL)) {
   `)
 }
 
-const { protocol, hostname, port, pathname } = new URL(
-  process.env.WORDPRESS_API_URL
-)
+// Throw early (with a clear message) if WORDPRESS_API_URL is missing/invalid.
+new URL(process.env.WORDPRESS_API_URL)
 
 /** @type {import('next').NextConfig} */
 module.exports = {

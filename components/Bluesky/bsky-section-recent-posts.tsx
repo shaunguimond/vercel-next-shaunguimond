@@ -1,6 +1,13 @@
 'use client';
 
-import { AppBskyFeedGetAuthorFeed } from "@atproto/api";
+import {
+    AppBskyEmbedExternal,
+    AppBskyEmbedImages,
+    AppBskyEmbedRecord,
+    AppBskyEmbedRecordWithMedia,
+    AppBskyFeedDefs,
+    AppBskyFeedGetAuthorFeed,
+} from "@atproto/api";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { BSKY_AUTHOR_FEED } from "../../lib/constants";
@@ -10,7 +17,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 
 export default function BskySectionRecentPosts() {
-    const [feedData, setFeedData] = useState([]);
+    const [feedData, setFeedData] = useState<AppBskyFeedDefs.FeedViewPost[]>([]);
     const [feedError, setFeedError] = useState(false);
     const { systemTheme, theme } = useTheme();
 
@@ -70,8 +77,8 @@ export default function BskySectionRecentPosts() {
                                         <p className="text-lg mb-5" dangerouslySetInnerHTML={{ __html: formattedContent }}></p>
 
 
-                                        {data?.post?.embed?.$type === "app.bsky.embed.recordWithMedia#view" ?
-                                            data?.post?.embed?.media?.$type === "app.bsky.embed.images#view" ?
+                                        {AppBskyEmbedRecordWithMedia.isView(data?.post?.embed) ?
+                                            AppBskyEmbedImages.isView(data.post.embed.media) ?
                                                 <>
                                                     <ImageEmbed images={data.post.embed.media.images} />
                                                     <ViewRecord record={data.post.embed.record.record} />
@@ -79,20 +86,20 @@ export default function BskySectionRecentPosts() {
                                                 : "" : ""
                                         }
 
-                                        {data?.post?.embed?.$type === "app.bsky.embed.record#view" ?
+                                        {AppBskyEmbedRecord.isView(data?.post?.embed) ?
                                             <ViewRecord record={data.post.embed.record} /> : ""}
 
-                                        {data?.post?.embed?.$type === "app.bsky.embed.images#view" ?
+                                        {AppBskyEmbedImages.isView(data?.post?.embed) ?
                                             <ImageEmbed images={data.post.embed.images} /> : ""}
 
-                                        {data?.post?.embed?.$type === "app.bsky.embed.external#view" ?
+                                        {AppBskyEmbedExternal.isView(data?.post?.embed) ?
                                             <ExternalView embed={data.post.embed} /> : ""}
 
 
                                         {/* This should be moved to a separate component */}
                                         <div className="flex flex-row justify-between w-11/12 mx-auto pb-4">
                                             <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.likeCount}</span></a>
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.repostCount + data.post.quoteCount}</span></a>
+                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{(data.post.repostCount ?? 0) + (data.post.quoteCount ?? 0)}</span></a>
                                             <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.replyCount}</span></a>
                                         </div>
 
@@ -157,7 +164,7 @@ const ImageEmbed = ({ images }) => {
 const ExternalView = ({ embed }) => {
     const hasThumbnail = embed.external.thumb;
     return (
-        <div className=" rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200m my-5">
+        <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 my-5">
             <a target="_blank" href={embed.external.uri}>
                 {/* Raw <img> on purpose: external thumbnails can point at any
                     third-party host, and next/image would need a wildcard
