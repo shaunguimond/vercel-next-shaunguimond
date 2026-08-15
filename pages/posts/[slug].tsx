@@ -16,7 +16,10 @@ import { CommentSection } from '../../components/Bluesky/bsky-comments'
 // Used to generate `/posts/[slug]` posts from the Wordpress backend.
 export default function Post({ post, posts, preview, standardDocumentUri }) {
   const router = useRouter()
-  const morePosts = posts?.edges
+  const morePosts = posts?.edges ?? []
+  // A post may not have tags or a linked Bluesky post.
+  const tags = post?.tags?.edges ?? []
+  const blueskyPostUrl = post?.extraPostInfo?.blueskyPostUrl ?? null
 
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
@@ -55,7 +58,7 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
             />
             <PostBody content={post.content} />
             <footer className="mx-3">
-              {post.tags.edges.length > 0 && <Tags tags={post.tags} />}
+              {tags.length > 0 && <Tags tags={{ edges: tags }} />}
             </footer>
           </article>
 
@@ -64,7 +67,7 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
 
           <SectionSeparator />
 
-          <CommentSection uri={post.extraPostInfo.blueskyPostUrl} />
+          <CommentSection uri={blueskyPostUrl} />
         </>
       )}
     </Layout>
