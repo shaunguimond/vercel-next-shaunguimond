@@ -54,15 +54,23 @@ module.exports = {
     // the Bluesky text formatter are the first line of defense; this CSP is
     // the second line. It still blocks remote scripts, remote objects,
     // framing, and limits where client-side fetches can go.
+    // The Vercel platform injects the Toolbar (deploy previews + comments)
+    // into preview deployments. It loads scripts, an iframe, styles, fonts,
+    // and images from vercel.live and uses a Pusher WebSocket. Vercel's
+    // documented CSP requirements are added for preview environments only
+    // (VERCEL_ENV is set by Vercel), so the production CSP stays closed to
+    // all external scripts and frames.
+    const isPreview = process.env.VERCEL_ENV === "preview";
+
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://atp.shaunguimond.com",
-      "font-src 'self'",
-      "connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com",
+      `script-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
+      `style-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
+      `img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://atp.shaunguimond.com${isPreview ? " https://vercel.live https://vercel.com" : ""}`,
+      `font-src 'self'${isPreview ? " https://vercel.live https://assets.vercel.com" : ""}`,
+      `connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com${isPreview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
       "object-src 'none'",
-      "frame-src 'none'",
+      `frame-src ${isPreview ? "https://vercel.live" : "'none'"}`,
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
