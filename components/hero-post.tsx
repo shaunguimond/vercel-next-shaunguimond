@@ -34,13 +34,13 @@ export default function HeroPost({
       </div>
       <div className="mb-20 md:mb-28 flex flex-col p-5 backdrop-blur-xl rounded-2xl">
         <div>
-          <h3 className="mb-4 text-4xl leading-tight">
+          <h2 className="mb-4 text-4xl leading-tight">
             <Link
               href={`/posts/${slug}`}
               className="hover:underline"
               dangerouslySetInnerHTML={{ __html: sanitizeWpText(title) }}
             ></Link>
-          </h3>
+          </h2>
           <div className="mb-4 md:mb-0 text-lg">
 
           </div>

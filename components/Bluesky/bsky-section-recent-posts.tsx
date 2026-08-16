@@ -59,7 +59,7 @@ export default function BskySectionRecentPosts() {
                                     {isReposted ? <span className="flex flex-row ml-20 mt-0 items-center gap-2"> <Reposted height="16px" width="16px" color={fillColor} /> Reposted by me</span> : ""}
                                     <div className="flex flex-row justify-between">
                                         <div className="flex gap-4 gap-y-4 rounded-2xl">
-                                            <a target="_blank" href={handleLink}>
+                                            <a target="_blank" href={handleLink} aria-label={`View @${data.post.author.handle} on Bluesky`}>
                                                 <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
                                                     {data.post.author.avatar && (
                                                         <Image src={data.post.author.avatar} alt="" fill className="rounded-full" />
@@ -101,9 +101,9 @@ export default function BskySectionRecentPosts() {
 
                                         {/* This should be moved to a separate component */}
                                         <div className="flex flex-row justify-between w-11/12 mx-auto pb-4">
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.likeCount}</span></a>
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{(data.post.repostCount ?? 0) + (data.post.quoteCount ?? 0)}</span></a>
-                                            <a target="_blank" href={postLink} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.replyCount}</span></a>
+                                            <a target="_blank" href={postLink} aria-label={`${data.post.likeCount ?? 0} likes on Bluesky`} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Likes height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.likeCount}</span></a>
+                                            <a target="_blank" href={postLink} aria-label={`${(data.post.repostCount ?? 0) + (data.post.quoteCount ?? 0)} reposts on Bluesky`} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Reposted height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{(data.post.repostCount ?? 0) + (data.post.quoteCount ?? 0)}</span></a>
+                                            <a target="_blank" href={postLink} aria-label={`${data.post.replyCount ?? 0} replies on Bluesky`} className="flex flex-row hover:shadow-medium transition-shadow duration-200"><Comments height="25px" width="25px" color={fillColor} /><span className="self-center ml-2">{data.post.replyCount}</span></a>
                                         </div>
 
                                         <div className="py-3 px-5 w-full">
@@ -215,7 +215,7 @@ const ViewRecord = ({ record }: { record: unknown }) => {
             <div className="pb-4"></div>
             <div className="flex flex-row justify-between">
                 <div className="flex gap-4 gap-y-4 rounded-2xl">
-                    <a target="_blank" href={handleLink}>
+                    <a target="_blank" href={handleLink} aria-label={`View @${view.author.handle} on Bluesky`}>
                         <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
                             {view.author.avatar && (
                                 <Image src={view.author.avatar} alt="" fill className="rounded-full" />
