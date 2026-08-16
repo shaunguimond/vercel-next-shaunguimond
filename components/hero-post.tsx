@@ -3,6 +3,7 @@ import Date from './date'
 import CoverImage from './cover-image'
 import Link from 'next/link'
 import { sanitizeWpText } from '../lib/sanitize'
+import type { AuthorEdge, FeaturedImage } from '../lib/types'
 
 export default function HeroPost({
   title,
@@ -11,6 +12,13 @@ export default function HeroPost({
   excerpt,
   author,
   slug,
+}: {
+  title: string
+  coverImage?: FeaturedImage | null
+  date: string
+  excerpt: string
+  author?: AuthorEdge | null
+  slug: string
 }) {
   // Remove <a> tags using regular expressions (display choice: hero
   // excerpts show "..." where the excerpt text contains a link).

@@ -1,6 +1,7 @@
 import Image from "next/image"
+import type { AuthorEdge } from '../lib/types'
 
-export default function Avatar({ author }) {
+export default function Avatar({ author }: { author?: AuthorEdge | null }) {
   const node = author?.node
   const name =
     node?.firstName && node?.lastName
@@ -24,7 +25,7 @@ export default function Avatar({ author }) {
         <Image
           src={avatarUrl}
           className="rounded-full"
-          alt={name}
+          alt={name ?? ''}
           fill
           sizes="36px" />
       </div>

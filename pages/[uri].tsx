@@ -5,8 +5,9 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
 import Layout from '../components/layout'
 import { getPageAndMorePages, getAllPagesWithUri } from '../lib/api'
+import type { PageNode, PreviewPage } from '../lib/types'
 
-export default function Page({ page, preview }) {
+export default function Page({ page, preview }: { page: PageNode | null; preview?: boolean }) {
   const router = useRouter()
 
   if (!router.isFallback && !page?.uri) {
@@ -18,7 +19,7 @@ export default function Page({ page, preview }) {
       <Container>
         {router.isFallback ? (
           <title>Loading…</title>
-        ) : (
+        ) : page ? (
           <>
             <article>
               <title>
@@ -27,6 +28,8 @@ export default function Page({ page, preview }) {
               <PostBody content={page.content} />
             </article>
           </>
+        ) : (
+          null
         )}
       </Container>
     </Layout>
@@ -40,7 +43,12 @@ export const getStaticProps: GetStaticProps = async ({
   preview = false,
   previewData,
 }) => {
-  const data = await getPageAndMorePages(params?.uri, preview, previewData)
+  const pageUri = typeof params?.uri === 'string' ? params.uri : undefined
+  const data = await getPageAndMorePages(
+    pageUri,
+    preview,
+    previewData as { page?: PreviewPage } | undefined
+  )
 
   return {
     props: {

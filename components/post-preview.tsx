@@ -3,6 +3,7 @@ import Date from './date'
 import CoverImage from './cover-image'
 import Link from 'next/link'
 import { sanitizeWpText } from '../lib/sanitize'
+import type { AuthorEdge, FeaturedImage } from '../lib/types'
 
 export default function PostPreview({
   title,
@@ -11,6 +12,13 @@ export default function PostPreview({
   excerpt,
   author,
   slug,
+}: {
+  title: string
+  coverImage?: FeaturedImage | null
+  date: string
+  excerpt: string
+  author?: AuthorEdge | null
+  slug: string
 }) {
   return (
     <article className='shadow-small rounded-2xl h-fit 

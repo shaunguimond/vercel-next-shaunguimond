@@ -1,4 +1,6 @@
-export default function Tags({ tags }) {
+import type { TermEdge } from '../lib/types'
+
+export default function Tags({ tags }: { tags: { edges: TermEdge[] } }) {
   return (
     <div className="max-w-2xl mx-auto">
       <p className="mt-8 text-lg font-bold">

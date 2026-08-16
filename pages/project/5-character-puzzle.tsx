@@ -8,7 +8,7 @@ import Layout from "../../components/layout";
 /**
  * WordGuesser component for playing a word guessing game.
  */
-export default function WordGuesser({preview}) {
+export default function WordGuesser({ preview }: { preview?: boolean }) {
     // State variables
     const [isClient, setIsClient] = useState(false);
     const [inputValue, setInputValue] = useState(""); // User input value

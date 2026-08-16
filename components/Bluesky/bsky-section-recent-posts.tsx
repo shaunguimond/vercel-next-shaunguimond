@@ -2,9 +2,11 @@
 
 import {
     AppBskyEmbedExternal,
+    AppBskyEmbedGallery,
     AppBskyEmbedImages,
     AppBskyEmbedRecord,
     AppBskyEmbedRecordWithMedia,
+    AppBskyEmbedVideo,
     AppBskyFeedDefs,
     AppBskyFeedGetAuthorFeed,
     AppBskyRichtextFacet,
@@ -42,7 +44,7 @@ export default function BskySectionRecentPosts() {
                 )}
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
-                        const renderTimeFromPost = getRenderTimeFromPost(data.post.record.createdAt)
+                        const renderTimeFromPost = getRenderTimeFromPost((data.post.record as PostRecordFields).createdAt)
                         const isReposted = data.reason !== undefined && data.reason.$type === "app.bsky.feed.defs#reasonRepost";
                         const postLink = `https://bsky.app/profile/${data.post.author.handle}/post/${data.post.uri.split("/")[4]}`;
                         const handleLink = `https://bsky.app/profile/${data.post.author.handle}`;
@@ -142,7 +144,7 @@ const getAuthorFeed = async (signal?: AbortSignal) => {
 }
 
 // components/ImageEmbed.js
-const ImageEmbed = ({ images }) => {
+const ImageEmbed = ({ images }: { images?: AppBskyEmbedImages.ViewImage[] }) => {
     const safeImages = Array.isArray(images) ? images : [];
     const hasMultiImages = safeImages.length > 1;
     return (
@@ -162,7 +164,7 @@ const ImageEmbed = ({ images }) => {
     );
 };
 
-const ExternalView = ({ embed }) => {
+const ExternalView = ({ embed }: { embed: AppBskyEmbedExternal.View }) => {
     const hasThumbnail = embed.external.thumb;
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 my-5">
@@ -182,17 +184,30 @@ const ExternalView = ({ embed }) => {
     )
 }
 
-const ViewRecord = ({ record }) => {
+const ViewRecord = ({ record }: { record: unknown }) => {
+    // The @atproto types model embedded record data as a generic map. Cast
+    // to the fields this component reads.
+    const view = record as {
+        value?: PostRecordFields | null;
+        author?: {
+            handle: string;
+            displayName?: string;
+            avatar?: string;
+        } | null;
+        embeds?: EmbedView[] | null;
+        post?: { author?: { handle: string } } | null;
+    };
+
     // Some embedded records may not resolve to a full record view.
-    if (!record?.value || !record?.author) return null;
+    if (!view?.value || !view?.author) return null;
 
-    const embeds = Array.isArray(record?.embeds) ? record.embeds : [];
+    const embeds = Array.isArray(view.embeds) ? view.embeds : [];
     const firstEmbed = embeds[0];
-    const renderTimeFromPost = getRenderTimeFromPost(record.value.createdAt)
-    // const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
-    const handleLink = `https://bsky.app/profile/${record.author.handle}`;
+    const renderTimeFromPost = getRenderTimeFromPost(view.value.createdAt)
+    // const postLink = `https://bsky.app/profile/${view.author.handle}/post/${view.uri.split("/")[4]}`;
+    const handleLink = `https://bsky.app/profile/${view.author.handle}`;
 
-    const formattedContent = getFormattedTextForRecord(record);
+    const formattedContent = getFormattedTextForRecord(view);
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 border mb-5">
 
@@ -202,14 +217,14 @@ const ViewRecord = ({ record }) => {
                 <div className="flex gap-4 gap-y-4 rounded-2xl">
                     <a target="_blank" href={handleLink}>
                         <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
-                            {record.author.avatar && (
-                                <Image src={record.author.avatar} alt="" fill className="rounded-full" />
+                            {view.author.avatar && (
+                                <Image src={view.author.avatar} alt="" fill className="rounded-full" />
                             )}
                         </div>
                     </a>
                     <p className="line-clamp-1 text-lg self-center flex flex-col">
-                        {record?.author?.displayName ?? record?.post?.author?.handle}{" "}
-                        <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{record.author.handle}</a>
+                        {view.author?.displayName ?? view.post?.author?.handle}{" "}
+                        <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{view.author.handle}</a>
                     </p>
                 </div>
                 <p className="self-center mr-5 text-sm">{renderTimeFromPost}
@@ -240,6 +255,23 @@ const ViewRecord = ({ record }) => {
 // restricted to http(s) before wrapping. The combined string still runs
 // through sanitize-html, which enforces the tag/attribute/class/scheme
 // allowlist as a second layer.
+
+// The @atproto types model post record data as a generic map. This is the
+// subset of fields the text formatting and time helpers read.
+interface PostRecordFields {
+    text?: string;
+    facets?: AppBskyRichtextFacet.Main[];
+    createdAt?: string;
+}
+
+// Embed views that can appear in an embedded record's embeds array.
+type EmbedView =
+    | AppBskyEmbedImages.View
+    | AppBskyEmbedVideo.View
+    | AppBskyEmbedGallery.View
+    | AppBskyEmbedExternal.View
+    | AppBskyEmbedRecord.View
+    | AppBskyEmbedRecordWithMedia.View;
 
 const BLUESKY_TEXT_SANITIZE_OPTIONS = {
     allowedTags: ['a', 'b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'],
@@ -324,17 +356,20 @@ function formatPostText(text: string | undefined, facets?: AppBskyRichtextFacet.
     return sanitizeHtml(withLineBreaks, BLUESKY_TEXT_SANITIZE_OPTIONS);
 }
 
-function getFormattedText(post) {
-    return formatPostText(post.record?.text, post.record?.facets);
+function getFormattedText(post: AppBskyFeedDefs.PostView): string {
+    const record = post.record as PostRecordFields;
+    return formatPostText(record?.text, record?.facets);
 }
 
-function getFormattedTextForRecord(record) {
+function getFormattedTextForRecord(
+    record: { value?: PostRecordFields | null }
+): string {
     return formatPostText(record?.value?.text, record?.value?.facets);
 }
 
 
-function getRenderTimeFromPost(date) {
-    const postDate = new Date(date);
+function getRenderTimeFromPost(date?: string) {
+    const postDate = new Date(date ?? '');
     const currentDate = new Date();
     const daysAgo = Math.floor((currentDate.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24));
 

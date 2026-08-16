@@ -1,7 +1,8 @@
 import PostPreview from './post-preview'
 import Container from './container'
+import type { PostEdge } from '../lib/types'
 
-export default function MoreStories({ posts }) {
+export default function MoreStories({ posts }: { posts: PostEdge[] }) {
   return (
     <Container>
       <section className='mx-1'>
