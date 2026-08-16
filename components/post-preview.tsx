@@ -2,6 +2,8 @@ import Avatar from './avatar'
 import Date from './date'
 import CoverImage from './cover-image'
 import Link from 'next/link'
+import { sanitizeWpText } from '../lib/sanitize'
+import type { AuthorEdge, FeaturedImage } from '../lib/types'
 
 export default function PostPreview({
   title,
@@ -10,6 +12,13 @@ export default function PostPreview({
   excerpt,
   author,
   slug,
+}: {
+  title: string
+  coverImage?: FeaturedImage | null
+  date: string
+  excerpt: string
+  author?: AuthorEdge | null
+  slug: string
 }) {
   return (
     <article className='shadow-small rounded-2xl h-fit 
@@ -24,12 +33,12 @@ export default function PostPreview({
           <Link
             href={`/posts/${slug}`}
             className="hover:underline"
-            dangerouslySetInnerHTML={{ __html: title }}
+            dangerouslySetInnerHTML={{ __html: sanitizeWpText(title) }}
           ></Link>
         </h3>
         <div
           className="text-lg leading-relaxed mb-4 post-excerpt"
-          dangerouslySetInnerHTML={{ __html: excerpt }}
+          dangerouslySetInnerHTML={{ __html: sanitizeWpText(excerpt) }}
         />
         <div className="flex flex-row items-center gap-10">
           <Avatar author={author} />

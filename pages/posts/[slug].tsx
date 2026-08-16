@@ -12,14 +12,25 @@ import Tags from '../../components/tags'
 import { getAllPostsWithSlug, getPostAndMorePosts } from '../../lib/api'
 import { getStandardDocumentUri } from '../../lib/pds'
 import { CommentSection } from '../../components/Bluesky/bsky-comments'
+import type { PostEdge, PostNode, PreviewPost } from '../../lib/types'
 
 // Used to generate `/posts/[slug]` posts from the Wordpress backend.
-export default function Post({ post, posts, preview, standardDocumentUri }) {
+export default function Post({
+  post,
+  posts,
+  preview,
+  standardDocumentUri,
+}: {
+  post: PostNode | null
+  posts: { edges: PostEdge[] } | null
+  preview?: boolean
+  standardDocumentUri: string | null
+}) {
   const router = useRouter()
   const morePosts = posts?.edges ?? []
   // A post may not have tags or a linked Bluesky post.
   const tags = post?.tags?.edges ?? []
-  const blueskyPostUrl = post?.extraPostInfo?.blueskyPostUrl ?? null
+  const blueskyPostUrl = post?.extraPostInfo?.blueskyPostUrl ?? undefined
 
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
@@ -29,7 +40,7 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
     <Layout preview={preview}>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
-      ) : (
+      ) : post ? (
         <>
           <article className="mx-auto max-w-3xl px-5">
             <Head>
@@ -38,7 +49,7 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
               </title>
               <meta
                 property="og:image"
-                content={post.featuredImage?.node.sourceUrl}
+                content={post.featuredImage?.node?.sourceUrl ?? undefined}
               />
               {standardDocumentUri && (
                 <>
@@ -69,6 +80,8 @@ export default function Post({ post, posts, preview, standardDocumentUri }) {
 
           <CommentSection uri={blueskyPostUrl} />
         </>
+      ) : (
+        null
       )}
     </Layout>
   )
@@ -83,7 +96,7 @@ export const getStaticProps: GetStaticProps = async ({
   const postSlug = typeof params?.slug === 'string' ? params.slug : null
   // Fetch the post and its standard-site URI concurrently.
   const [data, standardDocumentUri] = await Promise.all([
-    getPostAndMorePosts(postSlug, preview, previewData),
+    getPostAndMorePosts(postSlug, preview, previewData as { post?: PreviewPost } | undefined),
     postSlug ? getStandardDocumentUri(postSlug) : Promise.resolve(null),
   ])
 

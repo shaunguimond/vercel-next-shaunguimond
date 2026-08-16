@@ -2,12 +2,18 @@ import Avatar from './avatar'
 import Date from './date'
 import PostTitle from './post-title'
 import Categories from './categories'
+import type { AuthorEdge, TermEdge } from '../lib/types'
 
 export default function PostHeader({
   title,
   date,
   author,
   categories,
+}: {
+  title: string
+  date: string
+  author?: AuthorEdge | null
+  categories?: { edges: TermEdge[] } | null
 }) {
   return (
     <>

@@ -18,7 +18,12 @@ type Thread = AppBskyFeedDefs.ThreadViewPost;
 
 
 // Function to fetch the thread data
-const fetchThreadData = async (uri, setThread, setError, signal) => {
+const fetchThreadData = async (
+  uri: string,
+  setThread: (thread: Thread | null) => void,
+  setError: (error: string) => void,
+  signal?: AbortSignal
+) => {
   try {
     const thread = await getPostThread(uri, signal);
     setThread(thread);
@@ -29,7 +34,7 @@ const fetchThreadData = async (uri, setThread, setError, signal) => {
   }
 };
 
-export const CommentSection = ({ uri }) => {
+export const CommentSection = ({ uri }: Props) => {
   const [thread, setThread] = useState<Thread | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(3);

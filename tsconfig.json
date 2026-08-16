@@ -9,9 +9,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    // noImplicitAny stays off for now: props/params are untyped throughout.
-    // Track follow-up to type them, then flip this on.
-    "noImplicitAny": false,
+    // noImplicitAny is on: props and params are typed (see lib/types.ts).
+    "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,

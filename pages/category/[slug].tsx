@@ -6,10 +6,17 @@ import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import PostPreview from '../../components/post-preview'
 import Container from '../../components/container'
+import type { CategoryWithPosts } from '../../lib/types'
 
 
 
-export default function PostsByCategory({ category, preview }) {
+export default function PostsByCategory({
+    category,
+    preview,
+}: {
+    category: CategoryWithPosts | null
+    preview?: boolean
+}) {
     const router = useRouter()
 
     if (!router.isFallback && !category?.slug) {
@@ -20,6 +27,8 @@ export default function PostsByCategory({ category, preview }) {
 
     <Layout preview={preview}>
       <Container>
+        {category && (
+        <>
         <div>
             <h1 className="text-6xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight md:leading-none mb-12 text-center">
                 {category.name}
@@ -39,18 +48,21 @@ export default function PostsByCategory({ category, preview }) {
         />
       ))}
       </div>
+        </>
+        )}
       </Container>
     </Layout>
     )
 }
 
 export const getStaticProps: GetStaticProps = async ({ params}) => {
-    const data = await getAllPostsByCategory(params?.slug);
+    const categorySlug = typeof params?.slug === 'string' ? params.slug : undefined
+    const data = await getAllPostsByCategory(categorySlug);
 
     
     return {
       props: {
-        category: data || [],
+        category: data ?? null,
       },
       revalidate: 60,
     };

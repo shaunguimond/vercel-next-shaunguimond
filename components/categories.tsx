@@ -1,4 +1,10 @@
-export default function Categories({ categories }) {
+import type { TermEdge } from '../lib/types'
+
+export default function Categories({
+  categories,
+}: {
+  categories?: { edges: TermEdge[] } | null
+}) {
   const edges = categories?.edges
 
   // A post can have no categories — nothing to render in that case.

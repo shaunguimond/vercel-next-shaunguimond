@@ -2,11 +2,14 @@
 
 import {
     AppBskyEmbedExternal,
+    AppBskyEmbedGallery,
     AppBskyEmbedImages,
     AppBskyEmbedRecord,
     AppBskyEmbedRecordWithMedia,
+    AppBskyEmbedVideo,
     AppBskyFeedDefs,
     AppBskyFeedGetAuthorFeed,
+    AppBskyRichtextFacet,
 } from "@atproto/api";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -41,7 +44,7 @@ export default function BskySectionRecentPosts() {
                 )}
                 {feedData.length > 0 &&
                     feedData.map((data, index) => {
-                        const renderTimeFromPost = getRenderTimeFromPost(data.post.record.createdAt)
+                        const renderTimeFromPost = getRenderTimeFromPost((data.post.record as PostRecordFields).createdAt)
                         const isReposted = data.reason !== undefined && data.reason.$type === "app.bsky.feed.defs#reasonRepost";
                         const postLink = `https://bsky.app/profile/${data.post.author.handle}/post/${data.post.uri.split("/")[4]}`;
                         const handleLink = `https://bsky.app/profile/${data.post.author.handle}`;
@@ -141,7 +144,7 @@ const getAuthorFeed = async (signal?: AbortSignal) => {
 }
 
 // components/ImageEmbed.js
-const ImageEmbed = ({ images }) => {
+const ImageEmbed = ({ images }: { images?: AppBskyEmbedImages.ViewImage[] }) => {
     const safeImages = Array.isArray(images) ? images : [];
     const hasMultiImages = safeImages.length > 1;
     return (
@@ -161,7 +164,7 @@ const ImageEmbed = ({ images }) => {
     );
 };
 
-const ExternalView = ({ embed }) => {
+const ExternalView = ({ embed }: { embed: AppBskyEmbedExternal.View }) => {
     const hasThumbnail = embed.external.thumb;
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 my-5">
@@ -181,17 +184,30 @@ const ExternalView = ({ embed }) => {
     )
 }
 
-const ViewRecord = ({ record }) => {
+const ViewRecord = ({ record }: { record: unknown }) => {
+    // The @atproto types model embedded record data as a generic map. Cast
+    // to the fields this component reads.
+    const view = record as {
+        value?: PostRecordFields | null;
+        author?: {
+            handle: string;
+            displayName?: string;
+            avatar?: string;
+        } | null;
+        embeds?: EmbedView[] | null;
+        post?: { author?: { handle: string } } | null;
+    };
+
     // Some embedded records may not resolve to a full record view.
-    if (!record?.value || !record?.author) return null;
+    if (!view?.value || !view?.author) return null;
 
-    const embeds = Array.isArray(record?.embeds) ? record.embeds : [];
+    const embeds = Array.isArray(view.embeds) ? view.embeds : [];
     const firstEmbed = embeds[0];
-    const renderTimeFromPost = getRenderTimeFromPost(record.value.createdAt)
-    // const postLink = `https://bsky.app/profile/${record.author.handle}/post/${record.uri.split("/")[4]}`;
-    const handleLink = `https://bsky.app/profile/${record.author.handle}`;
+    const renderTimeFromPost = getRenderTimeFromPost(view.value.createdAt)
+    // const postLink = `https://bsky.app/profile/${view.author.handle}/post/${view.uri.split("/")[4]}`;
+    const handleLink = `https://bsky.app/profile/${view.author.handle}`;
 
-    const formattedContent = getFormattedTextForRecord(record);
+    const formattedContent = getFormattedTextForRecord(view);
     return (
         <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 border mb-5">
 
@@ -201,14 +217,14 @@ const ViewRecord = ({ record }) => {
                 <div className="flex gap-4 gap-y-4 rounded-2xl">
                     <a target="_blank" href={handleLink}>
                         <div className="h-16 w-16 shrink-0 rounded-full bg-gray-300 ml-5 relative">
-                            {record.author.avatar && (
-                                <Image src={record.author.avatar} alt="" fill className="rounded-full" />
+                            {view.author.avatar && (
+                                <Image src={view.author.avatar} alt="" fill className="rounded-full" />
                             )}
                         </div>
                     </a>
                     <p className="line-clamp-1 text-lg self-center flex flex-col">
-                        {record?.author?.displayName ?? record?.post?.author?.handle}{" "}
-                        <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{record.author.handle}</a>
+                        {view.author?.displayName ?? view.post?.author?.handle}{" "}
+                        <a target="_blank" href={handleLink} className="text-gray-700 dark:text-gray-300 font-bold text-sm hover:underline">@{view.author.handle}</a>
                     </p>
                 </div>
                 <p className="self-center mr-5 text-sm">{renderTimeFromPost}
@@ -231,65 +247,129 @@ const ViewRecord = ({ record }) => {
 }
 
 
-function getFormattedText(post) {
-    let sanitizedContent = sanitizeHtml(post.record.text, {
-        allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], // Allowed HTML tags
-        allowedAttributes: {
-            'a': ['href']
-        }
+// Bluesky rich text formatting.
+//
+// Facet link URIs are attacker-influenced (anyone can link to anything from
+// Bluesky). The raw post text is HTML-escaped before any anchor is spliced
+// in, so post text can never be interpreted as HTML. Link URIs are
+// restricted to http(s) before wrapping. The combined string still runs
+// through sanitize-html, which enforces the tag/attribute/class/scheme
+// allowlist as a second layer.
 
-    });
-
-    if (post.record?.facets !== undefined) {
-        post.record?.facets.map((facet, index) => {
-            facet.features.map((feature, index) => {
-                if (feature.$type === "app.bsky.richtext.facet#link") {
-                    const byteStart = facet.index.byteStart;
-                    const byteEnd = facet.index.byteEnd;
-                    const externalLink = `<a style="text-decoration: underline;" href="${feature.uri}" target="_blank" >`;
-
-                    sanitizedContent = sanitizedContent.slice(0, byteStart) + externalLink + sanitizedContent.slice(byteStart, byteEnd) + '</a>' + sanitizedContent.slice(byteEnd);
-
-                }
-            })
-        })
-    }
-    const formattedContent = sanitizedContent.replace(/\n/g, '<br>');
-
-    return formattedContent
+// The @atproto types model post record data as a generic map. This is the
+// subset of fields the text formatting and time helpers read.
+interface PostRecordFields {
+    text?: string;
+    facets?: AppBskyRichtextFacet.Main[];
+    createdAt?: string;
 }
 
-function getFormattedTextForRecord(record) {
-    let sanitizedContent = sanitizeHtml(record.value.text, {
-        allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], // Allowed HTML tags
-        allowedAttributes: {
-            'a': ['href']
-        }
+// Embed views that can appear in an embedded record's embeds array.
+type EmbedView =
+    | AppBskyEmbedImages.View
+    | AppBskyEmbedVideo.View
+    | AppBskyEmbedGallery.View
+    | AppBskyEmbedExternal.View
+    | AppBskyEmbedRecord.View
+    | AppBskyEmbedRecordWithMedia.View;
 
-    });
+const BLUESKY_TEXT_SANITIZE_OPTIONS = {
+    allowedTags: ['a', 'b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'],
+    allowedAttributes: {
+        a: ['href', 'target', 'rel', 'class'],
+    },
+    allowedClasses: {
+        a: ['underline'],
+    },
+    allowedSchemes: ['http', 'https'],
+};
 
-    if (record?.value?.facets !== undefined) {
-        record?.value?.facets.map((facet, index) => {
-            facet.features.map((feature, index) => {
-                if (feature.$type === "app.bsky.richtext.facet#link") {
-                    const byteStart = facet.index.byteStart;
-                    const byteEnd = facet.index.byteEnd;
-                    const externalLink = `<a style="text-decoration: underline;" href="${feature.uri}" target="_blank" >`;
-
-                    sanitizedContent = sanitizedContent.slice(0, byteStart) + externalLink + sanitizedContent.slice(byteStart, byteEnd) + '</a>' + sanitizedContent.slice(byteEnd);
-
-                }
-            })
-        })
+// Only http(s) link URIs are allowed. Everything else is dropped.
+function isSafeLinkUri(uri: string): boolean {
+    try {
+        const url = new URL(uri);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+        return false;
     }
-    const formattedContent = sanitizedContent.replace(/\n/g, '<br>');
+}
 
-    return formattedContent
+// Facet indices are UTF-8 byte offsets. Convert one to a JavaScript string
+// index (UTF-16 code units). JS slice indices only match byte offsets for
+// pure ASCII text, so this mapping is required for non-ASCII posts.
+function byteOffsetToCodeUnitIndex(text: string, byteOffset: number): number {
+    let bytes = 0;
+    for (let i = 0; i < text.length; ) {
+        const code = text.codePointAt(i) ?? 0;
+        const byteLength = code < 0x80 ? 1 : code < 0x800 ? 2 : code < 0x10000 ? 3 : 4;
+        if (bytes + byteLength > byteOffset) return i;
+        bytes += byteLength;
+        i += code > 0xffff ? 2 : 1;
+    }
+    return text.length;
+}
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+const LINK_OPEN_TAG = (uri: string) =>
+    `<a class="underline" href="${escapeHtml(uri)}" target="_blank" rel="noopener noreferrer">`;
+
+// Escapes the post text and wraps each link facet range in an <a> tag.
+// The character walk keeps the escaped text and the spliced anchors aligned
+// even for non-ASCII text and for posts with multiple links.
+function wrapFacetLinks(text: string, facets?: AppBskyRichtextFacet.Main[]): string {
+    const linkByIndex: (string | null)[] = new Array(text.length).fill(null);
+    for (const facet of facets ?? []) {
+        const link = facet.features.find(AppBskyRichtextFacet.isLink);
+        if (!link || !isSafeLinkUri(link.uri)) continue;
+        const start = byteOffsetToCodeUnitIndex(text, facet.index.byteStart);
+        const end = byteOffsetToCodeUnitIndex(text, facet.index.byteEnd);
+        for (let i = start; i < end && i < text.length; i++) {
+            linkByIndex[i] = link.uri;
+        }
+    }
+
+    let out = '';
+    let currentUri: string | null = null;
+    for (let i = 0; i < text.length; i++) {
+        const uri = linkByIndex[i];
+        if (uri !== currentUri) {
+            if (currentUri !== null) out += '</a>';
+            if (uri !== null) out += LINK_OPEN_TAG(uri);
+            currentUri = uri;
+        }
+        out += escapeHtml(text[i]);
+    }
+    if (currentUri !== null) out += '</a>';
+    return out;
+}
+
+function formatPostText(text: string | undefined, facets?: AppBskyRichtextFacet.Main[]): string {
+    const withLinks = wrapFacetLinks(text ?? '', facets);
+    const withLineBreaks = withLinks.replace(/\n/g, '<br>');
+    return sanitizeHtml(withLineBreaks, BLUESKY_TEXT_SANITIZE_OPTIONS);
+}
+
+function getFormattedText(post: AppBskyFeedDefs.PostView): string {
+    const record = post.record as PostRecordFields;
+    return formatPostText(record?.text, record?.facets);
+}
+
+function getFormattedTextForRecord(
+    record: { value?: PostRecordFields | null }
+): string {
+    return formatPostText(record?.value?.text, record?.value?.facets);
 }
 
 
-function getRenderTimeFromPost(date) {
-    const postDate = new Date(date);
+function getRenderTimeFromPost(date?: string) {
+    const postDate = new Date(date ?? '');
     const currentDate = new Date();
     const daysAgo = Math.floor((currentDate.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24));
 

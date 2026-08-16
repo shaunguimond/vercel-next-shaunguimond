@@ -3,8 +3,9 @@ import Footer from './footer'
 import Header from './header'
 import Meta from './meta'
 import { Analytics } from "@vercel/analytics/react"
+import type { ReactNode } from 'react'
 
-export default function Layout({ preview, children}) {
+export default function Layout({ preview, children }: { preview?: boolean; children: ReactNode }) {
   return (
     <>
       <Meta />

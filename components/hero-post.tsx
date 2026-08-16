@@ -2,7 +2,8 @@ import Avatar from './avatar'
 import Date from './date'
 import CoverImage from './cover-image'
 import Link from 'next/link'
-import sanitizeHtml from 'sanitize-html'
+import { sanitizeWpText } from '../lib/sanitize'
+import type { AuthorEdge, FeaturedImage } from '../lib/types'
 
 export default function HeroPost({
   title,
@@ -11,10 +12,17 @@ export default function HeroPost({
   excerpt,
   author,
   slug,
+}: {
+  title: string
+  coverImage?: FeaturedImage | null
+  date: string
+  excerpt: string
+  author?: AuthorEdge | null
+  slug: string
 }) {
-  const sanitizedContent = sanitizeHtml(excerpt, { allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li', 'a'] });
-  // Remove <a> tags using regular expressions 
-  const finalContent = sanitizedContent.replace(/<a[^>]*>.*?<\/a>/gi, '...');
+  // Remove <a> tags using regular expressions (display choice: hero
+  // excerpts show "..." where the excerpt text contains a link).
+  const finalContent = sanitizeWpText(excerpt).replace(/<a[^>]*>.*?<\/a>/gi, '...');
 
   return (
     <article className='shadow-small rounded-2xl bg-sg-multicolour hover:shadow-medium transition-shadow duration-200'>
@@ -30,7 +38,7 @@ export default function HeroPost({
             <Link
               href={`/posts/${slug}`}
               className="hover:underline"
-              dangerouslySetInnerHTML={{ __html: title }}
+              dangerouslySetInnerHTML={{ __html: sanitizeWpText(title) }}
             ></Link>
           </h3>
           <div className="mb-4 md:mb-0 text-lg">

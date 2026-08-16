@@ -7,8 +7,15 @@ import Layout from '../components/layout'
 import { getAllPostsForHome } from '../lib/api'
 import { HOME_OG_IMAGE_URL } from '../lib/constants'
 import BskySectionRecentPosts from '../components/Bluesky/bsky-section-recent-posts'
+import type { PostEdge } from '../lib/types'
 
-export default function Index({ allPosts: { edges }, preview }) {
+export default function Index({
+  allPosts: { edges },
+  preview,
+}: {
+  allPosts: { edges: PostEdge[] }
+  preview?: boolean
+}) {
   // Gets the first post from the allPosts data. The first post is the hero post.
   const heroPost = edges[0]?.node
   // Gets the rest of the posts data.
