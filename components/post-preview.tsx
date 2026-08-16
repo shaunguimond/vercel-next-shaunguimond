@@ -29,13 +29,13 @@ export default function PostPreview({
         )}
       </div>
       <div className="p-5 backdrop-blur-xl rounded-2xl">
-        <h3 className="text-3xl mb-3 leading-snug">
+        <h2 className="text-3xl mb-3 leading-snug">
           <Link
             href={`/posts/${slug}`}
             className="hover:underline"
             dangerouslySetInnerHTML={{ __html: sanitizeWpText(title) }}
           ></Link>
-        </h3>
+        </h2>
         <div
           className="text-lg leading-relaxed mb-4 post-excerpt"
           dangerouslySetInnerHTML={{ __html: sanitizeWpText(excerpt) }}
