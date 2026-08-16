@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import PostPreview from '../../components/post-preview'
 import Container from '../../components/container'
+import Head from 'next/head'
 import type { CategoryWithPosts } from '../../lib/types'
 
 
@@ -26,6 +27,13 @@ export default function PostsByCategory({
     return(
 
     <Layout preview={preview}>
+      <Head>
+        <title>
+          {router.isFallback
+            ? 'Loading…'
+            : `${category?.name ?? 'Category'} | Shaun Guimond`}
+        </title>
+      </Head>
       <Container>
         {category && (
         <>

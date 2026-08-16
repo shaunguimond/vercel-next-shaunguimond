@@ -38,15 +38,21 @@ export default function Post({
 
   return (
     <Layout preview={preview}>
+      <Head>
+        <title>
+          {router.isFallback
+            ? 'Loading…'
+            : post
+              ? `${post.title} | Shaun Guimond`
+              : 'Post not found | Shaun Guimond'}
+        </title>
+      </Head>
       {router.isFallback ? (
         <PostTitle>Loading…</PostTitle>
       ) : post ? (
         <>
           <article className="mx-auto max-w-3xl px-5">
             <Head>
-              <title>
-                {`${post.title} | Shaun Guimond`}
-              </title>
               <meta
                 property="og:image"
                 content={post.featuredImage?.node?.sourceUrl ?? undefined}

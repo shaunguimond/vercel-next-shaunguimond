@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
+import Head from 'next/head'
 import PostBody from '../components/post-body'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Container from '../components/container'
@@ -16,18 +17,20 @@ export default function Page({ page, preview }: { page: PageNode | null; preview
 
   return (
     <Layout preview={preview}>
+      <Head>
+        <title>
+          {router.isFallback
+            ? 'Loading…'
+            : `${page?.title ?? 'Page not found'} | Shaun Guimond`}
+        </title>
+      </Head>
       <Container>
         {router.isFallback ? (
-          <title>Loading…</title>
+          <p className="my-8 text-center">Loading…</p>
         ) : page ? (
-          <>
-            <article>
-              <title>
-                {`${page.title} | Next.js Blog with WordPress`}
-              </title>
-              <PostBody content={page.content} />
-            </article>
-          </>
+          <article>
+            <PostBody content={page.content} />
+          </article>
         ) : (
           null
         )}
