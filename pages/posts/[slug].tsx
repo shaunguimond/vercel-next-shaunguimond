@@ -80,11 +80,16 @@ export default function Post({
           </article>
 
           <SectionSeparator />
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-
-          <SectionSeparator />
 
           <CommentSection uri={blueskyPostUrl} />
+
+          {morePosts.length > 0 && (
+            <>
+              <SectionSeparator />
+
+              <MoreStories posts={morePosts} />
+            </>
+          )}
         </>
       ) : (
         null
