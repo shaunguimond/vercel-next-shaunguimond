@@ -60,15 +60,19 @@ module.exports = {
     // documented CSP requirements are added for preview environments only
     // (VERCEL_ENV is set by Vercel), so the production CSP stays closed to
     // all external scripts and frames.
+    //
+    // sifa.id is the one external script allowed: the profile embed on the
+    // About page. It also fetches profile data (connect-src) and may render
+    // an avatar image from its own origin (img-src).
     const isPreview = process.env.VERCEL_ENV === "preview";
 
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
+      `script-src 'self' 'unsafe-inline' https://sifa.id${isPreview ? " https://vercel.live" : ""}`,
       `style-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
-      `img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://atp.shaunguimond.com${isPreview ? " https://vercel.live https://vercel.com" : ""}`,
+      `img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://atp.shaunguimond.com https://sifa.id${isPreview ? " https://vercel.live https://vercel.com" : ""}`,
       `font-src 'self'${isPreview ? " https://vercel.live https://assets.vercel.com" : ""}`,
-      `connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com${isPreview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
+      `connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com https://sifa.id${isPreview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
       "object-src 'none'",
       `frame-src ${isPreview ? "https://vercel.live" : "'none'"}`,
       "frame-ancestors 'self'",

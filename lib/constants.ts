@@ -29,7 +29,7 @@ export const navLinks = [
   },
   {
     name: "About Shaun",
-    path: "/about-shaun/"
+    path: "/about-shaun"
   }
 ];
 
