@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import Script from 'next/script'
 import Layout from '../components/layout'
+import SifaEmbed from '../components/sifa-embed'
 
 // Custom About page, built in code instead of pulled from WordPress.
 // Edit the text below to change the content.
@@ -12,7 +12,7 @@ export default function AboutShaun() {
         <title>About Shaun | Shaun Guimond</title>
         <meta
           name="description"
-          content="Software engineer at Shopify, computer science student at UBC, and the writer behind this blog. Say hello!"
+          content="Software engineer at Shopify, computer science graduate from UBC, and the writer behind this blog. Say hello!"
         />
       </Head>
 
@@ -24,11 +24,11 @@ export default function AboutShaun() {
         <div className="space-y-6 text-lg leading-relaxed text-black dark:text-accent-1">
           <p>Hello, my name is Shaun Guimond.</p>
           <p>
-            I&apos;m a software engineer at Shopify and a computer science
-            student at the University of British Columbia, based in Vancouver,
-            BC. Before code, I&apos;ve worked in taxation, business auditing
-            and accounting, digital marketing, and web development — and I
-            relish every challenge as an opportunity for growth.
+            I&apos;m a software engineer at Shopify and a recent computer
+            science graduate from the University of British Columbia, based in
+            Vancouver, BC. Before code, I&apos;ve worked in taxation, business
+            auditing and accounting, digital marketing, and web development —
+            and I relish every challenge as an opportunity for growth.
           </p>
           <p>
             I&apos;m happily married to an amazing woman who is a Private
@@ -74,12 +74,7 @@ export default function AboutShaun() {
             I post about technology, programming, and life on Bluesky. Follow
             along, or check out my full profile on Sifa:
           </p>
-          <div className="flex justify-center">
-            <Script
-              src="https://sifa.id/embed.js"
-              data-handle="shaunguimond.com"
-            />
-          </div>
+          <SifaEmbed handle="shaunguimond.com" className="flex justify-center" />
         </section>
       </div>
     </Layout>
