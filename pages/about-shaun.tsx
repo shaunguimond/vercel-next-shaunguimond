@@ -64,6 +64,23 @@ export default function AboutShaun() {
             Caroline and Shaun at the Bay of Fundy.
           </figcaption>
         </figure>
+
+        <section className="mt-16" aria-label="My profile on Sifa">
+          <h2 className="font-serif text-3xl font-bold tracking-tighter mb-4">
+            Around the web
+          </h2>
+          <p className="text-lg leading-relaxed text-black dark:text-accent-1 mb-8">
+            I post about technology, programming, and life on Bluesky. Follow
+            along, or check out my full profile on Sifa:
+          </p>
+          <iframe
+            src="https://sifa.id/embed/shaunguimond.com"
+            title="Sifa ID profile card for Shaun Guimond"
+            className="w-full rounded-xl"
+            style={{ height: "356px" }}
+            loading="lazy"
+          />
+        </section>
       </div>
     </Layout>
   )
