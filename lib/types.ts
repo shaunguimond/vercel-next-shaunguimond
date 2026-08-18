@@ -46,23 +46,6 @@ export interface PostConnection {
   edges: PostEdge[]
 }
 
-export interface PageNode {
-  title: string
-  uri: string
-  date: string
-  featuredImage?: FeaturedImage | null
-  author?: AuthorEdge | null
-  content?: string | null
-}
-
-export interface PageEdge {
-  node: PageNode
-}
-
-export interface PageConnection {
-  edges: PageEdge[]
-}
-
 export interface CategoryWithPosts {
   name: string
   slug: string
@@ -74,12 +57,5 @@ export interface CategoryWithPosts {
 export interface PreviewPost {
   id: number
   slug?: string | null
-  status?: string | null
-}
-
-// Shape of the preview cookie a page preview flow would set.
-export interface PreviewPage {
-  id: number
-  uri?: string | null
   status?: string | null
 }

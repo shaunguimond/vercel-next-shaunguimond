@@ -59,7 +59,11 @@ module.exports = {
     // and images from vercel.live and uses a Pusher WebSocket. Vercel's
     // documented CSP requirements are added for preview environments only
     // (VERCEL_ENV is set by Vercel), so the production CSP stays closed to
-    // all external scripts and frames.
+    // all external scripts.
+    //
+    // The one external frame allowed in production is sifa.id: the About
+    // page shows a Sifa profile card via <iframe src="https://sifa.id/embed/
+    // <handle>">, the same URL Sifa's own embed-builder preview iframes.
     const isPreview = process.env.VERCEL_ENV === "preview";
 
     const csp = [
@@ -70,7 +74,7 @@ module.exports = {
       `font-src 'self'${isPreview ? " https://vercel.live https://assets.vercel.com" : ""}`,
       `connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com${isPreview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
       "object-src 'none'",
-      `frame-src ${isPreview ? "https://vercel.live" : "'none'"}`,
+      `frame-src 'none' https://sifa.id${isPreview ? " https://vercel.live" : ""}`,
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
