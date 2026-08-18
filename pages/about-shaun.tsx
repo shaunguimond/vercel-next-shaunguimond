@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import Layout from '../components/layout'
-import SifaEmbed from '../components/sifa-embed'
 
 // Custom About page, built in code instead of pulled from WordPress.
 // Edit the text below to change the content.
@@ -65,17 +64,6 @@ export default function AboutShaun() {
             Caroline and Shaun at the Bay of Fundy.
           </figcaption>
         </figure>
-
-        <section className="mt-16" aria-label="My profile on Sifa">
-          <h2 className="font-serif text-3xl font-bold tracking-tighter mb-4">
-            Around the web
-          </h2>
-          <p className="text-lg leading-relaxed text-black dark:text-accent-1 mb-8">
-            I post about technology, programming, and life on Bluesky. Follow
-            along, or check out my full profile on Sifa:
-          </p>
-          <SifaEmbed handle="shaunguimond.com" className="flex justify-center" />
-        </section>
       </div>
     </Layout>
   )
