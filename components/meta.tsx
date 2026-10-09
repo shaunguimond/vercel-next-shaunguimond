@@ -7,8 +7,8 @@ export default function Meta() {
 
   const renderThemeIcons = () => {
     const currentTheme = theme === "system" ? systemTheme : theme;
-  
-    if (currentTheme === "dark") 
+
+    if (currentTheme === "dark")
       {
         return (
           <>
@@ -55,15 +55,16 @@ export default function Meta() {
           <link rel="shortcut icon" href="/favicon/favicon.ico" />
         </>
       )
-  
+
       }
-  
+
   };
 
   return (
     <Head>
       {renderThemeIcons()}
       <link rel="manifest" href="/favicon/site.webmanifest" />
+      <link rel="me" href="https://sifa.id/p/shaunguimond.com" />
       <link
         rel="mask-icon"
         href="/favicon/safari-pinned-tab.svg"
