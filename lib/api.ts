@@ -1,5 +1,6 @@
 import type {
   CategoryWithPosts,
+  PaginatedPostConnection,
   PostConnection,
   PostNode,
   PreviewPost,
@@ -389,53 +390,96 @@ export async function getAllCategoriesWithSlug(): Promise<
 }
 
 
-// Function call to GraphQL API to get all posts based on category.
+const CATEGORY_POST_FIELDS = `
+  excerpt
+  slug
+  uri
+  title
+  featuredImage {
+    node {
+      sourceUrl
+    }
+  }
+  date
+  author {
+    node {
+      name
+      firstName
+      lastName
+      avatar {
+        url
+      }
+    }
+  }
+`
+
+const CATEGORY_POSTS_PAGE = `
+  pageInfo {
+    endCursor
+    hasNextPage
+  }
+  edges {
+    node {
+      ${CATEGORY_POST_FIELDS}
+    }
+  }
+`
+
+const CATEGORY_POST_PAGE_SIZE = 20
+
+// Fetch the first category page during static generation so its posts are
+// available in the initial HTML. Later pages are loaded by the category API.
 export async function getAllPostsByCategory(
   slug?: string
 ): Promise<CategoryWithPosts | null> {
+  if (!slug) return null
 
   const data = await fetchAPI<{ category: CategoryWithPosts | null }>(
     `
-    query PostsByCategory($id: ID!) {
+    query PostsByCategory($id: ID!, $after: String) {
       category(id: $id, idType: SLUG) {
         name
         slug
         databaseId
-        posts(first: 20) {
-          edges {
-            node {
-              excerpt
-              slug
-              uri
-              title
-              featuredImage {
-                node {
-                  sourceUrl
-                }
-              }
-              date
-              author {
-                node {
-                  name
-                  firstName
-                  lastName
-                  avatar {
-                    url
-                  }
-                }
-              }
-            }
-          }
+        posts(
+          first: ${CATEGORY_POST_PAGE_SIZE}
+          after: $after
+          where: { orderby: { field: DATE, order: DESC } }
+        ) {
+          ${CATEGORY_POSTS_PAGE}
         }
       }
     }
   `,
-    {
-      variables: {
-        id: slug,
-      },
-    }
+    { variables: { id: slug, after: null } }
   )
 
-  return data?.category
+  return data.category
+}
+
+// Fetch one additional page for the same-origin category posts API.
+export async function getCategoryPostsPage(
+  slug: string,
+  after: string
+): Promise<PaginatedPostConnection | null> {
+  const data = await fetchAPI<{
+    category: { posts: PaginatedPostConnection } | null
+  }>(
+    `
+    query CategoryPostsPage($id: ID!, $after: String!) {
+      category(id: $id, idType: SLUG) {
+        posts(
+          first: ${CATEGORY_POST_PAGE_SIZE}
+          after: $after
+          where: { orderby: { field: DATE, order: DESC } }
+        ) {
+          ${CATEGORY_POSTS_PAGE}
+        }
+      }
+    }
+  `,
+    { variables: { id: slug, after } }
+  )
+
+  return data.category?.posts ?? null
 }
