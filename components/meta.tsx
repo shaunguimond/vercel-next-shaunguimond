@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { CMS_NAME } from '../lib/constants'
 import { useTheme } from 'next-themes';
 
 export default function Meta() {

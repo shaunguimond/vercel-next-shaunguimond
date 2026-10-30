@@ -2,7 +2,10 @@
   "private": true,
   "scripts": {
     "dev": "next",
-    "test": "vitest run",
+"test": "vitest run",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
     "build": "next build",
     "start": "next start"
   },
@@ -22,6 +25,7 @@
     "sanitize-html": "^2.18.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
