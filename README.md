@@ -1,38 +1,43 @@
 # A Refactor of my Blog - Shaun Guimond - from the Frontity Framework to Next.js + GraphQL in Wordpress. 
 
 ## Project Overview
+
 This project is a portfolio website for Shaun Guimond. It is built using Next.js and WordPress as the data source. The website showcases my skills, projects, and experiences.
 
 ## Features
-* **Incremental Static Regeneration:** Next.js's Incremental Static Regeneration feature is used to regenerate pages on-demand, improving the performance of the website.
-* **WordPress Integration:** The website uses WordPress as the data source, allowing for easy content management.
-* **GraphQL API:** The website leverages the GraphQL API provided by WordPress to fetch and display content dynamically. This ensures seamless integration with WordPress and enables efficient data retrieval.
-* **Responsive Design:** The website is designed to be responsive, ensuring a good user experience on various devices.
-* **Portfolio Showcase:** The website showcases my skills, projects, and experiences, making it a great platform to showcase my portfolio.
-* **Bluesky Integration:** Post comments are rendered from the Bluesky (AT Protocol) public API, and recent Bluesky posts are displayed on the home page.
-* **Standard Site:** Posts publish Standard Site links (`site.standard.document` records) via a personal PDS.
+
+- **Incremental Static Regeneration:** Next.js's Incremental Static Regeneration feature is used to regenerate pages on-demand, improving the performance of the website.
+- **WordPress Integration:** The website uses WordPress as the data source, allowing for easy content management.
+- **GraphQL API:** The website leverages the GraphQL API provided by WordPress to fetch and display content dynamically. This ensures seamless integration with WordPress and enables efficient data retrieval.
+- **Responsive Design:** The website is designed to be responsive, ensuring a good user experience on various devices.
+- **Portfolio Showcase:** The website showcases my skills, projects, and experiences, making it a great platform to showcase my portfolio.
+- **Bluesky Integration:** Post comments are rendered from the Bluesky (AT Protocol) public API, and recent Bluesky posts are displayed on the home page.
+- **Standard Site:** Posts publish Standard Site links (`site.standard.document` records) via a personal PDS.
 
 ## Environment Variables
 
 Configuration lives in `.env` (committed on purpose — every value in it is either public or a harmless placeholder):
 
-| Variable | Description |
-| --- | --- |
-| `WORDPRESS_API_URL` | URL of the WPGraphQL endpoint used for all content queries. Public. |
-| `WORDPRESS_PREVIEW_SECRET` | Shared secret that enables WordPress preview mode via `/api/preview`. The value in the repo is a **placeholder example**; set a real random value here and in the WordPress preview plugin. |
-| `WORDPRESS_AUTH_REFRESH_TOKEN` | *(optional)* Refresh token for authenticated WPGraphQL queries (needed to preview draft posts). Not set by default. |
-| `PDS_URL` | URL of the personal (Atmosphere) PDS hosting `site.standard.document` records. Public. |
-| `PDS_DID` | DID of the repo on the PDS that owns the standard-site records. Public. |
+| Variable                       | Description                                                                                                                                                                                 |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WORDPRESS_API_URL`            | URL of the WPGraphQL endpoint used for all content queries. Public.                                                                                                                         |
+| `WORDPRESS_PREVIEW_SECRET`     | Shared secret that enables WordPress preview mode via `/api/preview`. The value in the repo is a **placeholder example**; set a real random value here and in the WordPress preview plugin. |
+| `WORDPRESS_AUTH_REFRESH_TOKEN` | _(optional)_ Refresh token for authenticated WPGraphQL queries (needed to preview draft posts). Not set by default.                                                                         |
+| `PDS_URL`                      | URL of the personal (Atmosphere) PDS hosting `site.standard.document` records. Public.                                                                                                      |
+| `PDS_DID`                      | DID of the repo on the PDS that owns the standard-site records. Public.                                                                                                                     |
 
 ## Scripts
 
 The project requires Node.js 22 or newer, matching the engine requirement of
 `@atproto/api`.
 
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | Start the development server. |
-| `pnpm build` | Production build (also runs the TypeScript check). |
-| `pnpm start` | Serve the production build. |
+| Command          | Description                                        |
+| ---------------- | -------------------------------------------------- |
+| `pnpm dev`       | Start the development server.                      |
+| `pnpm lint`      | Run Biome lint rules over the project.             |
+| `pnpm format`    | Format supported project files with Biome.         |
+| `pnpm typecheck` | Run TypeScript without emitting files.             |
+| `pnpm build`     | Production build (also runs the TypeScript check). |
+| `pnpm start`     | Serve the production build.                        |
 
-> Note: there is no lint script. Next 16 removed `next lint`, and `typescript-eslint` does not support TypeScript 7 yet (see [typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)). TypeScript type-checking still runs during `pnpm build`.
+Pull requests run Biome linting and a TypeScript typecheck. Use the Biome editor extension or `pnpm format` to format files. Biome is used because the project is on TypeScript 7, which the README's previous typescript-eslint note did not support.
