@@ -1,0 +1,166 @@
+{
+  "rules": [
+    {
+      "pattern": [
+        "git"
+      ],
+      "decision": "allow",
+      "justification": "Allow git operations for version control"
+    },
+    {
+      "pattern": [
+        "gh"
+      ],
+      "decision": "allow",
+      "justification": "Allow GitHub CLI operations (PRs, issues, repos, releases)"
+    },
+    {
+      "pattern": [
+        "tg"
+      ],
+      "decision": "allow",
+      "justification": "Allow Tangled Knot CLI operations (repo, pr, issue, ssh-key management)"
+    },
+    {
+      "pattern": [
+        "ls"
+      ],
+      "decision": "allow",
+      "justification": "Read-only directory listing"
+    },
+    {
+      "pattern": [
+        "pwd"
+      ],
+      "decision": "allow",
+      "justification": "Print current directory"
+    },
+    {
+      "pattern": [
+        "cat"
+      ],
+      "decision": "allow",
+      "justification": "Read-only file content display"
+    },
+    {
+      "pattern": [
+        "rg"
+      ],
+      "decision": "allow",
+      "justification": "Read-only code search with ripgrep"
+    },
+    {
+      "pattern": [
+        "grep"
+      ],
+      "decision": "allow",
+      "justification": "Read-only text search"
+    },
+    {
+      "pattern": [
+        "head"
+      ],
+      "decision": "allow",
+      "justification": "Read-only first lines of file"
+    },
+    {
+      "pattern": [
+        "tail"
+      ],
+      "decision": "allow",
+      "justification": "Read-only last lines of file"
+    },
+    {
+      "pattern": [
+        "wc"
+      ],
+      "decision": "allow",
+      "justification": "Read-only line/word/byte counts"
+    },
+    {
+      "pattern": [
+        "file"
+      ],
+      "decision": "allow",
+      "justification": "Read-only file type detection"
+    },
+    {
+      "pattern": [
+        "stat"
+      ],
+      "decision": "allow",
+      "justification": "Read-only file metadata"
+    },
+    {
+      "pattern": [
+        "which"
+      ],
+      "decision": "allow",
+      "justification": "Read-only binary lookup"
+    },
+    {
+      "pattern": [
+        "diff"
+      ],
+      "decision": "allow",
+      "justification": "Read-only file comparison"
+    },
+    {
+      "pattern": [
+        "du"
+      ],
+      "decision": "allow",
+      "justification": "Read-only disk usage"
+    },
+    {
+      "pattern": [
+        "df"
+      ],
+      "decision": "allow",
+      "justification": "Read-only filesystem free space"
+    },
+    {
+      "pattern": [
+        "jq"
+      ],
+      "decision": "allow",
+      "justification": "Read-only JSON parsing"
+    },
+    {
+      "pattern": [
+        "date"
+      ],
+      "decision": "allow",
+      "justification": "Print current date/time"
+    },
+    {
+      "pattern": [
+        "whoami"
+      ],
+      "decision": "allow",
+      "justification": "Print current user"
+    },
+    {
+      "pattern": [
+        "uname"
+      ],
+      "decision": "allow",
+      "justification": "Print system info"
+    },
+    {
+      "pattern": [
+        "pnpm",
+        "build"
+      ],
+      "decision": "allow",
+      "justification": "Allow Next.js production build (writes .next/ only, idempotent)"
+    },
+    {
+      "pattern": [
+        "sudo"
+      ],
+      "decision": "forbidden",
+      "justification": "No privilege escalation — block sudo entirely"
+    }
+  ]
+}
