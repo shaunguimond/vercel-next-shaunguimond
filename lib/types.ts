@@ -46,11 +46,20 @@ export interface PostConnection {
   edges: PostEdge[]
 }
 
+export interface PostPageInfo {
+  endCursor: string | null
+  hasNextPage: boolean
+}
+
+export interface PaginatedPostConnection extends PostConnection {
+  pageInfo: PostPageInfo
+}
+
 export interface CategoryWithPosts {
   name: string
   slug: string
   databaseId: number
-  posts: PostConnection
+  posts: PaginatedPostConnection
 }
 
 // Shape of the preview cookie set by pages/api/preview.ts.

@@ -2,9 +2,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Layout from '../../components/layout'
 import { getAllPostsByCategory, getAllCategoriesWithSlug } from '../../lib/api'
+import CategoryPostList from '../../components/category-post-list'
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
-import PostPreview from '../../components/post-preview'
 import Container from '../../components/container'
 import Head from 'next/head'
 import type { CategoryWithPosts } from '../../lib/types'
@@ -43,19 +43,7 @@ export default function PostsByCategory({
 
             </h1>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32">
-        {category.posts.edges.map(({ node }) => (
-        <PostPreview
-          key={node.databaseId}
-          title={node.title}
-          coverImage={node.featuredImage}
-          date={node.date}
-          author={node.author}
-          slug={node.slug}
-          excerpt={node.excerpt}
-        />
-      ))}
-      </div>
+        <CategoryPostList key={category.slug} category={category} />
         </>
         )}
       </Container>
