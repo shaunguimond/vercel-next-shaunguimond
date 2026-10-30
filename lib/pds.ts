@@ -3,6 +3,8 @@ const PDS_DID = process.env.PDS_DID
 
 // Keep a hung PDS from stalling ISR regeneration.
 const PDS_TIMEOUT_MS = 10_000
+const CACHE_TTL_MS = 5 * 60_000
+const FAILURE_RETRY_MS = 30_000
 
 interface StandardDocument {
   uri: string
@@ -13,27 +15,31 @@ interface StandardDocument {
 }
 
 interface PdsListRecordsResponse {
-  records: StandardDocument[]
+  records?: StandardDocument[]
   cursor?: string
   error?: string
   message?: string
 }
 
-// Promise that resolves to the cached map of normalized post path to AT URI.
-// Set once and reused for the lifetime of the Node process.
-let standardDocumentPromise: Promise<Map<string, string>> | null = null
+interface CachedDocumentMap {
+  value: Map<string, string>
+  expiresAt: number
+}
 
-// Fetch all site.standard.document records from the PDS.
-async function fetchStandardDocuments(): Promise<StandardDocument[]> {
+let cachedDocumentMap: CachedDocumentMap | null = null
+let refreshPromise: Promise<Map<string, string> | null> | null = null
+
+// Fetch every site.standard.document record. Return null on an incomplete
+// response so a partial result is never mistaken for a complete cache.
+async function fetchStandardDocuments(): Promise<StandardDocument[] | null> {
   if (!PDS_URL || !PDS_DID) {
     return []
   }
 
   const allRecords: StandardDocument[] = []
+  const seenCursors = new Set<string>()
   let cursor: string | undefined
 
-  // Paginate through all records.
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const params = new URLSearchParams({
       repo: PDS_DID,
@@ -51,61 +57,84 @@ async function fetchStandardDocuments(): Promise<StandardDocument[]> {
         { signal: controller.signal }
       )
     } catch {
-      // Network error or timeout — return whatever we have so far.
-      return allRecords
+      return null
     } finally {
       clearTimeout(timeout)
     }
 
-    if (!res.ok) {
-      return allRecords
+    if (!res.ok) return null
+
+    let data: PdsListRecordsResponse
+    try {
+      data = await res.json()
+    } catch {
+      return null
     }
 
-    const data: PdsListRecordsResponse = await res.json()
-
-    if (data.error) {
-      return allRecords
-    }
-
+    if (data.error || !Array.isArray(data.records)) return null
     allRecords.push(...data.records)
 
-    if (data.cursor) {
-      cursor = data.cursor
-    } else {
-      break
-    }
+    if (!data.cursor) break
+    if (seenCursors.has(data.cursor)) return null
+    seenCursors.add(data.cursor)
+    cursor = data.cursor
   }
 
   return allRecords
 }
 
-// Build a map of normalized post path to AT URI.
-async function buildStandardDocumentMap(): Promise<Map<string, string>> {
+// Build a map of normalized post path to AT URI. A null result means the
+// refresh failed and callers should keep using any stale cache they have.
+async function buildStandardDocumentMap(): Promise<Map<string, string> | null> {
   const records = await fetchStandardDocuments()
-  const map = new Map<string, string>()
+  if (!records) return null
 
+  const map = new Map<string, string>()
   for (const record of records) {
-    // Normalize the path: strip leading/trailing slashes.
-    // E.g., "/posts/test-standard-site/" -> "posts/test-standard-site"
     const normalizedPath = record.value.path
       .replace(/^\/+/, '')
       .replace(/\/+$/, '')
-
     map.set(normalizedPath, record.uri)
   }
 
   return map
 }
 
-// Get the standard document AT URI for a given post slug.
-// Fetches from the PDS once and caches the result for subsequent calls.
-// Parallel callers share the same promise, so only one fetch runs.
+async function getStandardDocumentMap(): Promise<Map<string, string>> {
+  if (cachedDocumentMap && cachedDocumentMap.expiresAt > Date.now()) {
+    return cachedDocumentMap.value
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = buildStandardDocumentMap()
+  }
+
+  try {
+    const refreshed = await refreshPromise
+    if (refreshed) {
+      cachedDocumentMap = {
+        value: refreshed,
+        expiresAt: Date.now() + CACHE_TTL_MS,
+      }
+    } else if (!cachedDocumentMap) {
+      // Avoid retrying on every request during an initial PDS outage.
+      cachedDocumentMap = {
+        value: new Map(),
+        expiresAt: Date.now() + FAILURE_RETRY_MS,
+      }
+    }
+  } finally {
+    refreshPromise = null
+  }
+
+  return cachedDocumentMap?.value ?? new Map()
+}
+
+// Get the standard document AT URI for a given post slug. The map refreshes
+// periodically, and failed refreshes leave the last known good map in place.
 export async function getStandardDocumentUri(
   slug: string
 ): Promise<string | null> {
-  if (standardDocumentPromise === null) {
-    standardDocumentPromise = buildStandardDocumentMap()
-  }
-  const cache = await standardDocumentPromise
+  const cache = await getStandardDocumentMap()
   return cache.get(`posts/${slug}`) ?? null
 }
