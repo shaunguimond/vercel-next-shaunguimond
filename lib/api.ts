@@ -13,11 +13,25 @@ const API_URL = process.env.WORDPRESS_API_URL as string
 // (each stalled fetch pins a serverless function instance).
 const API_TIMEOUT_MS = 15_000
 
+interface GraphQLError {
+  message?: string
+}
+
+interface GraphQLResponse<TData> {
+  data?: TData
+  errors?: GraphQLError[]
+}
+
+interface FetchApiOptions {
+  variables?: Record<string, unknown>
+  useAuth?: boolean
+}
+
 // Function to fetch data from WPGraphQL API
-async function fetchAPI(
+async function fetchAPI<TData>(
   query = '',
-  { variables, useAuth = false }: Record<string, any> = {}
-) {
+  { variables, useAuth = false }: FetchApiOptions = {}
+): Promise<TData> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
   // The auth header is only sent for preview/draft fetches. Build-time
@@ -56,11 +70,33 @@ async function fetchAPI(
     clearTimeout(timeout)
   }
 
-  const json = await res.json()
-  if (json.errors) {
-    console.error(json.errors)
-    throw new Error('Failed to fetch API')
+  if (!res.ok) {
+    throw new Error(`WordPress GraphQL request failed with HTTP ${res.status}`)
   }
+
+  let json: GraphQLResponse<TData>
+  try {
+    json = await res.json()
+  } catch {
+    throw new Error('WordPress GraphQL returned invalid JSON')
+  }
+
+  if (json.errors?.length) {
+    console.error('WordPress GraphQL errors:', json.errors)
+    const messages = json.errors
+      .map((error) => error.message)
+      .filter((message): message is string => Boolean(message))
+    throw new Error(
+      messages.length
+        ? `WordPress GraphQL query failed: ${messages.join('; ')}`
+        : 'WordPress GraphQL query failed'
+    )
+  }
+
+  if (json.data === undefined || json.data === null) {
+    throw new Error('WordPress GraphQL response did not include data')
+  }
+
   return json.data
 }
 
@@ -72,7 +108,9 @@ export async function getPreviewPost(
   | { databaseId: number; slug?: string | null; status?: string | null }
   | null
 > {
-  const data = await fetchAPI(
+  const data = await fetchAPI<{
+    post: { databaseId: number; slug?: string | null; status?: string | null } | null
+  }>(
     `
     query PreviewPost($id: ID!, $idType: PostIdType!) {
       post(id: $id, idType: $idType) {
@@ -93,7 +131,9 @@ export async function getPreviewPost(
 export async function getAllPostsWithSlug(): Promise<
   { edges: { node: { slug: string } }[] }
 > {
-  const data = await fetchAPI(`
+  const data = await fetchAPI<{
+    posts: { edges: { node: { slug: string } }[] }
+  }>(`
     {
       posts(first: 10000) {
         edges {
@@ -109,7 +149,7 @@ export async function getAllPostsWithSlug(): Promise<
 
 // function call to GraphQL API to get 20 posts for the home page. 
 export async function getAllPostsForHome(preview?: boolean): Promise<PostConnection> {
-  const data = await fetchAPI(
+  const data = await fetchAPI<{ posts: PostConnection }>(
     `
     query AllPosts {
       posts(first: 20, where: { orderby: { field: DATE, order: DESC } }) {
@@ -150,7 +190,7 @@ export async function getPostAndMorePosts(
   slug: string | null,
   preview?: boolean,
   previewData?: { post?: PreviewPost }
-): Promise<{ post: PostNode; posts: PostConnection }> {
+): Promise<{ post: PostNode | null; posts: PostConnection }> {
   const postPreview: PreviewPost | null = preview
     ? (previewData?.post ?? null)
     : null
@@ -161,7 +201,12 @@ export async function getPostAndMorePosts(
     : slug === postPreview?.slug
   const isDraft = isSamePost && postPreview?.status === 'draft'
   const isRevision = isSamePost && postPreview?.status === 'publish'
-  const data = await fetchAPI(
+  const data = await fetchAPI<{
+    post: (PostNode & {
+      revisions?: { edges: { node: Partial<PostNode> }[] } | null
+    }) | null
+    posts: PostConnection
+  }>(
     `
     fragment AuthorFields on User {
       name
@@ -250,9 +295,11 @@ export async function getPostAndMorePosts(
 
   // Draft posts may not have an slug. Store the database id in the slug
   // field so the post can be found again during preview.
-  if (isDraft) (data.post as { slug: string | number }).slug = postPreview?.id
+  if (isDraft && data.post) {
+    (data.post as { slug: string | number }).slug = postPreview?.id
+  }
   // Apply a revision (changes in a published post)
-  if (isRevision && data.post.revisions) {
+  if (isRevision && data.post?.revisions) {
     const revision = data.post.revisions.edges[0]?.node
 
     if (revision) Object.assign(data.post, revision)
@@ -274,7 +321,11 @@ export async function getPostAndMorePosts(
 export async function getAllCategoriesWithSlug(): Promise<
   { edges: { node: { slug: string; id: string; name: string; uri: string } }[] }
 > {
-  const data = await fetchAPI(`
+  const data = await fetchAPI<{
+    categories: {
+      edges: { node: { slug: string; id: string; name: string; uri: string } }[]
+    }
+  }>(`
   query getAllCategoriesWithSlug {
     categories(first: 10) {
       edges {
@@ -298,7 +349,7 @@ export async function getAllPostsByCategory(
   slug?: string
 ): Promise<CategoryWithPosts | null> {
 
-  const data = await fetchAPI(
+  const data = await fetchAPI<{ category: CategoryWithPosts | null }>(
     `
     query PostsByCategory($id: ID!) {
       category(id: $id, idType: SLUG) {
