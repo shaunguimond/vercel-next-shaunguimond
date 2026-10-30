@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next",
-"test": "vitest run",
+    "test": "vitest run",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
