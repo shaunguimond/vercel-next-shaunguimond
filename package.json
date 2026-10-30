@@ -6,7 +6,7 @@
     "start": "next start"
   },
   "engines": {
-    "node": ">=20.x"
+    "node": ">=22.x"
   },
   "dependencies": {
     "@atproto/api": "^0.30.0",
