@@ -131,20 +131,44 @@ export async function getPreviewPost(
 export async function getAllPostsWithSlug(): Promise<
   { edges: { node: { slug: string } }[] }
 > {
-  const data = await fetchAPI<{
-    posts: { edges: { node: { slug: string } }[] }
-  }>(`
-    {
-      posts(first: 10000) {
-        edges {
-          node {
-            slug
+  const edges: { node: { slug: string } }[] = []
+  let after: string | null = null
+  let hasNextPage: boolean
+
+  do {
+    const data: {
+      posts: {
+        pageInfo: { endCursor: string | null; hasNextPage: boolean }
+        edges: { node: { slug: string } }[]
+      }
+    } = await fetchAPI(`
+      query AllPostSlugs($after: String) {
+        posts(first: 100, after: $after) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          edges {
+            node {
+              slug
+            }
           }
         }
       }
+    `, { variables: { after } })
+
+    const page = data.posts
+    edges.push(...page.edges)
+    hasNextPage = page.pageInfo.hasNextPage
+    const nextAfter = page.pageInfo.endCursor
+
+    if (hasNextPage && (!nextAfter || nextAfter === after)) {
+      throw new Error('WordPress post pagination returned no advancing cursor')
     }
-  `)
-  return data?.posts
+    after = nextAfter
+  } while (hasNextPage)
+
+  return { edges }
 }
 
 // function call to GraphQL API to get 20 posts for the home page. 
@@ -321,26 +345,47 @@ export async function getPostAndMorePosts(
 export async function getAllCategoriesWithSlug(): Promise<
   { edges: { node: { slug: string; id: string; name: string; uri: string } }[] }
 > {
-  const data = await fetchAPI<{
-    categories: {
-      edges: { node: { slug: string; id: string; name: string; uri: string } }[]
-    }
-  }>(`
-  query getAllCategoriesWithSlug {
-    categories(first: 10) {
-      edges {
-        node {
-          slug
-          id
-          name
-          uri
+  const edges: { node: { slug: string; id: string; name: string; uri: string } }[] = []
+  let after: string | null = null
+  let hasNextPage: boolean
+
+  do {
+    const data: {
+      categories: {
+        pageInfo: { endCursor: string | null; hasNextPage: boolean }
+        edges: { node: { slug: string; id: string; name: string; uri: string } }[]
+      }
+    } = await fetchAPI(`
+      query AllCategoriesWithSlug($after: String) {
+        categories(first: 100, after: $after) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          edges {
+            node {
+              slug
+              id
+              name
+              uri
+            }
+          }
         }
       }
-    }
-  }
-  `)
+    `, { variables: { after } })
 
-  return data?.categories
+    const page = data.categories
+    edges.push(...page.edges)
+    hasNextPage = page.pageInfo.hasNextPage
+    const nextAfter = page.pageInfo.endCursor
+
+    if (hasNextPage && (!nextAfter || nextAfter === after)) {
+      throw new Error('WordPress category pagination returned no advancing cursor')
+    }
+    after = nextAfter
+  } while (hasNextPage)
+
+  return { edges }
 }
 
 
