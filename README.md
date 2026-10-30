@@ -26,6 +26,9 @@ Configuration lives in `.env` (committed on purpose — every value in it is eit
 
 ## Scripts
 
+The project requires Node.js 22 or newer, matching the engine requirement of
+`@atproto/api`.
+
 | Command | Description |
 | --- | --- |
 | `pnpm dev` | Start the development server. |
@@ -33,4 +36,3 @@ Configuration lives in `.env` (committed on purpose — every value in it is eit
 | `pnpm start` | Serve the production build. |
 
 > Note: there is no lint script. Next 16 removed `next lint`, and `typescript-eslint` does not support TypeScript 7 yet (see [typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)). TypeScript type-checking still runs during `pnpm build`.
-
