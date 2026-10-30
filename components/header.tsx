@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes';
-import { MoonIcon, SunIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { MoonIcon, SunIcon, Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import Nav from './nav';
 import MobileNav from './mobile-nav';
 import { useState, useEffect } from 'react';
@@ -47,6 +47,14 @@ const renderThemeChanger = () => {
       </h2>
       <Nav />
         <div className="flex flex-row gap-5">
+          <Link
+            href="/search"
+            aria-label="Search posts and categories"
+            title="Search"
+            className="hidden items-center lg:flex"
+          >
+            <MagnifyingGlassIcon className="h-7 w-7 text-accent-1" aria-hidden="true" />
+          </Link>
           <div>{renderThemeChanger()}</div>
           <div
             onClick={() => setNav(!nav)}
