@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
 import Layout from '../components/layout'
 
 const topics = [
@@ -29,6 +30,13 @@ const careerSteps = [
 ]
 
 export default function AboutShaun() {
+  const { systemTheme, theme } = useTheme()
+  const currentTheme = theme === 'system' ? systemTheme : theme
+  const sifaEmbedUrl = new URL('https://sifa.id/embed/shaunguimond.com')
+  if (currentTheme === 'light' || currentTheme === 'dark') {
+    sifaEmbedUrl.searchParams.set('theme', currentTheme)
+  }
+
   return (
     <Layout>
       <Head>
@@ -220,7 +228,7 @@ export default function AboutShaun() {
             </div>
           </div>
           <iframe
-            src="https://sifa.id/embed/shaunguimond.com"
+            src={sifaEmbedUrl.toString()}
             title="Sifa ID profile card for Shaun Guimond"
             className="w-full rounded-2xl border-0 bg-white"
             style={{ height: '356px' }}
