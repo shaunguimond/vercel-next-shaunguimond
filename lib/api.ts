@@ -619,9 +619,13 @@ export async function getAllPostsByCategory(
   addCategoryFacets(data.category.posts.edges.map(({ node }) => node), filterOptions)
   for (const { node } of data.category.posts.edges) delete node.tags
   if (data.category.posts.pageInfo.hasNextPage) {
+    const endCursor = data.category.posts.pageInfo.endCursor
+    if (!endCursor) {
+      throw new Error(`Category filter pagination returned no initial cursor: ${slug}`)
+    }
     await getCategoryFilterOptions(
       slug,
-      data.category.posts.pageInfo.endCursor,
+      endCursor,
       filterOptions
     )
   }

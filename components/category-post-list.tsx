@@ -32,6 +32,7 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
     loadingRef.current = true
     setIsLoading(true)
     setError(null)
+    const requestId = filterRequestRef.current
 
     try {
       const query = new URLSearchParams({ after })
@@ -55,6 +56,8 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
         throw new Error('The post response did not include a valid next page')
       }
 
+      if (requestId !== filterRequestRef.current) return
+
       setPosts((current) => {
         const existingSlugs = new Set(current.map(({ node }) => node.slug))
         const newPosts = nextPage.edges.filter(({ node }) => !existingSlugs.has(node.slug))
@@ -63,10 +66,14 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
       cursorRef.current = nextPage.pageInfo.endCursor
       setPageInfo(nextPage.pageInfo)
     } catch {
-      setError('More posts could not be loaded. Please try again.')
+      if (requestId === filterRequestRef.current) {
+        setError('More posts could not be loaded. Please try again.')
+      }
     } finally {
-      loadingRef.current = false
-      setIsLoading(false)
+      if (requestId === filterRequestRef.current) {
+        loadingRef.current = false
+        setIsLoading(false)
+      }
     }
   }, [category.slug, isFiltering, pageInfo.hasNextPage, selectedTag, selectedYear])
 
@@ -161,7 +168,10 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
           <select
             id="archive-tag-filter"
             value={selectedTag}
-            onChange={(event) => setSelectedTag(event.target.value)}
+            onChange={(event) => {
+              filterRequestRef.current += 1
+              setSelectedTag(event.target.value)
+            }}
             className="min-h-12 w-full rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-400 dark:bg-slate-900 dark:text-white"
           >
             <option value="">All tags</option>
@@ -177,7 +187,10 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
           <select
             id="archive-year-filter"
             value={selectedYear}
-            onChange={(event) => setSelectedYear(event.target.value)}
+            onChange={(event) => {
+              filterRequestRef.current += 1
+              setSelectedYear(event.target.value)
+            }}
             className="min-h-12 w-full rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-400 dark:bg-slate-900 dark:text-white"
           >
             <option value="">All years</option>
