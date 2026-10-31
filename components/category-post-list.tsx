@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import PostPreview from './post-preview'
 import type { CategoryWithPosts, PaginatedPostConnection, PostEdge } from '../lib/types'
 
+const filterSelectClass =
+  'scheme-light min-h-12 w-full rounded-lg border border-accent-3 bg-laccent-2 px-4 py-3 text-daccent-1 dark:scheme-dark dark:border-slate-600 dark:bg-daccent-2 dark:text-accent-1'
+
 export default function CategoryPostList({ category }: { category: CategoryWithPosts }) {
   const [posts, setPosts] = useState(category.posts.edges)
   const [pageInfo, setPageInfo] = useState(category.posts.pageInfo)
@@ -172,7 +175,7 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
               filterRequestRef.current += 1
               setSelectedTag(event.target.value)
             }}
-            className="min-h-12 w-full rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-400 dark:bg-slate-900 dark:text-white"
+            className={filterSelectClass}
           >
             <option value="">All tags</option>
             {category.filterOptions.tags.map((tag) => (
@@ -191,7 +194,7 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
               filterRequestRef.current += 1
               setSelectedYear(event.target.value)
             }}
-            className="min-h-12 w-full rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-400 dark:bg-slate-900 dark:text-white"
+            className={filterSelectClass}
           >
             <option value="">All years</option>
             {category.filterOptions.years.map((year) => (
