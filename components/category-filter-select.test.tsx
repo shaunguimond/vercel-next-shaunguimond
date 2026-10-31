@@ -30,8 +30,9 @@ describe('category filter select', () => {
 
     fireEvent.click(trigger)
     const listbox = screen.getByRole('listbox', { name: 'Filter by tag' })
-    expect(listbox.className).toContain('bg-laccent-2')
-    expect(listbox.className).toContain('dark:bg-daccent-2')
+    expect(listbox.className).toContain('bg-[#d9dcf2]/95')
+    expect(listbox.className).toContain('dark:bg-[#070a15]/95')
+    expect(listbox.className).toContain('backdrop-blur-md')
     expect(listbox.className).toContain('text-daccent-1')
     expect(listbox.className).toContain('dark:text-accent-1')
 

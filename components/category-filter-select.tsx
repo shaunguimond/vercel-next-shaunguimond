@@ -17,7 +17,7 @@ const triggerClass =
   'flex min-h-12 w-full items-center justify-between gap-3 rounded-lg border border-daccent-2 bg-laccent-2 px-4 py-3 text-left text-daccent-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-daccent-2 dark:bg-daccent-2 dark:text-accent-1 dark:focus-visible:outline-sky-300'
 
 const listboxClass =
-  'absolute inset-x-0 top-full z-50 mt-2 max-h-60 overflow-y-auto rounded-lg border border-daccent-2 bg-laccent-2 p-1 text-daccent-1 shadow-lg dark:border-daccent-2 dark:bg-daccent-2 dark:text-accent-1'
+  'absolute inset-x-0 top-full z-50 mt-2 max-h-60 overflow-y-auto rounded-lg border border-daccent-2 bg-[#d9dcf2]/95 p-1 text-daccent-1 shadow-lg backdrop-blur-md dark:border-daccent-2 dark:bg-[#070a15]/95 dark:text-accent-1'
 
 export default function CategoryFilterSelect({
   label,
