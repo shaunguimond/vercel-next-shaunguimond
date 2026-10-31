@@ -4,7 +4,7 @@ function BlueskyIcon() {
   return (
     <svg
       viewBox="0 0 600 530"
-      className="h-5 w-5 min-[800px]:h-6 min-[800px]:w-6"
+      className="h-4 w-4 min-[800px]:h-6 min-[800px]:w-6"
       aria-hidden="true"
     >
       <path
@@ -18,7 +18,7 @@ function BlueskyIcon() {
 export default function PostReadingTools({ title }: { title: string }) {
   const [progress, setProgress] = useState(0)
   const [isMobileFixed, setIsMobileFixed] = useState(false)
-  const [mobileStickyTop, setMobileStickyTop] = useState(88)
+  const [mobileStickyTop, setMobileStickyTop] = useState(82)
 
   useEffect(() => {
     const article = document.querySelector<HTMLElement>('[data-reading-article]')
@@ -44,7 +44,7 @@ export default function PostReadingTools({ title }: { title: string }) {
       const articleBottom = articleTop + articleHeight
       const navBottom =
         document.querySelector<HTMLElement>('.nav-fixed')?.getBoundingClientRect().bottom ?? 80
-      const stickyTop = Math.ceil(navBottom + 8)
+      const stickyTop = Math.ceil(navBottom + 2)
       setMobileStickyTop(stickyTop)
       setIsMobileFixed(
         window.scrollY > slotTop - stickyTop && window.scrollY < articleBottom - stickyTop,
@@ -67,10 +67,10 @@ export default function PostReadingTools({ title }: { title: string }) {
   }
 
   return (
-    <div data-reading-tools-slot className="min-h-[4.5rem] min-[800px]:min-h-0">
+    <div data-reading-tools-slot className="min-h-14 min-[800px]:min-h-0">
       <aside
         aria-label="Post tools"
-        className={`${isMobileFixed ? 'fixed inset-x-5 top-[var(--mobile-sticky-top)] z-20 w-auto' : 'sticky top-[var(--mobile-sticky-top)] z-10 w-full'} mb-6 flex items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
+        className={`${isMobileFixed ? 'fixed inset-x-5 top-[var(--mobile-sticky-top)] z-20 w-auto' : 'sticky top-[var(--mobile-sticky-top)] z-10 w-full'} mb-4 flex items-center justify-between rounded-xl bg-daccent-2/90 p-1.5 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
         style={{ '--mobile-sticky-top': `${mobileStickyTop}px` } as CSSProperties}
       >
         <button
@@ -78,13 +78,13 @@ export default function PostReadingTools({ title }: { title: string }) {
           onClick={sharePost}
           aria-label={`Share ${title} on Bluesky`}
           title="Share on Bluesky"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sky-500 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 min-[800px]:h-10 min-[800px]:w-10"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sky-500 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 min-[800px]:h-10 min-[800px]:w-10"
         >
           <BlueskyIcon />
         </button>
 
         <div className="flex min-w-0 flex-1 items-center gap-3 min-[800px]:w-full min-[800px]:flex-1 min-[800px]:flex-col min-[800px]:gap-2">
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-accent-1/20 min-[800px]:h-auto min-[800px]:min-h-0 min-[800px]:w-1.5 min-[800px]:flex-1">
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-accent-1/20 min-[800px]:h-auto min-[800px]:min-h-0 min-[800px]:w-1.5 min-[800px]:flex-1">
             <div
               className="h-full w-[var(--reading-progress)] rounded-full bg-sky-500 transition-[width,height] duration-150 min-[800px]:h-[var(--reading-progress)] min-[800px]:w-full"
               style={{ '--reading-progress': `${progress}%` } as CSSProperties}
