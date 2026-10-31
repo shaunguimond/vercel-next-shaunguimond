@@ -8,6 +8,7 @@ import {
 } from '@atproto/api'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
+import BskyVideo from './bsky-video'
 import {
   EmbedView,
   getFormattedText,
@@ -161,26 +162,12 @@ function PostEmbeds({ post }: { post: AppBskyFeedDefs.PostView }) {
 
   if (AppBskyEmbedVideo.isView(embed)) {
     return (
-      <a
-        href={`https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/')[4]}`}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="relative mb-5 block aspect-video overflow-hidden rounded-xl bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
-        aria-label={`Watch video by @${post.author.handle} on Bluesky`}
-      >
-        {embed.thumbnail && (
-          <Image
-            src={embed.thumbnail}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="(min-width: 1024px) 50vw, 100vw"
-          />
-        )}
-        <span className="absolute inset-0 flex items-center justify-center bg-black/25 text-lg font-semibold text-white">
-          ▶ <span className="sr-only">Watch video on Bluesky</span>
-        </span>
-      </a>
+      <BskyVideo
+        src={embed.playlist}
+        poster={embed.thumbnail}
+        postUrl={`https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/')[4]}`}
+        author={post.author.handle}
+      />
     )
   }
 
