@@ -1,9 +1,33 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 import Layout from '../components/layout'
 
-// Custom About page, built in code instead of pulled from WordPress.
-// Edit the text below to change the content.
+const topics = [
+  {
+    title: 'Technology',
+    description: 'Programming, tools, and ideas I am learning about.',
+    href: '/category/technology/',
+  },
+  {
+    title: 'Projects',
+    description: 'Things I have built and what the process taught me.',
+    href: '/category/projects/',
+  },
+  {
+    title: 'Travel',
+    description: 'Stories and photos from the places we explore.',
+    href: '/category/travels/',
+  },
+]
+
+const careerSteps = [
+  'Taxation, accounting, and auditing',
+  'Digital marketing',
+  'Web development',
+  'Software engineering',
+]
+
 export default function AboutShaun() {
   return (
     <Layout>
@@ -11,73 +35,195 @@ export default function AboutShaun() {
         <title>About Shaun | Shaun Guimond</title>
         <meta
           name="description"
-          content="Software engineer at Shopify, computer science graduate from UBC, and the writer behind this blog. Say hello!"
+          content="Meet Shaun Guimond: a software engineer in Vancouver writing about technology, projects, learning, and travel."
         />
       </Head>
 
-      <div className="mx-auto max-w-3xl px-5 py-10">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tighter leading-tight text-center mb-12">
-          About Shaun
-        </h1>
+      <div className="mx-auto max-w-6xl px-5 pb-20">
+        <section className="grid gap-10 py-8 md:gap-14 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-14">
+          <div>
+            <p className="mb-5 text-sm font-bold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
+              A little about me
+            </p>
+            <h1 className="font-serif text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
+              Hi, I&apos;m Shaun.
+            </h1>
+            <p className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-700 dark:text-slate-200 sm:text-2xl">
+              I&apos;m a software engineer in Vancouver who likes learning how things work and building useful things with what I learn.
+            </p>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-700 dark:text-slate-200">
+              I work at Shopify and studied computer science at the University of British Columbia. This site is where I share notes from that work, personal projects, and the places Caroline and I visit.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/"
+                className="inline-flex min-h-12 items-center rounded-full bg-daccent-2 px-6 py-3 font-semibold text-accent-1 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              >
+                Browse the latest posts
+              </Link>
+              <a
+                href="https://bsky.app/profile/shaunguimond.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex min-h-12 items-center rounded-full border border-slate-400 px-6 py-3 font-semibold hover:bg-slate-100 dark:border-slate-500 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              >
+                Find me on Bluesky
+              </a>
+            </div>
+            <dl className="mt-10 grid max-w-lg grid-cols-2 gap-4 border-t border-slate-300 pt-6 dark:border-slate-700">
+              <div>
+                <dt className="text-sm text-slate-600 dark:text-slate-400">Based in</dt>
+                <dd className="mt-1 font-semibold">Vancouver, BC</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-slate-600 dark:text-slate-400">Currently</dt>
+                <dd className="mt-1 font-semibold">Software engineer at Shopify</dd>
+              </div>
+            </dl>
+          </div>
 
-        <div className="space-y-6 text-lg leading-relaxed text-black dark:text-accent-1">
-          <p>Hello, my name is Shaun Guimond.</p>
-          <p>
-            I&apos;m a software engineer at Shopify and a recent computer
-            science graduate from the University of British Columbia, based in
-            Vancouver, BC. Before code, I&apos;ve worked in taxation, business
-            auditing and accounting, digital marketing, and web development —
-            and I relish every challenge as an opportunity for growth.
-          </p>
-          <p>
-            I&apos;m happily married to an amazing woman who is a Private
-            Practice Dietitian, recipe developer, and food photographer behind{' '}
-            <a
-              className="underline"
-              href="https://www.nourishedbycaroline.ca"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Nourished by Caroline
-            </a>
-            . We love learning and exploring as much as possible. We&apos;ve
-            travelled much of Canada, the United States, and Europe, with plans
-            to explore new countries in the future.
-          </p>
-          <p>
-            In this blog, I share all of my learning experiences — from
-            programming to general technology. You&apos;ll also find me
-            sharing all of our amazing travels. I hope you enjoy!
-          </p>
-        </div>
+          <figure className="relative mx-auto w-full max-w-xl">
+            <div className="absolute -inset-3 rotate-2 rounded-[2rem] bg-accent-3/70 dark:bg-sky-900/50" aria-hidden="true" />
+            <div className="relative overflow-hidden rounded-[1.75rem] shadow-medium">
+              <Image
+                src="https://wp.shaunguimond.com/wp-content/uploads/2019/08/ShaunCarolineEngagement-0047-1536x1024.jpg"
+                width={1536}
+                height={1024}
+                alt="Caroline and Shaun at the Bay of Fundy."
+                preload
+                sizes="(min-width: 1024px) 42vw, (min-width: 640px) 80vw, 100vw"
+                className="aspect-[4/3] h-auto w-full object-cover"
+              />
+            </div>
+            <figcaption className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+              Caroline and me at the Bay of Fundy.
+            </figcaption>
+          </figure>
+        </section>
 
-        <figure className="my-12">
-          <Image
-            src="https://wp.shaunguimond.com/wp-content/uploads/2019/08/ShaunCarolineEngagement-0047-1536x1024.jpg"
-            width={1536}
-            height={1024}
-            alt="Caroline and Shaun at the Bay of Fundy."
-            loading="lazy"
-            className="w-full h-auto rounded-2xl shadow-medium"
-          />
-          <figcaption className="mt-3 text-center text-sm opacity-70 text-black dark:text-accent-1">
-            Caroline and Shaun at the Bay of Fundy.
-          </figcaption>
-        </figure>
+        <section className="mt-12 grid gap-8 border-t border-slate-300 py-12 dark:border-slate-700 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
+              The path here
+            </p>
+            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+              A career with a few turns
+            </h2>
+          </div>
+          <div>
+            <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-200">
+              Software wasn&apos;t my first field. I&apos;ve worked across a few disciplines, and each one gave me a different way to approach a problem. I still enjoy the challenge of learning something new and putting it to use.
+            </p>
+            <ol className="mt-7 grid gap-3 sm:grid-cols-2">
+              {careerSteps.map((step, index) => (
+                <li
+                  key={step}
+                  className="flex items-center gap-3 rounded-xl bg-laccent-2 p-4 dark:bg-daccent-2"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white font-semibold text-sky-800 dark:bg-slate-900 dark:text-sky-300">
+                    {index + 1}
+                  </span>
+                  <span className="font-medium">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
 
-        <section className="mt-16" aria-label="My profile on Sifa">
-          <h2 className="font-serif text-3xl font-bold tracking-tighter mb-4">
-            Around the web
-          </h2>
-          <p className="text-lg leading-relaxed text-black dark:text-accent-1 mb-8">
-            I post about technology, programming, and life on Bluesky. Follow
-            along, or check out my full profile on Sifa:
-          </p>
+        <section className="mt-4 grid gap-6 rounded-[2rem] border border-slate-300 p-6 dark:border-slate-700 sm:p-9 md:grid-cols-[0.7fr_1.3fr] md:items-start md:gap-12" aria-labelledby="outside-work">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
+              Away from work
+            </p>
+            <h2 id="outside-work" className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+              Life beyond the screen
+            </h2>
+          </div>
+          <div className="space-y-4 text-lg leading-relaxed text-slate-700 dark:text-slate-200">
+            <p>
+              I&apos;m married to Caroline, a private practice dietitian, recipe developer, and food photographer behind{' '}
+              <a
+                href="https://www.nourishedbycaroline.ca"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="font-semibold text-sky-800 underline underline-offset-4 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200"
+              >
+                Nourished by Caroline
+              </a>
+              .
+            </p>
+            <p>
+              We love learning and exploring together. We&apos;ve travelled across much of Canada, the United States, and Europe, and are looking forward to discovering more.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-[2rem] bg-laccent-2 p-6 dark:bg-daccent-2 sm:p-10" aria-labelledby="writing-topics">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-800 dark:text-sky-300">
+              On this site
+            </p>
+            <h2 id="writing-topics" className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+              Things I&apos;m learning and doing
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-slate-700 dark:text-slate-200">
+              I write to make sense of what I&apos;m learning, and to keep a record of projects and trips worth remembering.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {topics.map((topic) => (
+              <Link
+                key={topic.title}
+                href={topic.href}
+                className="group rounded-2xl bg-white/80 p-6 shadow-small transition-transform hover:-translate-y-1 dark:bg-slate-950/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500"
+              >
+                <h3 className="text-xl font-bold group-hover:underline">{topic.title}</h3>
+                <p className="mt-3 leading-relaxed text-slate-700 dark:text-slate-300">
+                  {topic.description}
+                </p>
+                <span className="mt-5 inline-block font-semibold text-sky-800 dark:text-sky-300">
+                  Browse posts <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 grid gap-8 border-t border-slate-300 pt-12 dark:border-slate-700 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16" aria-labelledby="around-web">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
+              Say hello
+            </p>
+            <h2 id="around-web" className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+              Around the web
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-slate-700 dark:text-slate-200">
+              I share notes about technology, programming, and everyday life on Bluesky. You can also find my profile on Sifa.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+              <a
+                href="https://bsky.app/profile/shaunguimond.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="font-semibold text-sky-800 underline underline-offset-4 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200"
+              >
+                Bluesky profile
+              </a>
+              <a
+                href="https://sifa.id/shaunguimond.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="font-semibold text-sky-800 underline underline-offset-4 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200"
+              >
+                Sifa profile
+              </a>
+            </div>
+          </div>
           <iframe
             src="https://sifa.id/embed/shaunguimond.com"
             title="Sifa ID profile card for Shaun Guimond"
-            className="w-full rounded-xl"
-            style={{ height: "356px" }}
+            className="w-full rounded-2xl border-0 bg-white"
+            style={{ height: '356px' }}
             loading="lazy"
           />
         </section>
