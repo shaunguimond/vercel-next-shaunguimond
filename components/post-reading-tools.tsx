@@ -66,7 +66,7 @@ export default function PostReadingTools({ title }: { title: string }) {
     <div data-reading-tools-slot className="min-h-[4.5rem] min-[800px]:min-h-0">
       <aside
         aria-label="Post tools"
-        className={`${isMobileFixed ? 'fixed inset-x-5 top-32 z-20' : 'sticky top-32 z-10'} mb-6 flex w-full items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
+        className={`${isMobileFixed ? 'fixed inset-x-5 top-32 z-20 w-auto' : 'sticky top-32 z-10 w-full'} mb-6 flex items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
       >
         <button
           type="button"
