@@ -41,34 +41,24 @@ export const CommentSection = ({ uri }: Props) => {
 
   useEffect(() => {
     if (!uri) return;
+    setThread(null);
+    setError(null);
     const controller = new AbortController();
     fetchThreadData(uri, setThread, setError, controller.signal);
     return () => controller.abort();
   }, [uri]);
 
   // Hooks must run unconditionally, so this guard comes after them.
-  if (!uri) return <div />;
+  if (!uri) return null;
 
   const [, , did, _, rkey] = uri.split("/");
   const postUrl = `https://bsky.app/profile/${did}/post/${rkey}`;
-
-  if (error) {
-    return <p className="text-center">{error}</p>;
-  }
-
-  if (!thread) {
-    return <p className="text-center">Loading comments...</p>;
-  }
-
-  if (!thread.replies || thread.replies.length === 0) {
-    return <div />;
-  }
 
   const showMore = () => {
     setVisibleCount((prevCount) => prevCount + 5);
   };
 
-  const sortedReplies = (thread.replies || [])
+  const sortedReplies = (thread?.replies || [])
     .filter((reply) => AppBskyFeedDefs.isThreadViewPost(reply))
     .map((reply) => reply as AppBskyFeedDefs.ThreadViewPost)
     .sort(sortByLikes);
@@ -76,7 +66,7 @@ export const CommentSection = ({ uri }: Props) => {
   return (
     <Container>
       <div className="bg-laccent-2 dark:bg-daccent-2 rounded-2xl p-5 max-w-5xl mb-10 sm:mx-auto mx-1.5">
-        <Link href={postUrl} target="_blank">
+        {thread && <Link href={postUrl} target="_blank" rel="noreferrer noopener">
           <p className="flex items-center hover:underline gap-2 text-lg">
             <span className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="pink" viewBox="0 0 24 24" strokeWidth="1.5" stroke="pink" className="size-5" color="pink">
@@ -101,26 +91,31 @@ export const CommentSection = ({ uri }: Props) => {
 
 
           </p>
-        </Link>
+        </Link>}
         <h2 className="mt-6 text-3xl font-bold">Comments</h2>
         <p className="mt-2 text-md">
-          Reply on Bluesky{" "}
-          <Link
+          Replies to this article&rsquo;s Bluesky post appear here.
+        </p>
+        <Link
             href={postUrl}
-            className="underline"
+            className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-sky-600 px-4 py-2 font-semibold text-white hover:bg-sky-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
             target="_blank"
             rel="noreferrer noopener"
           >
-            here
-          </Link>{" "}
-          to join the conversation.
-        </p>
+            Join the conversation on Bluesky
+        </Link>
         <hr className="mt-2" />
         <div className="mt-2 space-y-8">
-          {sortedReplies.slice(0, visibleCount).map((reply) => {
+          {error ? (
+            <p role="alert" className="text-center">{error}. You can still open the Bluesky conversation above.</p>
+          ) : !thread ? (
+            <p role="status" aria-live="polite" className="text-center">Loading replies…</p>
+          ) : sortedReplies.length === 0 ? (
+            <p className="text-center">No replies yet. Start the conversation on Bluesky.</p>
+          ) : sortedReplies.slice(0, visibleCount).map((reply) => {
             return <Comment key={reply.post.uri} comment={reply} />;
           })}
-          {visibleCount < sortedReplies.length && (
+          {!error && thread && visibleCount < sortedReplies.length && (
             <button onClick={showMore} className="mt-2 text-sm text-blue-500 underline">
               Show more comments
             </button>
