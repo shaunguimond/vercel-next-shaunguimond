@@ -18,6 +18,7 @@ function BlueskyIcon() {
 export default function PostReadingTools({ title }: { title: string }) {
   const [progress, setProgress] = useState(0)
   const [isMobileFixed, setIsMobileFixed] = useState(false)
+  const [mobileStickyTop, setMobileStickyTop] = useState(88)
 
   useEffect(() => {
     const article = document.querySelector<HTMLElement>('[data-reading-article]')
@@ -41,7 +42,10 @@ export default function PostReadingTools({ title }: { title: string }) {
 
       const slotTop = slot.getBoundingClientRect().top + window.scrollY
       const articleBottom = articleTop + articleHeight
-      const stickyTop = 128
+      const navBottom =
+        document.querySelector<HTMLElement>('.nav-fixed')?.getBoundingClientRect().bottom ?? 80
+      const stickyTop = Math.ceil(navBottom + 8)
+      setMobileStickyTop(stickyTop)
       setIsMobileFixed(
         window.scrollY > slotTop - stickyTop && window.scrollY < articleBottom - stickyTop,
       )
@@ -66,7 +70,8 @@ export default function PostReadingTools({ title }: { title: string }) {
     <div data-reading-tools-slot className="min-h-[4.5rem] min-[800px]:min-h-0">
       <aside
         aria-label="Post tools"
-        className={`${isMobileFixed ? 'fixed inset-x-5 top-32 z-20 w-auto' : 'sticky top-32 z-10 w-full'} mb-6 flex items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
+        className={`${isMobileFixed ? 'fixed inset-x-5 top-[var(--mobile-sticky-top)] z-20 w-auto' : 'sticky top-[var(--mobile-sticky-top)] z-10 w-full'} mb-6 flex items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
+        style={{ '--mobile-sticky-top': `${mobileStickyTop}px` } as CSSProperties}
       >
         <button
           type="button"
