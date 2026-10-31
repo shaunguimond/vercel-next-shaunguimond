@@ -8,6 +8,7 @@ import PostHeader from '../../components/post-header'
 import SectionSeparator from '../../components/section-separator'
 import Layout from '../../components/layout'
 import PostTitle from '../../components/post-title'
+import ShareOnBluesky from '../../components/share-on-bluesky'
 import Tags from '../../components/tags'
 import { getAllPostsWithSlug, getPostAndMorePosts } from '../../lib/api'
 import { getStandardDocumentUri } from '../../lib/pds'
@@ -53,6 +54,13 @@ export default function Post({
         <>
           <article className="mx-auto max-w-3xl px-5">
             <Head>
+              <meta property="og:type" content="article" />
+              <meta property="og:title" content={`${post.title} | Shaun Guimond`} />
+              <meta
+                property="og:description"
+                content={post.excerpt.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}
+              />
+              <meta name="twitter:card" content="summary_large_image" />
               <meta
                 property="og:image"
                 content={post.featuredImage?.node?.sourceUrl ?? undefined}
@@ -73,6 +81,9 @@ export default function Post({
               author={post.author}
               categories={post.categories}
             />
+            <div className="mb-8 flex justify-center">
+              <ShareOnBluesky title={post.title} />
+            </div>
             <PostBody content={post.content} />
             <footer className="mx-3">
               {tags.length > 0 && <Tags tags={{ edges: tags }} />}
