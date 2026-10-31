@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
+import { useEffect, useRef, useState } from 'react'
 import Layout from '../components/layout'
 
 const topics = [
@@ -31,11 +32,39 @@ const careerSteps = [
 
 export default function AboutShaun() {
   const { systemTheme, theme } = useTheme()
+  const sifaEmbedRef = useRef<HTMLIFrameElement>(null)
+  const [sifaEmbedHeight, setSifaEmbedHeight] = useState(1)
   const currentTheme = theme === 'system' ? systemTheme : theme
   const sifaEmbedUrl = new URL('https://sifa.id/embed/shaunguimond.com')
   if (currentTheme === 'light' || currentTheme === 'dark') {
     sifaEmbedUrl.searchParams.set('theme', currentTheme)
   }
+
+  useEffect(() => {
+    const handleEmbedResize = (event: MessageEvent<unknown>) => {
+      if (
+        event.origin !== 'https://sifa.id' ||
+        event.source !== sifaEmbedRef.current?.contentWindow ||
+        typeof event.data !== 'object' ||
+        event.data === null
+      ) {
+        return
+      }
+
+      const { height, type } = event.data as { height?: unknown; type?: unknown }
+      if (
+        type === 'sifa-embed-resize' &&
+        typeof height === 'number' &&
+        Number.isFinite(height) &&
+        height > 0
+      ) {
+        setSifaEmbedHeight(Math.ceil(height))
+      }
+    }
+
+    window.addEventListener('message', handleEmbedResize)
+    return () => window.removeEventListener('message', handleEmbedResize)
+  }, [])
 
   return (
     <Layout>
@@ -228,10 +257,11 @@ export default function AboutShaun() {
             </div>
           </div>
           <iframe
+            ref={sifaEmbedRef}
             src={sifaEmbedUrl.toString()}
             title="Sifa ID profile card for Shaun Guimond"
-            className="w-full rounded-2xl border-0 bg-transparent"
-            style={{ height: '356px', backgroundColor: 'transparent' }}
+            className="w-full rounded-2xl border border-slate-300 bg-transparent dark:border-slate-700"
+            style={{ height: `${sifaEmbedHeight + 2}px`, backgroundColor: 'transparent' }}
             loading="lazy"
           />
         </section>
