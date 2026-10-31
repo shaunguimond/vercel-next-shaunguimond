@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import PostPreview from './post-preview'
+import CategoryFilterSelect from './category-filter-select'
 import type { CategoryWithPosts, PaginatedPostConnection, PostEdge } from '../lib/types'
-
-const filterSelectClass =
-  'scheme-light min-h-12 w-full rounded-lg border border-daccent-2 bg-laccent-2 px-4 py-3 text-daccent-1 dark:scheme-dark dark:border-daccent-2 dark:bg-daccent-2 dark:text-accent-1'
 
 export default function CategoryPostList({ category }: { category: CategoryWithPosts }) {
   const [posts, setPosts] = useState(category.posts.edges)
@@ -165,42 +163,32 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
       <fieldset className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <legend className="sr-only">Filter posts</legend>
         <div className="min-w-0">
-          <label htmlFor="archive-tag-filter" className="sr-only">
-            Filter by tag
-          </label>
-          <select
-            id="archive-tag-filter"
+          <CategoryFilterSelect
+            label="Filter by tag"
             value={selectedTag}
-            onChange={(event) => {
+            onChange={(value) => {
               filterRequestRef.current += 1
-              setSelectedTag(event.target.value)
+              setSelectedTag(value)
             }}
-            className={filterSelectClass}
-          >
-            <option value="">All tags</option>
-            {category.filterOptions.tags.map((tag) => (
-              <option key={tag.slug} value={tag.slug}>{tag.name}</option>
-            ))}
-          </select>
+            options={[
+              { label: 'All tags', value: '' },
+              ...category.filterOptions.tags.map((tag) => ({ label: tag.name, value: tag.slug })),
+            ]}
+          />
         </div>
         <div className="min-w-0">
-          <label htmlFor="archive-year-filter" className="sr-only">
-            Filter by year
-          </label>
-          <select
-            id="archive-year-filter"
+          <CategoryFilterSelect
+            label="Filter by year"
             value={selectedYear}
-            onChange={(event) => {
+            onChange={(value) => {
               filterRequestRef.current += 1
-              setSelectedYear(event.target.value)
+              setSelectedYear(value)
             }}
-            className={filterSelectClass}
-          >
-            <option value="">All years</option>
-            {category.filterOptions.years.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+            options={[
+              { label: 'All years', value: '' },
+              ...category.filterOptions.years.map((year) => ({ label: String(year), value: String(year) })),
+            ]}
+          />
         </div>
       </fieldset>
 
