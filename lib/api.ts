@@ -172,12 +172,12 @@ export async function getAllPostsWithSlug(): Promise<
   return { edges }
 }
 
-// function call to GraphQL API to get 20 posts for the home page. 
+// Fetch only the three latest posts shown on the home page.
 export async function getAllPostsForHome(preview?: boolean): Promise<PostConnection> {
   const data = await fetchAPI<{ posts: PostConnection }>(
     `
     query AllPosts {
-      posts(first: 20, where: { orderby: { field: DATE, order: DESC } }) {
+      posts(first: 3, where: { orderby: { field: DATE, order: DESC } }) {
         edges {
           node {
             title
