@@ -59,22 +59,25 @@ export default function MobileNav({ setNav, themeToggle, onClose }: MobileNavPro
       aria-modal="true"
       aria-label="Site navigation"
       onKeyDown={trapKeyboard}
-      className="absolute left-0 top-0 z-0 flex h-dvh w-full flex-col items-center justify-center overflow-y-auto bg-accent-3 px-5 py-24 dark:bg-daccent-1"
+      className="absolute left-0 top-0 z-0 flex h-dvh w-full flex-col items-center justify-center overflow-hidden bg-accent-3 px-5 pt-14 pb-[calc(env(safe-area-inset-bottom)+4rem)] dark:bg-daccent-1"
     >
       <button
         type="button"
         onClick={closeMenu}
         aria-label="Close navigation menu"
-        className="absolute right-6 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:text-accent-1"
+        className="absolute right-6 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:text-accent-1"
       >
         <XMarkIcon className="h-8 w-8" aria-hidden="true" />
       </button>
 
-      <nav aria-label="Primary navigation" className="my-auto">
-        <ul className="text-center">
-          <li className="my-3">
+      <nav
+        aria-label="Primary navigation"
+        className="flex min-h-0 flex-1 items-center justify-center"
+      >
+        <ul className="space-y-1 text-center max-[500px]:space-y-0">
+          <li>
             <Link
-              className="my-6 cursor-pointer text-3xl capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1"
+              className="block cursor-pointer py-0.5 text-2xl leading-8 capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1 max-[500px]:py-0 max-[500px]:text-xl max-[500px]:leading-6"
               href="/"
               onClick={() => setNav(false)}
             >
@@ -82,9 +85,9 @@ export default function MobileNav({ setNav, themeToggle, onClose }: MobileNavPro
             </Link>
           </li>
           {navLinks.map((link) => (
-            <li key={link.path} className="my-3">
+            <li key={link.path}>
               <Link
-                className="my-6 cursor-pointer text-3xl capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1"
+                className="block cursor-pointer py-0.5 text-2xl leading-8 capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1 max-[500px]:py-0 max-[500px]:text-xl max-[500px]:leading-6"
                 href={link.path}
                 onClick={() => setNav(false)}
               >
@@ -95,7 +98,7 @@ export default function MobileNav({ setNav, themeToggle, onClose }: MobileNavPro
         </ul>
       </nav>
 
-      <div className="absolute bottom-8 left-8 right-8 flex items-center justify-between">
+      <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-6 right-6 flex items-center justify-between">
         <div className="flex h-11 w-11 items-center justify-center rounded-full border border-black/50 dark:border-white/50">
           {themeToggle}
         </div>
