@@ -230,8 +230,8 @@ export default function AboutShaun() {
           <iframe
             src={sifaEmbedUrl.toString()}
             title="Sifa ID profile card for Shaun Guimond"
-            className="w-full rounded-2xl border-0 bg-white"
-            style={{ height: '356px' }}
+            className="w-full rounded-2xl border-0 bg-transparent"
+            style={{ height: '356px', backgroundColor: 'transparent' }}
             loading="lazy"
           />
         </section>
