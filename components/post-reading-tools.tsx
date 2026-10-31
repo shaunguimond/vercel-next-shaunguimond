@@ -17,10 +17,12 @@ function BlueskyIcon() {
 
 export default function PostReadingTools({ title }: { title: string }) {
   const [progress, setProgress] = useState(0)
+  const [isMobileFixed, setIsMobileFixed] = useState(false)
 
   useEffect(() => {
     const article = document.querySelector<HTMLElement>('[data-reading-article]')
-    if (!article) return
+    const slot = document.querySelector<HTMLElement>('[data-reading-tools-slot]')
+    if (!article || !slot) return
 
     const updateProgress = () => {
       const articleTop = article.getBoundingClientRect().top + window.scrollY
@@ -31,6 +33,18 @@ export default function PostReadingTools({ title }: { title: string }) {
         Math.max(0, ((window.scrollY - articleTop) / readableHeight) * 100),
       )
       setProgress(Math.round(value))
+
+      if (window.innerWidth >= 800) {
+        setIsMobileFixed(false)
+        return
+      }
+
+      const slotTop = slot.getBoundingClientRect().top + window.scrollY
+      const articleBottom = articleTop + articleHeight
+      const stickyTop = 128
+      setIsMobileFixed(
+        window.scrollY > slotTop - stickyTop && window.scrollY < articleBottom - stickyTop,
+      )
     }
 
     updateProgress()
@@ -49,42 +63,44 @@ export default function PostReadingTools({ title }: { title: string }) {
   }
 
   return (
-    <aside
-      aria-label="Post tools"
-      className="sticky top-28 z-10 mb-6 flex w-full items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:top-28 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3"
-    >
-      <button
-        type="button"
-        onClick={sharePost}
-        aria-label={`Share ${title} on Bluesky`}
-        title="Share on Bluesky"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sky-500 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 min-[800px]:h-10 min-[800px]:w-10"
+    <div data-reading-tools-slot className="min-h-[4.5rem] min-[800px]:min-h-0">
+      <aside
+        aria-label="Post tools"
+        className={`${isMobileFixed ? 'fixed inset-x-5 top-32 z-20' : 'sticky top-32 z-10'} mb-6 flex w-full items-center justify-between rounded-xl bg-daccent-2/90 p-2 text-accent-1 shadow-sm backdrop-blur min-[800px]:sticky min-[800px]:top-28 min-[800px]:z-10 min-[800px]:mb-0 min-[800px]:h-[calc(100vh-9rem)] min-[800px]:min-h-80 min-[800px]:w-14 min-[800px]:flex-col min-[800px]:justify-start min-[800px]:gap-6 min-[800px]:rounded-2xl min-[800px]:p-3`}
       >
-        <BlueskyIcon />
-      </button>
+        <button
+          type="button"
+          onClick={sharePost}
+          aria-label={`Share ${title} on Bluesky`}
+          title="Share on Bluesky"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sky-500 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 min-[800px]:h-10 min-[800px]:w-10"
+        >
+          <BlueskyIcon />
+        </button>
 
-      <div className="flex min-w-0 flex-1 items-center gap-3 min-[800px]:w-full min-[800px]:flex-1 min-[800px]:flex-col min-[800px]:gap-2">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-accent-1/20 min-[800px]:h-auto min-[800px]:min-h-0 min-[800px]:w-1.5 min-[800px]:flex-1">
-          <div
-            className="h-full w-[var(--reading-progress)] rounded-full bg-sky-500 transition-[width,height] duration-150 min-[800px]:h-[var(--reading-progress)] min-[800px]:w-full"
-            style={{ '--reading-progress': `${progress}%` } as CSSProperties}
+        <div className="flex min-w-0 flex-1 items-center gap-3 min-[800px]:w-full min-[800px]:flex-1 min-[800px]:flex-col min-[800px]:gap-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-accent-1/20 min-[800px]:h-auto min-[800px]:min-h-0 min-[800px]:w-1.5 min-[800px]:flex-1">
+            <div
+              className="h-full w-[var(--reading-progress)] rounded-full bg-sky-500 transition-[width,height] duration-150 min-[800px]:h-[var(--reading-progress)] min-[800px]:w-full"
+              style={{ '--reading-progress': `${progress}%` } as CSSProperties}
+            />
+          </div>
+          <span
+            className="w-10 text-right text-xs tabular-nums min-[800px]:w-auto"
+            aria-hidden="true"
+          >
+            {progress}%
+          </span>
+          <span
+            className="sr-only"
+            role="progressbar"
+            aria-label="Article reading progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
           />
         </div>
-        <span
-          className="w-10 text-right text-xs tabular-nums min-[800px]:w-auto"
-          aria-hidden="true"
-        >
-          {progress}%
-        </span>
-        <span
-          className="sr-only"
-          role="progressbar"
-          aria-label="Article reading progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={progress}
-        />
-      </div>
-    </aside>
+      </aside>
+    </div>
   )
 }
