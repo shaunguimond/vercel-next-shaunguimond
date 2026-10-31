@@ -1,47 +1,117 @@
-import { navLinks } from "../lib/constants";
-import Link from "next/link";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type KeyboardEvent, type ReactNode } from 'react'
+import Link from 'next/link'
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { navLinks } from '../lib/constants'
 
 interface MobileNavProps {
-    setNav: (nav: boolean) => void;
-    themeToggle: ReactNode;
+  setNav: (nav: boolean) => void
+  themeToggle: ReactNode
+  onClose: () => void
 }
 
-export default function MobileNav({ setNav, themeToggle }: MobileNavProps) {
-    const handleClick = () => {
-        setNav(false);
-    }
-    
-    return(
-        <nav aria-label="Mobile navigation" className="absolute left-0 top-0 flex h-screen w-full flex-col items-center justify-center bg-accent-3 dark:bg-daccent-1">
-            <ul className="text-center">
-                <li className="my-3">
-                    <Link className="text-black dark:text-accent-1 my-6 cursor-pointer capitalize text-3xl" href="/" onClick={handleClick}>Home</Link>
-                </li>
-                {navLinks.map((link, index) => {
-                return (
-                        <li key={index} className="my-3 ">
-                            <Link className="text-black dark:text-accent-1 my-6 cursor-pointer capitalize text-3xl" href={link.path} onClick={handleClick}>{link.name}</Link>
-                        </li>
-                );
-                })}
-            </ul>
-            <div className="absolute bottom-8 left-8 right-8 flex items-center justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-black/20 dark:border-white/20">
-                    {themeToggle}
-                </div>
-                <Link
-                    href="/search"
-                    onClick={handleClick}
-                    aria-label="Search posts and categories"
-                    title="Search"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-black/20 text-black dark:border-white/20 dark:text-accent-1"
-                >
-                    <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
-                </Link>
-            </div>
-        </nav>
-    )
-};
+export default function MobileNav({ setNav, themeToggle, onClose }: MobileNavProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    dialogRef.current?.querySelector<HTMLElement>('nav a[href]')?.focus()
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  const closeMenu = () => {
+    setNav(false)
+    onClose()
+  }
+
+  const trapKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      closeMenu()
+      return
+    }
+
+    if (event.key !== 'Tab' || !dialogRef.current) return
+
+    const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled])',
+    )
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last?.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first?.focus()
+    }
+  }
+
+  return (
+    <div
+      ref={dialogRef}
+      id="mobile-navigation"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site navigation"
+      onKeyDown={trapKeyboard}
+      className="absolute left-0 top-0 z-0 flex h-dvh w-full flex-col items-center justify-center overflow-hidden bg-accent-3 px-5 pt-14 pb-[calc(env(safe-area-inset-bottom)+4rem)] dark:bg-daccent-1"
+    >
+      <button
+        type="button"
+        onClick={closeMenu}
+        aria-label="Close navigation menu"
+        className="absolute right-6 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:text-accent-1"
+      >
+        <XMarkIcon className="h-8 w-8" aria-hidden="true" />
+      </button>
+
+      <nav
+        aria-label="Primary navigation"
+        className="flex min-h-0 flex-1 items-center justify-center"
+      >
+        <ul className="space-y-1 text-center max-[500px]:space-y-0">
+          <li>
+            <Link
+              className="block cursor-pointer py-0.5 text-2xl leading-8 capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1 max-[500px]:py-0 max-[500px]:text-xl max-[500px]:leading-6"
+              href="/"
+              onClick={() => setNav(false)}
+            >
+              Home
+            </Link>
+          </li>
+          {navLinks.map((link) => (
+            <li key={link.path}>
+              <Link
+                className="block cursor-pointer py-0.5 text-2xl leading-8 capitalize text-black focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:text-accent-1 max-[500px]:py-0 max-[500px]:text-xl max-[500px]:leading-6"
+                href={link.path}
+                onClick={() => setNav(false)}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-6 right-6 flex items-center justify-between">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-black/50 dark:border-white/50">
+          {themeToggle}
+        </div>
+        <Link
+          href="/search"
+          onClick={() => setNav(false)}
+          aria-label="Search posts and categories"
+          title="Search"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-black/50 text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:border-white/50 dark:text-accent-1"
+        >
+          <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
+        </Link>
+      </div>
+    </div>
+  )
+}
