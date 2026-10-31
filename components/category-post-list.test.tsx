@@ -48,6 +48,7 @@ function makeCategory(hasNextPage: boolean): CategoryWithPosts {
         hasNextPage,
       },
     },
+    filterOptions: { tags: [], years: [2026] },
   }
 }
 

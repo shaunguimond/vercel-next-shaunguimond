@@ -413,6 +413,18 @@ const CATEGORY_POST_FIELDS = `
   }
 `
 
+const CATEGORY_POST_FIELDS_WITH_TAGS = `
+  ${CATEGORY_POST_FIELDS}
+  tags {
+    edges {
+      node {
+        name
+        slug
+      }
+    }
+  }
+`
+
 const CATEGORY_POSTS_PAGE = `
   pageInfo {
     endCursor
@@ -425,8 +437,95 @@ const CATEGORY_POSTS_PAGE = `
   }
 `
 
+const CATEGORY_POSTS_PAGE_WITH_TAGS = `
+  pageInfo {
+    endCursor
+    hasNextPage
+  }
+  edges {
+    node {
+      ${CATEGORY_POST_FIELDS_WITH_TAGS}
+    }
+  }
+`
+
 const CATEGORY_POST_PAGE_SIZE = 20
+const CATEGORY_FACET_PAGE_SIZE = 100
 const SEARCH_POST_PAGE_SIZE = 20
+
+interface CategoryFilterOptions {
+  tags: { name: string; slug: string }[]
+  years: number[]
+}
+
+interface CategoryFacetPost {
+  date: string
+  tags?: { edges: { node: { name: string; slug?: string | null } }[] } | null
+}
+
+function addCategoryFacets(posts: CategoryFacetPost[], options: CategoryFilterOptions) {
+  const tags = new Map(options.tags.map((tag) => [tag.slug, tag.name]))
+  const years = new Set(options.years)
+
+  for (const post of posts) {
+    const year = Number(post.date.slice(0, 4))
+    if (Number.isInteger(year)) years.add(year)
+    for (const { node } of post.tags?.edges ?? []) {
+      if (node.slug && node.name) tags.set(node.slug, node.name)
+    }
+  }
+
+  options.tags = [...tags].map(([slug, name]) => ({ name, slug }))
+  options.years = [...years].sort((a, b) => b - a)
+}
+
+async function getCategoryFilterOptions(
+  slug: string,
+  after: string | null,
+  options: CategoryFilterOptions
+): Promise<void> {
+  let cursor = after
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const data = await fetchAPI<{
+      category: {
+        posts: {
+          pageInfo: { endCursor: string | null; hasNextPage: boolean }
+          edges: { node: CategoryFacetPost }[]
+        }
+      } | null
+    }>(
+      `
+    query CategoryFilterOptions($id: ID!, $after: String) {
+      category(id: $id, idType: SLUG) {
+        posts(first: ${CATEGORY_FACET_PAGE_SIZE}, after: $after, where: { orderby: { field: DATE, order: DESC } }) {
+          pageInfo { endCursor hasNextPage }
+          edges {
+            node {
+              date
+              tags { edges { node { name slug } } }
+            }
+          }
+        }
+      }
+    }
+  `,
+      { variables: { id: slug, after: cursor } }
+    )
+
+    const page = data.category?.posts
+    if (!page) throw new Error(`Category not found while loading filters: ${slug}`)
+    addCategoryFacets(page.edges.map(({ node }) => node), options)
+
+    const nextAfter = page.pageInfo.endCursor
+    hasNextPage = page.pageInfo.hasNextPage
+    if (hasNextPage && (!nextAfter || nextAfter === cursor)) {
+      throw new Error(`Category filter pagination returned no advancing cursor: ${slug}`)
+    }
+    cursor = nextAfter
+  }
+}
 
 // Search published posts using WordPress's native WPGraphQL search argument.
 // The cursor is used by the same-origin search API for subsequent pages.
@@ -492,7 +591,9 @@ export async function getAllPostsByCategory(
 ): Promise<CategoryWithPosts | null> {
   if (!slug) return null
 
-  const data = await fetchAPI<{ category: CategoryWithPosts | null }>(
+  const data = await fetchAPI<{
+    category: Omit<CategoryWithPosts, 'filterOptions'> | null
+  }>(
     `
     query PostsByCategory($id: ID!, $after: String) {
       category(id: $id, idType: SLUG) {
@@ -504,7 +605,7 @@ export async function getAllPostsByCategory(
           after: $after
           where: { orderby: { field: DATE, order: DESC } }
         ) {
-          ${CATEGORY_POSTS_PAGE}
+          ${CATEGORY_POSTS_PAGE_WITH_TAGS}
         }
       }
     }
@@ -512,31 +613,50 @@ export async function getAllPostsByCategory(
     { variables: { id: slug, after: null } }
   )
 
-  return data.category
+  if (!data.category) return null
+
+  const filterOptions: CategoryFilterOptions = { tags: [], years: [] }
+  addCategoryFacets(data.category.posts.edges.map(({ node }) => node), filterOptions)
+  for (const { node } of data.category.posts.edges) delete node.tags
+  if (data.category.posts.pageInfo.hasNextPage) {
+    await getCategoryFilterOptions(
+      slug,
+      data.category.posts.pageInfo.endCursor,
+      filterOptions
+    )
+  }
+
+  return { ...data.category, filterOptions }
 }
 
 // Fetch one additional page for the same-origin category posts API.
 export async function getCategoryPostsPage(
   slug: string,
-  after: string
+  after: string | null,
+  tag: string | null = null,
+  year: number | null = null
 ): Promise<PaginatedPostConnection | null> {
   const data = await fetchAPI<{
     category: { posts: PaginatedPostConnection } | null
   }>(
     `
-    query CategoryPostsPage($id: ID!, $after: String!) {
+    query CategoryPostsPage($id: ID!, $after: String, $tag: String, $year: Int) {
       category(id: $id, idType: SLUG) {
         posts(
           first: ${CATEGORY_POST_PAGE_SIZE}
           after: $after
-          where: { orderby: { field: DATE, order: DESC } }
+          where: {
+            tag: $tag
+            dateQuery: { year: $year }
+            orderby: { field: DATE, order: DESC }
+          }
         ) {
           ${CATEGORY_POSTS_PAGE}
         }
       }
     }
   `,
-    { variables: { id: slug, after } }
+    { variables: { id: slug, after, tag, year } }
   )
 
   return data.category?.posts ?? null
