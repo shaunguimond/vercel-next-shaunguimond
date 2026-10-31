@@ -14,6 +14,7 @@ export interface AuthorEdge {
 
 export interface TermNode {
   name: string
+  slug?: string | null
 }
 
 export interface TermEdge {
@@ -60,6 +61,10 @@ export interface CategoryWithPosts {
   slug: string
   databaseId: number
   posts: PaginatedPostConnection
+  filterOptions: {
+    tags: { name: string; slug: string }[]
+    years: number[]
+  }
 }
 
 // Shape of the preview cookie set by pages/api/preview.ts.
