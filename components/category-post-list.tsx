@@ -3,7 +3,7 @@ import PostPreview from './post-preview'
 import type { CategoryWithPosts, PaginatedPostConnection, PostEdge } from '../lib/types'
 
 const filterSelectClass =
-  'scheme-light min-h-12 w-full rounded-lg border border-accent-3 bg-laccent-2 px-4 py-3 text-daccent-1 dark:scheme-dark dark:border-slate-600 dark:bg-daccent-2 dark:text-accent-1'
+  'scheme-light min-h-12 min-w-0 flex-1 rounded-lg border border-daccent-2 bg-laccent-2 px-4 py-3 text-daccent-1 dark:scheme-dark dark:border-daccent-2 dark:bg-daccent-2 dark:text-accent-1'
 
 export default function CategoryPostList({ category }: { category: CategoryWithPosts }) {
   const [posts, setPosts] = useState(category.posts.edges)
@@ -164,8 +164,8 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
     <>
       <fieldset className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <legend className="sr-only">Filter posts</legend>
-        <div>
-          <label htmlFor="archive-tag-filter" className="mb-2 block font-semibold">
+        <div className="flex min-w-0 items-center gap-3">
+          <label htmlFor="archive-tag-filter" className="w-12 shrink-0 font-semibold">
             Tag
           </label>
           <select
@@ -183,8 +183,8 @@ export default function CategoryPostList({ category }: { category: CategoryWithP
             ))}
           </select>
         </div>
-        <div>
-          <label htmlFor="archive-year-filter" className="mb-2 block font-semibold">
+        <div className="flex min-w-0 items-center gap-3">
+          <label htmlFor="archive-year-filter" className="w-12 shrink-0 font-semibold">
             Year
           </label>
           <select
