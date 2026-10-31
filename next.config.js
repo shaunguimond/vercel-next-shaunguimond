@@ -10,6 +10,9 @@ new URL(process.env.WORDPRESS_API_URL)
 
 /** @type {import('next').NextConfig} */
 module.exports = {
+  // Bundle sanitize-html and its ESM-only htmlparser2 dependency into Pages
+  // Router server functions instead of loading them through Node's require().
+  transpilePackages: ["sanitize-html"],
   images: {
     remotePatterns: [
       {

@@ -426,6 +426,64 @@ const CATEGORY_POSTS_PAGE = `
 `
 
 const CATEGORY_POST_PAGE_SIZE = 20
+const SEARCH_POST_PAGE_SIZE = 20
+
+// Search published posts using WordPress's native WPGraphQL search argument.
+// The cursor is used by the same-origin search API for subsequent pages.
+export async function getSearchPosts(
+  search: string,
+  after: string | null = null,
+): Promise<PaginatedPostConnection> {
+  const data = await fetchAPI<{ posts: PaginatedPostConnection }>(
+    `
+    query SearchPosts($search: String!, $after: String) {
+      posts(
+        first: ${SEARCH_POST_PAGE_SIZE}
+        after: $after
+        where: { search: $search, orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            title
+            excerpt
+            slug
+            date
+            featuredImage {
+              node {
+                sourceUrl
+              }
+            }
+            author {
+              node {
+                name
+                firstName
+                lastName
+                avatar {
+                  url
+                }
+              }
+            }
+            categories {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `,
+    { variables: { search, after } },
+  )
+
+  return data.posts
+}
 
 // Fetch the first category page during static generation so its posts are
 // available in the initial HTML. Later pages are loaded by the category API.
