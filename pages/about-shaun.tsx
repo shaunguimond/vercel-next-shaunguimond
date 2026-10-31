@@ -257,6 +257,7 @@ export default function AboutShaun() {
             </div>
           </div>
           <iframe
+            key={currentTheme ?? 'system'}
             ref={sifaEmbedRef}
             src={sifaEmbedUrl.toString()}
             title="Sifa ID profile card for Shaun Guimond"
