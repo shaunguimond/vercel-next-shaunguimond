@@ -18,7 +18,7 @@ useEffect(() => {
   setMounted(true);
 }, []);
 
-const renderThemeChanger = () => {
+const renderThemeChanger = (className = "w-8 h-8 text-accent-1") => {
   if (!mounted) return null;
   const currentTheme = theme === "system" ? systemTheme : theme;
   
@@ -26,11 +26,15 @@ const renderThemeChanger = () => {
   if (currentTheme === "dark") 
     {
       return (
-        <SunIcon className="w-8 h-8 text-accent-1" role="button" onClick={() => setTheme("light")} />
+        <button type="button" aria-label="Switch to light theme" onClick={() => setTheme("light")}>
+          <SunIcon className={className} aria-hidden="true" />
+        </button>
     );
   } else {
     return (
-      <MoonIcon className="w-8 h-8 text-accent-1" role="button" onClick={() => setTheme("dark")} />
+      <button type="button" aria-label="Switch to dark theme" onClick={() => setTheme("dark")}>
+        <MoonIcon className={className} aria-hidden="true" />
+      </button>
     )
 
     }
@@ -55,7 +59,7 @@ const renderThemeChanger = () => {
           >
             <MagnifyingGlassIcon className="h-7 w-7 text-accent-1" aria-hidden="true" />
           </Link>
-          <div>{renderThemeChanger()}</div>
+          <div className="hidden lg:block">{renderThemeChanger()}</div>
           <div
             onClick={() => setNav(!nav)}
             className="cursor-pointer pr-4 z-10 text-gray-500 lg:hidden">
@@ -63,7 +67,7 @@ const renderThemeChanger = () => {
           </div>
 
           {nav && (
-            <MobileNav setNav={setNav}/>
+            <MobileNav setNav={setNav} themeToggle={renderThemeChanger("h-8 w-8 text-accent-1")} />
           )}
 
         </div>
