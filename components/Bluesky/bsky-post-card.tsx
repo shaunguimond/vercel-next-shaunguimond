@@ -3,6 +3,7 @@ import {
   AppBskyEmbedImages,
   AppBskyEmbedRecord,
   AppBskyEmbedRecordWithMedia,
+  AppBskyEmbedVideo,
   AppBskyFeedDefs,
 } from '@atproto/api'
 import Image from 'next/image'
@@ -19,21 +20,21 @@ import { Comments, Likes, Reposted } from '../../lib/icons'
 interface Props {
   post: AppBskyFeedDefs.PostView
   reposted: boolean
-  fillColor: string
+  date: string
 }
 
-export default function BskyPostCard({ post, reposted, fillColor }: Props) {
+export default function BskyPostCard({ post, reposted, date }: Props) {
   const record = post.record as PostRecordFields
   const postLink = `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/')[4]}`
   const handleLink = `https://bsky.app/profile/${post.author.handle}`
 
   return (
-    <article className="break-inside mb-5 shadow-small rounded-2xl h-fit bg-sg-multicolour hover:shadow-medium transition-shadow duration-200">
+    <article className="break-inside mb-5 shadow-small rounded-2xl h-fit bg-sg-multicolour text-daccent-1 dark:text-accent-1 hover:shadow-medium transition-shadow duration-200">
       <div className="mb-0 backdrop-blur-xl rounded-2xl">
         <div className="pb-4" />
         {reposted && (
           <span className="flex flex-row ml-20 mt-0 items-center gap-2">
-            <Reposted height="16px" width="16px" color={fillColor} />
+            <Reposted height="16px" width="16px" />
             Reposted by me
           </span>
         )}
@@ -64,7 +65,7 @@ export default function BskyPostCard({ post, reposted, fillColor }: Props) {
             </p>
           </div>
           <p className="self-center mr-5 text-sm">
-            {getRenderTimeFromPost(record.createdAt)}
+            {getRenderTimeFromPost(date)}
           </p>
         </div>
 
@@ -80,19 +81,19 @@ export default function BskyPostCard({ post, reposted, fillColor }: Props) {
               href={postLink}
               label={`${post.likeCount ?? 0} likes on Bluesky`}
               count={post.likeCount}
-              icon={<Likes height="25px" width="25px" color={fillColor} />}
+              icon={<Likes height="25px" width="25px" />}
             />
             <PostMetric
               href={postLink}
               label={`${(post.repostCount ?? 0) + (post.quoteCount ?? 0)} reposts on Bluesky`}
               count={(post.repostCount ?? 0) + (post.quoteCount ?? 0)}
-              icon={<Reposted height="25px" width="25px" color={fillColor} />}
+              icon={<Reposted height="25px" width="25px" />}
             />
             <PostMetric
               href={postLink}
               label={`${post.replyCount ?? 0} replies on Bluesky`}
               count={post.replyCount}
-              icon={<Comments height="25px" width="25px" color={fillColor} />}
+              icon={<Comments height="25px" width="25px" />}
             />
           </div>
 
@@ -156,6 +157,31 @@ function PostEmbeds({ post }: { post: AppBskyFeedDefs.PostView }) {
 
   if (AppBskyEmbedImages.isView(embed)) {
     return <ImageEmbed images={embed.images} />
+  }
+
+  if (AppBskyEmbedVideo.isView(embed)) {
+    return (
+      <a
+        href={`https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/')[4]}`}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="relative mb-5 block aspect-video overflow-hidden rounded-xl bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+        aria-label={`Watch video by @${post.author.handle} on Bluesky`}
+      >
+        {embed.thumbnail && (
+          <Image
+            src={embed.thumbnail}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="(min-width: 1024px) 50vw, 100vw"
+          />
+        )}
+        <span className="absolute inset-0 flex items-center justify-center bg-black/25 text-lg font-semibold text-white">
+          ▶ <span className="sr-only">Watch video on Bluesky</span>
+        </span>
+      </a>
+    )
   }
 
   if (AppBskyEmbedExternal.isView(embed)) {

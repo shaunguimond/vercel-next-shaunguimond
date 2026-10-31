@@ -41,6 +41,10 @@ module.exports = {
       },
       {
         protocol: "https",
+        hostname: "video.bsky.app",
+      },
+      {
+        protocol: "https",
         hostname: "atp.shaunguimond.com",
       },
     ],
@@ -73,7 +77,7 @@ module.exports = {
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
       `style-src 'self' 'unsafe-inline'${isPreview ? " https://vercel.live" : ""}`,
-      `img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://atp.shaunguimond.com${isPreview ? " https://vercel.live https://vercel.com" : ""}`,
+      `img-src 'self' data: blob: https://wp.shaunguimond.com https://*.smushcdn.com https://secure.gravatar.com https://cdn.bsky.app https://avatars.bsky.app https://pbs.bsky.app https://video.bsky.app https://atp.shaunguimond.com${isPreview ? " https://vercel.live https://vercel.com" : ""}`,
       `font-src 'self'${isPreview ? " https://vercel.live https://assets.vercel.com" : ""}`,
       `connect-src 'self' https://public.api.bsky.app https://wp.shaunguimond.com https://atp.shaunguimond.com https://vercel.com https://va.vercel-insights.com https://vitals.vercel-insights.com${isPreview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
       "object-src 'none'",

@@ -57,7 +57,12 @@ export async function getRecentBlueskyActivities(): Promise<AtmosphereActivity[]
 
     return data.feed.flatMap((item) => {
       const record = item.post.record as { createdAt?: unknown }
-      const date = parseDate(record.createdAt) ?? parseDate(item.post.indexedAt)
+      const reason = item.reason as { $type?: string; indexedAt?: unknown } | undefined
+      const reposted = reason?.$type === 'app.bsky.feed.defs#reasonRepost'
+      const date =
+        (reposted ? parseDate(reason?.indexedAt) : undefined) ??
+        parseDate(record.createdAt) ??
+        parseDate(item.post.indexedAt)
       if (!date) return []
 
       return [
@@ -66,7 +71,7 @@ export async function getRecentBlueskyActivities(): Promise<AtmosphereActivity[]
           type: 'bluesky' as const,
           date,
           post: item.post,
-          reposted: item.reason?.$type === 'app.bsky.feed.defs#reasonRepost',
+          reposted,
         },
       ]
     })
@@ -100,28 +105,10 @@ export async function getPdsActivities(): Promise<AtmosphereActivity[]> {
 export function mergeAtmosphereActivities(
   ...sources: AtmosphereActivity[][]
 ): AtmosphereActivity[] {
-  const allActivities = sources.flat().sort((a, b) => b.date.localeCompare(a.date))
-  const includedIds = new Set<string>()
-  const selected: AtmosphereActivity[] = []
-  const selectedTypes = new Set<AtmosphereActivity['type']>()
-
-  // Keep the newest entry from every source represented before filling the
-  // remaining space with the newest activity overall.
-  for (const activity of allActivities) {
-    if (selectedTypes.has(activity.type)) continue
-    selected.push(activity)
-    selectedTypes.add(activity.type)
-    includedIds.add(activity.id)
-  }
-
-  for (const activity of allActivities) {
-    if (selected.length >= MAX_ACTIVITY_ITEMS) break
-    if (includedIds.has(activity.id)) continue
-    selected.push(activity)
-    includedIds.add(activity.id)
-  }
-
-  return selected.sort((a, b) => b.date.localeCompare(a.date))
+  return sources
+    .flat()
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, MAX_ACTIVITY_ITEMS)
 }
 
 async function listAllRecords(collection: string): Promise<PdsRecord[]> {

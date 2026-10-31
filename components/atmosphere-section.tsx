@@ -1,14 +1,7 @@
-'use client'
-
-import { useTheme } from 'next-themes'
 import type { AtmosphereActivity } from '../lib/atmosphere-feed'
 import BskyPostCard from './Bluesky/bsky-post-card'
 
 export default function AtmosphereSection({ activities }: { activities: AtmosphereActivity[] }) {
-  const { systemTheme, theme } = useTheme()
-  const currentTheme = theme === 'system' ? systemTheme : theme
-  const fillColor = currentTheme === 'dark' ? 'white' : 'black'
-
   return (
     <section className="mx-1" aria-labelledby="atmosphere-heading">
       <h2 id="atmosphere-heading" className="my-8 text-center text-3xl font-bold">
@@ -23,7 +16,7 @@ export default function AtmosphereSection({ activities }: { activities: Atmosphe
                   key={activity.id}
                   post={activity.post}
                   reposted={activity.reposted}
-                  fillColor={fillColor}
+                  date={activity.date}
                 />
               )
             }
