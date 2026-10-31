@@ -77,6 +77,11 @@ function post(title: string, slug: string): PaginatedPostConnection['edges'][num
   }
 }
 
+function chooseFilter(filter: 'tag' | 'year', option: string) {
+  fireEvent.click(screen.getByRole('combobox', { name: `Filter by ${filter}` }))
+  fireEvent.click(screen.getByRole('option', { name: option }))
+}
+
 const fetchMock = vi.fn()
 
 beforeEach(() => {
@@ -151,7 +156,9 @@ describe('category archive filters', () => {
   it('shows the tag and year options supplied for the whole category', () => {
     render(<CategoryPostList category={makeCategory(false)} />)
 
+    fireEvent.click(screen.getByRole('combobox', { name: 'Filter by tag' }))
     expect(screen.getByRole('option', { name: 'Accessibility' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('combobox', { name: 'Filter by year' }))
     expect(screen.getByRole('option', { name: '2025' })).toBeTruthy()
   })
 
@@ -162,11 +169,11 @@ describe('category archive filters', () => {
       .mockResolvedValueOnce(pageResponse([post('Next filtered page', 'next-filtered-post')], null, false))
     render(<CategoryPostList category={makeCategory(false)} />)
 
-    fireEvent.change(screen.getByLabelText('Tag'), { target: { value: 'accessibility' } })
+    chooseFilter('tag', 'Accessibility')
     expect(await screen.findByText('Tagged posts')).toBeTruthy()
     expect(screen.queryByText('First post')).toBeNull()
 
-    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2025' } })
+    chooseFilter('year', '2025')
     expect(await screen.findByText('Filtered posts')).toBeTruthy()
     expect(screen.queryByText('Tagged posts')).toBeNull()
 
@@ -196,7 +203,7 @@ describe('category archive filters', () => {
     fetchMock.mockResolvedValueOnce(pageResponse([], null, false))
     render(<CategoryPostList category={makeCategory(false)} />)
 
-    fireEvent.change(screen.getByLabelText('Tag'), { target: { value: 'accessibility' } })
+    chooseFilter('tag', 'Accessibility')
 
     expect(await screen.findByText('No posts match these filters.')).toBeTruthy()
     expect(screen.queryByText('First post')).toBeNull()
@@ -217,7 +224,7 @@ describe('category archive filters', () => {
         {} as IntersectionObserver,
       ),
     )
-    fireEvent.change(screen.getByLabelText('Tag'), { target: { value: 'accessibility' } })
+    chooseFilter('tag', 'Accessibility')
     expect(await screen.findByText('Filtered post')).toBeTruthy()
 
     await act(async () => {
