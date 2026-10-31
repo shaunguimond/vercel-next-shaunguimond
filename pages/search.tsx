@@ -22,10 +22,15 @@ export default function SearchPage({ search, results, matchingCategories }: Sear
       </Head>
       <Container>
         <section className="mx-auto mb-16 max-w-4xl">
-          <h1 className="mb-8 text-center text-5xl font-bold tracking-tight md:text-6xl">
+          <h1 className="mb-8 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
             Search the archive
           </h1>
-          <form action="/search" method="get" role="search" className="flex flex-col gap-3 sm:flex-row">
+          <form
+            action="/search"
+            method="get"
+            role="search"
+            className="flex flex-col gap-3 sm:flex-row"
+          >
             <label htmlFor="search-query" className="sr-only">
               Search posts and categories
             </label>
@@ -36,11 +41,11 @@ export default function SearchPage({ search, results, matchingCategories }: Sear
               maxLength={100}
               defaultValue={search}
               placeholder="Search posts and categories"
-              className="min-w-0 flex-1 rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              className="min-h-12 min-w-0 flex-1 rounded-lg border border-slate-400 bg-white px-4 py-3 text-slate-950 dark:border-slate-400 dark:bg-slate-900 dark:text-white"
             />
             <button
               type="submit"
-              className="rounded-lg bg-accent-3 px-6 py-3 font-semibold text-slate-950 hover:opacity-90 dark:bg-daccent-1 dark:text-accent-1"
+              className="min-h-12 rounded-lg bg-accent-3 px-6 py-3 font-semibold text-slate-950 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:bg-daccent-1 dark:text-accent-1"
             >
               Search
             </button>
