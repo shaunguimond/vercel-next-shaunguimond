@@ -10,6 +10,9 @@ new URL(process.env.WORDPRESS_API_URL)
 
 /** @type {import('next').NextConfig} */
 module.exports = {
+  // The framework banner is only a fingerprint for automated scanners; the
+  // site reveals nothing that the HTML and JS bundles do not already show.
+  poweredByHeader: false,
   // Bundle sanitize-html and its ESM-only htmlparser2 dependency into Pages
   // Router server functions instead of loading them through Node's require().
   transpilePackages: ["sanitize-html"],

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getCategoryPostsPage } from '../../../../lib/api'
-import posts from './posts'
+import { getCategoryPostsPage } from '../../lib/api'
+import posts from '../../pages/api/categories/[slug]/posts'
 
-vi.mock('../../../../lib/api', () => ({
+vi.mock('../../lib/api', () => ({
   getCategoryPostsPage: vi.fn(),
 }))
 
