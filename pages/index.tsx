@@ -34,6 +34,12 @@ export default function Index({
       <Seo title={SITE_NAME} path="/" />
       <JsonLd data={webSiteJsonLd()} />
       <Container>
+        {/*
+          The page has no title of its own — the header carries the site name as
+          a heading below this level — so assistive technology is left without a
+          first-level heading to announce what this page is.
+        */}
+        <h1 className="sr-only">{`${SITE_NAME}: essays, projects, and travel notes`}</h1>
         {heroPost && (
           <HeroPost
             title={heroPost.title}

@@ -57,7 +57,15 @@
     --color-laccent-2: #d9dcf2b3;
     --color-daccent-1: #242a3e;
     --color-daccent-2: #070a15cc;
-    --color-brand: rgba(23, 105, 75, 0.5);
+    /*
+     * Brand green at full strength. The design used rgba(23, 105, 75, 0.5), and
+     * at 50% the colour is determined by whatever is behind it: white button
+     * labels on it reached 2.3:1 on light surfaces, under the 4.5:1 WCAG AA
+     * asks for. On the dark canvas the same colour is fine (9.9:1), so that is
+     * kept there. `html.dark` rather than `.dark` so it wins against the `:root`
+     * rule Tailwind generates for this variable, whichever order they land in.
+     */
+    --color-brand: #17694b;
     --color-accent-1: #fafafa;
     --color-accent-2: #eaeaea;
     --color-accent-3: #acb1db;
@@ -92,6 +100,10 @@
     --breakpoint-mobile: 480px;
     --breakpoint-tablet: 768px;
     --breakpoint-desktop: 1280px;
+}
+
+html.dark {
+    --color-brand: rgba(23, 105, 75, 0.5);
 }
 
 @layer utilities {
