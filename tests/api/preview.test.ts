@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getPreviewPost } from '../../lib/api'
-import preview from './preview'
+import preview from '../../pages/api/preview'
 
 vi.mock('../../lib/api', () => ({
   getPreviewPost: vi.fn(),

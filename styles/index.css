@@ -107,6 +107,10 @@
     src:
         local(""),
         url(/fonts/Gotu-Regular.woff2) format("woff2");
+    /* Without this the custom faces block text rendering, so headings and body
+       copy disappear until the woff2 files download. swap keeps the fallback
+       face visible immediately. */
+    font-display: swap;
 }
 
 @font-face {
@@ -114,6 +118,7 @@
     src:
         local(""),
         url(/fonts/Quicksand-Regular.woff2) format("woff2");
+    font-display: swap;
 }
 
 /* Variables*/
