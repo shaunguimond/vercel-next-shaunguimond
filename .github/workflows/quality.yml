@@ -19,3 +19,9 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm typecheck
+      # The build is the only check that runs the config and the data fetching:
+      # an invalid `revalidate`, a `getStaticProps` that throws, or a rewrite
+      # that shadows a page fails here and nowhere else. It needs no secrets —
+      # the build degrades to a site with no posts when WordPress is
+      # unreachable, which is exactly what a pull request branch should do.
+      - run: pnpm build
