@@ -1,19 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getPreviewPost } from '../../lib/api'
+import { previewSecret } from '../../lib/preview-secret'
 
-export default async function preview(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function preview(req: NextApiRequest, res: NextApiResponse) {
   const { secret, id, slug } = req.query
+  const configured = previewSecret()
 
   // Check the secret and next parameters
   // This secret should only be known by this API route
-  if (
-    !process.env.WORDPRESS_PREVIEW_SECRET ||
-    secret !== process.env.WORDPRESS_PREVIEW_SECRET ||
-    (!id && !slug)
-  ) {
+  if (!configured || secret !== configured || (!id && !slug)) {
+    if (!configured) {
+      // Worth a log line: this means the deployment kept the placeholder from
+      // `.env`, so preview mode is off until a real secret is set.
+      console.warn(
+        'Preview mode is disabled: WORDPRESS_PREVIEW_SECRET is unset or still the example value.',
+      )
+    }
     return res.status(401).json({ message: 'Invalid token' })
   }
 
