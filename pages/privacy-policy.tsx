@@ -51,6 +51,9 @@ export default function PrivacyPolicy() {
       />
       <Container>
         <article>
+          <h1 className="mb-8 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+            Privacy Policy
+          </h1>
           <PostBody content={PRIVACY_POLICY_CONTENT} />
         </article>
       </Container>

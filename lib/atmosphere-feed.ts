@@ -1,4 +1,4 @@
-import type { AppBskyFeedDefs, AppBskyFeedGetAuthorFeed } from '@atproto/api'
+import type { PostView } from './bluesky-view'
 import { BSKY_AUTHOR_FEED } from './constants'
 
 const PDS_URL = process.env.PDS_URL
@@ -21,7 +21,7 @@ type ActivityBase = {
 export type AtmosphereActivity =
   | (ActivityBase & {
       type: 'bluesky'
-      post: AppBskyFeedDefs.PostView
+      post: PostView
       reposted: boolean
     })
   | (ActivityBase & {
@@ -52,7 +52,7 @@ export async function getRecentBlueskyActivities(): Promise<AtmosphereActivity[]
     })
     if (!response.ok) return []
 
-    const data = (await response.json()) as AppBskyFeedGetAuthorFeed.OutputSchema
+    const data = (await response.json()) as { feed?: { post: PostView; reason?: { $type?: string }; }[] }
     if (!Array.isArray(data.feed)) return []
 
     return data.feed.flatMap((item) => {
