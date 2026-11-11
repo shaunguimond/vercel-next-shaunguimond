@@ -7,11 +7,16 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Pinned majors, not `@latest`: an action update should not be able to
+      # break the check that tells you about a broken commit. `@v4` of these
+      # declared the Node 20 runtime GitHub deprecated in September 2025, so the
+      # runner had to force every step onto Node 24 and warned about it in every
+      # run.
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -19,3 +24,9 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm typecheck
+      # The build is the only check that runs the config and the data fetching:
+      # an invalid `revalidate`, a `getStaticProps` that throws, or a rewrite
+      # that shadows a page fails here and nowhere else. It needs no secrets —
+      # the build degrades to a site with no posts when WordPress is
+      # unreachable, which is exactly what a pull request branch should do.
+      - run: pnpm build

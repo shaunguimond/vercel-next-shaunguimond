@@ -58,4 +58,46 @@ describe('WordPress preview route', () => {
     })
     expect(res.end).toHaveBeenCalled()
   })
+
+  it('treats the secret committed to this repository as no secret', async () => {
+    // `.env` carries this value in git, so a visitor who presents it has proven
+    // only that they read the repository.
+    vi.stubEnv('WORDPRESS_PREVIEW_SECRET', 'a-strong-preview-secret-key-change-in-production')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const res = makeResponse()
+
+    await preview(
+      {
+        query: {
+          secret: 'a-strong-preview-secret-key-change-in-production',
+          id: '42',
+        },
+      } as unknown as NextApiRequest,
+      res as unknown as NextApiResponse
+    )
+
+    expect(res.status).toHaveBeenCalledWith(401)
+    expect(getPreviewPost).not.toHaveBeenCalled()
+    expect(res.setPreviewData).not.toHaveBeenCalled()
+    // The log line is how a deployment finds out preview mode never turned on.
+    expect(warn.mock.calls.map(([message]) => message).join('')).toContain(
+      'Preview mode is disabled'
+    )
+    warn.mockRestore()
+  })
+
+  it('refuses every request while the deployment sets no secret', async () => {
+    vi.stubEnv('WORDPRESS_PREVIEW_SECRET', '')
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const res = makeResponse()
+
+    await preview(
+      { query: { secret: '', id: '42' } } as unknown as NextApiRequest,
+      res as unknown as NextApiResponse
+    )
+
+    expect(res.status).toHaveBeenCalledWith(401)
+    expect(getPreviewPost).not.toHaveBeenCalled()
+    warn.mockRestore()
+  })
 })

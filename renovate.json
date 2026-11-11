@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "_comment": "Dependencies are updated by Renovate pull requests, one batch per schedule, so an update lands with a Vercel preview build to look at rather than as a surprise during a deploy.",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitsDisabled",
+    ":label(dependencies)",
+    ":widenPeerDependencies"
+  ],
+  "updateInternalDeps": true,
+  "packageRules": [
+    {
+      "_comment": "Routine updates arrive together. A green preview build is enough to merge a patch, and reviewing forty separate pull requests teaches nobody anything.",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "minor and patch updates",
+      "automerge": false
+    },
+    {
+      "_comment": "The framework boundary deserves its own review: Next, React, and their types move together and break together.",
+      "matchPackageNames": [
+        "next",
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "/^@next\//"
+      ],
+      "separateMajorMinor": true,
+      "groupName": "Next.js and React majors",
+      "major": {
+        "groupName": "Next.js and React majors"
+      }
+    },
+    {
+      "_comment": "The toolchain changes how the code is checked, not what the site does, so it updates apart from the runtime.",
+      "matchCategories": ["types", "devDependencies"],
+      "groupName": "toolchain",
+      "groupSlug": "toolchain"
+    }
+  ],
+  "rangeStrategy": "bump",
+  "prConcurrentLimit": 4,
+  "prHourlyLimit": 10,
+  "rebaseWhen": "conflicted",
+  "schedule": ["before 6am on monday"]
+}
