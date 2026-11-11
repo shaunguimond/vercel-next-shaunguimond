@@ -52,6 +52,21 @@ module.exports = {
       },
     ],
   },
+  // `/sitemap.xml` and `/feed.xml` are XML payloads, and Pages Router only
+  // emits those from API routes: a page would arrive wrapped in the HTML
+  // document shell. The rewrite keeps the conventional crawlable URLs out of
+  // robots.txt, the sitemap, and the feed's self-link instead of exposing the
+  // `/api` path in all three. Applied after `pages/` and `public/`, so nothing
+  // here shadows a real route.
+  async rewrites() {
+    return [
+      { source: '/sitemap.xml', destination: '/api/sitemap' },
+      { source: '/feed.xml', destination: '/api/feed' },
+      { source: '/feed', destination: '/api/feed' },
+      { source: '/rss.xml', destination: '/api/feed' },
+      { source: '/atom.xml', destination: '/api/feed' },
+    ]
+  },
   async headers() {
     // Vercel already sends Strict-Transport-Security, so it is not set here.
     //

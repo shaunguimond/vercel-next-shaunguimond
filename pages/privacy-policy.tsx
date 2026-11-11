@@ -1,7 +1,7 @@
-import Head from 'next/head'
 import Layout from '../components/layout'
 import Container from '../components/container'
 import PostBody from '../components/post-body'
+import Seo from '../components/seo'
 
 // Static copy of the WordPress Privacy Policy page.
 // This page is now custom-built in code instead of being pulled from
@@ -44,9 +44,11 @@ const PRIVACY_POLICY_CONTENT = `
 export default function PrivacyPolicy() {
   return (
     <Layout>
-      <Head>
-        <title>Privacy Policy | Shaun Guimond</title>
-      </Head>
+      <Seo
+        title="Privacy Policy | Shaun Guimond"
+        description="How shaunguimond.com handles comments, cookies, embedded content, analytics, and the data it retains."
+        path="/privacy-policy"
+      />
       <Container>
         <article>
           <PostBody content={PRIVACY_POLICY_CONTENT} />

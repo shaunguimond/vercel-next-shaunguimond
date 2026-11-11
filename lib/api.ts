@@ -246,6 +246,7 @@ export async function getPostAndMorePosts(
       excerpt
       slug
       date
+      modified
       featuredImage {
         node {
           sourceUrl
@@ -664,4 +665,115 @@ export async function getCategoryPostsPage(
   )
 
   return data.category?.posts ?? null
+}
+
+/**
+ * Slug and modification time for every published post, used to build
+ * `/sitemap.xml`. Paginated like `getAllPostsWithSlug`, because the sitemap has
+ * to list every post rather than the newest page of them.
+ */
+export interface SitemapPostNode {
+  slug: string
+  modified?: string | null
+}
+
+export async function getAllPostsForSitemap(): Promise<SitemapPostNode[]> {
+  const edges: { node: SitemapPostNode }[] = []
+  let after: string | null = null
+  let hasNextPage: boolean
+
+  do {
+    const data: {
+      posts: {
+        pageInfo: { endCursor: string | null; hasNextPage: boolean }
+        edges: { node: SitemapPostNode }[]
+      }
+    } = await fetchAPI(
+      `
+      query SitemapPosts($after: String) {
+        posts(first: 100, after: $after, where: { status: PUBLISH }) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          edges {
+            node {
+              slug
+              modified
+            }
+          }
+        }
+      }
+    `,
+      { variables: { after } }
+    )
+
+    const page = data.posts
+    edges.push(...page.edges)
+    hasNextPage = page.pageInfo.hasNextPage
+    const nextAfter = page.pageInfo.endCursor
+
+    if (hasNextPage && (!nextAfter || nextAfter === after)) {
+      throw new Error('WordPress post pagination returned no advancing cursor')
+    }
+    after = nextAfter
+  } while (hasNextPage)
+
+  return edges.map(({ node }) => node)
+}
+
+/** Fields the RSS `<item>` elements need. */
+export interface FeedPostNode {
+  title: string
+  slug: string
+  excerpt: string
+  content?: string | null
+  date?: string | null
+  modified?: string | null
+  author?: { node?: { name?: string | null } | null } | null
+  categories?: { edges: { node: { name: string } }[] } | null
+}
+
+/**
+ * The most recent published posts for the RSS feed. Drafts are excluded by
+ * leaving the preview `Authorization` header unused: a feed must not be a way to
+ * read unpublished work.
+ */
+export async function getFeedPosts(limit = 20): Promise<FeedPostNode[]> {
+  const data = await fetchAPI<{ posts: { edges: { node: FeedPostNode }[] } }>(
+    `
+    query FeedPosts($first: Int) {
+      posts(
+        first: $first
+        where: { orderby: { field: DATE, order: DESC }, status: PUBLISH }
+      ) {
+        edges {
+          node {
+            title
+            slug
+            excerpt
+            content
+            date
+            modified
+            author {
+              node {
+                name
+              }
+            }
+            categories {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `,
+    { variables: { first: limit } }
+  )
+
+  return data.posts.edges.map(({ node }) => node)
 }

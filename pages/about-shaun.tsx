@@ -1,9 +1,9 @@
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useRef, useState } from 'react'
 import Layout from '../components/layout'
+import Seo from '../components/seo'
 
 const topics = [
   {
@@ -68,13 +68,11 @@ export default function AboutShaun() {
 
   return (
     <Layout>
-      <Head>
-        <title>About Shaun | Shaun Guimond</title>
-        <meta
-          name="description"
-          content="Meet Shaun Guimond: a software engineer in Vancouver writing about technology, projects, learning, and travel."
-        />
-      </Head>
+      <Seo
+        title="About Shaun | Shaun Guimond"
+        description="Meet Shaun Guimond: a software engineer in Vancouver writing about technology, projects, learning, and travel."
+        path="/about-shaun"
+      />
 
       <div className="mx-auto max-w-6xl px-5 pb-20">
         <section className="grid gap-10 py-8 md:gap-14 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-14">

@@ -1,10 +1,11 @@
-import Head from 'next/head'
 import Link from 'next/link'
 import type { GetServerSideProps } from 'next'
 import Container from '../components/container'
 import Layout from '../components/layout'
+import Seo from '../components/seo'
 import SearchPostList from '../components/search-post-list'
 import { getAllCategoriesWithSlug, getSearchPosts } from '../lib/api'
+import { SITE_NAME } from '../lib/seo'
 import type { PaginatedPostConnection } from '../lib/types'
 
 interface SearchPageProps {
@@ -16,10 +17,17 @@ interface SearchPageProps {
 export default function SearchPage({ search, results, matchingCategories }: SearchPageProps) {
   return (
     <Layout>
-      <Head>
-        <title>{search ? `Search: ${search} | Shaun Guimond` : 'Search | Shaun Guimond'}</title>
-        <meta name="robots" content="noindex, follow" />
-      </Head>
+      {/*
+        Every query string renders the same utility page, so they all canonicalise
+        to /search and stay out of the index: a crawler that follows search links
+        would otherwise find infinite near-duplicate result sets.
+      */}
+      <Seo
+        title={search ? `Search: ${search} | ${SITE_NAME}` : `Search | ${SITE_NAME}`}
+        description="Search every post, project, and travel story on shaunguimond.com."
+        path="/search"
+        noindex
+      />
       <Container>
         <section className="mx-auto mb-16 max-w-4xl">
           <h1 className="mb-8 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">

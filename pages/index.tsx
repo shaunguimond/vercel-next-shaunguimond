@@ -1,10 +1,10 @@
 import { GetStaticProps } from 'next'
-import Head from 'next/head'
 import AtmosphereSection from '../components/atmosphere-section'
 import Container from '../components/container'
 import HeroPost from '../components/hero-post'
 import Layout from '../components/layout'
 import MoreStories from '../components/more-stories'
+import Seo, { JsonLd } from '../components/seo'
 import { getAllPostsForHome } from '../lib/api'
 import {
   type AtmosphereActivity,
@@ -12,7 +12,7 @@ import {
   getRecentBlueskyActivities,
   mergeAtmosphereActivities,
 } from '../lib/atmosphere-feed'
-import { HOME_OG_IMAGE_URL } from '../lib/constants'
+import { SITE_NAME, webSiteJsonLd } from '../lib/seo'
 import type { PostEdge } from '../lib/types'
 
 export default function Index({
@@ -31,10 +31,8 @@ export default function Index({
 
   return (
     <Layout preview={preview}>
-      <Head>
-        <title>Shaun Guimond</title>
-        <meta property="og:image" content={HOME_OG_IMAGE_URL} />
-      </Head>
+      <Seo title={SITE_NAME} path="/" />
+      <JsonLd data={webSiteJsonLd()} />
       <Container>
         {heroPost && (
           <HeroPost

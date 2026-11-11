@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useTheme } from 'next-themes'
+import { SITE_NAME, absoluteUrl } from '../lib/seo'
 
 // Browser-chrome colours for the two themes. The light value is
 // --color-laccent-1 (#acb1db at 70% alpha) composited over the white canvas
@@ -72,6 +73,14 @@ export default function Meta() {
     <Head>
       {renderThemeIcons()}
       <link rel="manifest" href="/favicon/site.webmanifest" />
+      {/* Feed autodiscovery: readers and browser read-mode find the feed from
+          any page, which is also how the site advertises it in one place. */}
+      <link
+        rel="alternate"
+        type="application/rss+xml"
+        title={`${SITE_NAME} — RSS`}
+        href={absoluteUrl('/feed.xml')}
+      />
       <link rel="me" href="https://sifa.id/p/shaunguimond.com" />
       <link
         rel="mask-icon"
@@ -90,10 +99,9 @@ export default function Meta() {
         name="theme-color"
         content={currentTheme === 'dark' ? THEME_COLORS.dark : THEME_COLORS.light}
       />
-      <meta
-        name="description"
-        content="Essays on technology, business, travel, and personal projects by Shaun Guimond."
-      />
+      {/* Title and description are per-document and live on <Seo>: Next's <Head>
+          de-duplicates <meta> by `name`, so emitting a site-wide default here as
+          well would make the winner depend on render order. */}
     </Head>
   )
 }

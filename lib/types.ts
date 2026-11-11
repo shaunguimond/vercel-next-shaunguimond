@@ -30,6 +30,8 @@ export interface PostNode {
   excerpt: string
   slug: string
   date: string
+  /** Last edit, used for `schema.org/dateModified` and the feed. */
+  modified?: string | null
   featuredImage?: FeaturedImage | null
   author?: AuthorEdge | null
   categories?: { edges: TermEdge[] } | null
