@@ -1,31 +1,29 @@
-import {
-  AppBskyEmbedExternal,
-  AppBskyEmbedImages,
-  AppBskyEmbedRecord,
-  AppBskyEmbedRecordWithMedia,
-  AppBskyEmbedVideo,
-  AppBskyFeedDefs,
-} from '@atproto/api'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import BskyVideo from './bsky-video'
+import { getFormattedText, getFormattedTextForRecord, getRenderTimeFromPost } from '../../lib/bluesky-format'
 import {
-  EmbedView,
-  getFormattedText,
-  getFormattedTextForRecord,
-  getRenderTimeFromPost,
-  PostRecordFields,
-} from '../../lib/bluesky-format'
+  type ExternalView,
+  type ImagesView,
+  type PostRecord,
+  type PostView,
+  type EmbeddedRecordView,
+  isExternalView,
+  isImagesView,
+  isRecordView,
+  isRecordWithMediaView,
+  isVideoView,
+} from '../../lib/bluesky-view'
 import { Comments, Likes, Reposted } from '../../lib/icons'
 
 interface Props {
-  post: AppBskyFeedDefs.PostView
+  post: PostView
   reposted: boolean
   date: string
 }
 
 export default function BskyPostCard({ post, reposted, date }: Props) {
-  const record = post.record as PostRecordFields
+  const record = post.record as PostRecord
   const postLink = `https://bsky.app/profile/${post.author.handle}/post/${post.uri.split('/')[4]}`
   const handleLink = `https://bsky.app/profile/${post.author.handle}`
 
@@ -139,12 +137,12 @@ function PostMetric({
   )
 }
 
-function PostEmbeds({ post }: { post: AppBskyFeedDefs.PostView }) {
+function PostEmbeds({ post }: { post: PostView }) {
   const embed = post.embed
   if (!embed) return null
 
-  if (AppBskyEmbedRecordWithMedia.isView(embed)) {
-    return AppBskyEmbedImages.isView(embed.media) ? (
+  if (isRecordWithMediaView(embed)) {
+    return isImagesView(embed.media) ? (
       <>
         <ImageEmbed images={embed.media.images} />
         <ViewRecord record={embed.record.record} />
@@ -152,15 +150,15 @@ function PostEmbeds({ post }: { post: AppBskyFeedDefs.PostView }) {
     ) : null
   }
 
-  if (AppBskyEmbedRecord.isView(embed)) {
+  if (isRecordView(embed)) {
     return <ViewRecord record={embed.record} />
   }
 
-  if (AppBskyEmbedImages.isView(embed)) {
+  if (isImagesView(embed)) {
     return <ImageEmbed images={embed.images} />
   }
 
-  if (AppBskyEmbedVideo.isView(embed)) {
+  if (isVideoView(embed)) {
     return (
       <BskyVideo
         src={embed.playlist}
@@ -171,14 +169,14 @@ function PostEmbeds({ post }: { post: AppBskyFeedDefs.PostView }) {
     )
   }
 
-  if (AppBskyEmbedExternal.isView(embed)) {
+  if (isExternalView(embed)) {
     return <ExternalView embed={embed} />
   }
 
   return null
 }
 
-function ImageEmbed({ images }: { images?: AppBskyEmbedImages.ViewImage[] }) {
+function ImageEmbed({ images }: { images?: ImagesView["images"] }) {
   const safeImages = Array.isArray(images) ? images : []
   return (
     <div className={safeImages.length > 1 ? 'grid grid-cols-2 gap-2 mb-5' : 'mb-5'}>
@@ -197,7 +195,7 @@ function ImageEmbed({ images }: { images?: AppBskyEmbedImages.ViewImage[] }) {
   )
 }
 
-function ExternalView({ embed }: { embed: AppBskyEmbedExternal.View }) {
+function ExternalView({ embed }: { embed: ExternalView }) {
   const hasThumbnail = embed.external.thumb
   return (
     <div className="rounded-2xl backdrop-blur-xl shadow-small h-fit hover:shadow-medium transition-shadow duration-200 my-5">
@@ -227,12 +225,7 @@ function ExternalView({ embed }: { embed: AppBskyEmbedExternal.View }) {
 }
 
 function ViewRecord({ record }: { record: unknown }) {
-  const view = record as {
-    value?: PostRecordFields | null
-    author?: { handle: string; displayName?: string; avatar?: string } | null
-    embeds?: EmbedView[] | null
-    post?: { author?: { handle: string } } | null
-  }
+  const view = record as EmbeddedRecordView
 
   if (!view?.value || !view.author) return null
 
@@ -257,7 +250,7 @@ function ViewRecord({ record }: { record: unknown }) {
             </div>
           </a>
           <p className="line-clamp-1 text-lg self-center flex flex-col">
-            {view.author.displayName ?? view.post?.author?.handle}{' '}
+            {view.author.displayName ?? view.author.handle}{' '}
             <a
               target="_blank"
               rel="noreferrer noopener"
@@ -277,12 +270,8 @@ function ViewRecord({ record }: { record: unknown }) {
           className="text-lg"
           dangerouslySetInnerHTML={{ __html: getFormattedTextForRecord(view) }}
         />
-        {firstEmbed?.$type === 'app.bsky.embed.images#view' && (
-          <ImageEmbed images={firstEmbed.images} />
-        )}
-        {firstEmbed?.$type === 'app.bsky.embed.external#view' && (
-          <ExternalView embed={firstEmbed} />
-        )}
+        {isImagesView(firstEmbed) && <ImageEmbed images={firstEmbed.images} />}
+        {isExternalView(firstEmbed) && <ExternalView embed={firstEmbed} />}
       </div>
     </div>
   )

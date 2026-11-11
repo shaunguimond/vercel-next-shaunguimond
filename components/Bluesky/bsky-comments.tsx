@@ -4,23 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 import {
-  AppBskyFeedDefs,
-  AppBskyFeedPost,
-  type AppBskyFeedGetPostThread,
-} from "@atproto/api";
+  type PostThreadResponse,
+  type PostView,
+  type ThreadViewPost,
+  isPostRecord,
+  isThreadViewPost,
+} from "../../lib/bluesky-view";
 import Container from "../container";
 
 interface Props {
   uri?: string;
 }
 
-type Thread = AppBskyFeedDefs.ThreadViewPost;
 
 
 // Function to fetch the thread data
 const fetchThreadData = async (
   uri: string,
-  setThread: (thread: Thread | null) => void,
+  setThread: (thread: ThreadViewPost | null) => void,
   setError: (error: string) => void,
   signal?: AbortSignal
 ) => {
@@ -35,7 +36,7 @@ const fetchThreadData = async (
 };
 
 export const CommentSection = ({ uri }: Props) => {
-  const [thread, setThread] = useState<Thread | null>(null);
+  const [thread, setThread] = useState<ThreadViewPost | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(3);
 
@@ -58,10 +59,7 @@ export const CommentSection = ({ uri }: Props) => {
     setVisibleCount((prevCount) => prevCount + 5);
   };
 
-  const sortedReplies = (thread?.replies || [])
-    .filter((reply) => AppBskyFeedDefs.isThreadViewPost(reply))
-    .map((reply) => reply as AppBskyFeedDefs.ThreadViewPost)
-    .sort(sortByLikes);
+  const sortedReplies = sortReplies(thread?.replies);
 
   return (
     <Container>
@@ -127,13 +125,12 @@ export const CommentSection = ({ uri }: Props) => {
 };
 
 
-const Comment = ({ comment }: { comment: AppBskyFeedDefs.ThreadViewPost }) => {
+const Comment = ({ comment }: { comment: ThreadViewPost }) => {
   const author = comment.post.author;
   const avatarClassName = "h-10 w-10 shrink-0 rounded-full bg-gray-300";
 
-  if (!AppBskyFeedPost.isRecord(comment.post.record)) return null;
-  
   const record = comment.post.record;
+  if (!isPostRecord(record)) return null;
 
   return (
     <div className="my-4 text-md sm:mx-10 mx-0">
@@ -164,25 +161,21 @@ const Comment = ({ comment }: { comment: AppBskyFeedDefs.ThreadViewPost }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <p>{record.text as string}</p>
+          <p>{record.text}</p>
           <Actions post={comment.post} />
         </Link>
       </div>
       {comment.replies && comment.replies.length > 0 && (
         <div className="border-l-2 border-neutral-600 pl-2">
-          {comment.replies
-            .filter((reply) => AppBskyFeedDefs.isThreadViewPost(reply))
-            .map((reply) => reply as AppBskyFeedDefs.ThreadViewPost)
-            .sort(sortByLikes)
-            .map((reply) => {
-              return <Comment key={reply.post.uri} comment={reply} />;
-            })}
+          {sortReplies(comment.replies).map((reply) => {
+            return <Comment key={reply.post.uri} comment={reply} />;
+          })}
         </div>
       )}
     </div>
   );
 };
-const Actions = ({ post }: { post: AppBskyFeedDefs.PostView }) => (
+const Actions = ({ post }: { post: PostView }) => (
   <div className="mt-2 flex mb-2 w-full max-w-[150px] flex-row items-center justify-between opacity-60">
     <div className="flex flex-row items-center gap-1.5">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
@@ -227,20 +220,17 @@ const getPostThread = async (uri: string, signal?: AbortSignal) => {
     throw new Error("Failed to fetch post thread");
   }
 
-  const data = (await res.json()) as AppBskyFeedGetPostThread.OutputSchema;
+  const data = (await res.json()) as PostThreadResponse;
 
-  if (!AppBskyFeedDefs.isThreadViewPost(data.thread)) {
+  if (!isThreadViewPost(data.thread)) {
     throw new Error("Could not find thread");
   }
   return data.thread;
 };
 
-const sortByLikes = (a: unknown, b: unknown) => {
-  if (
-    !AppBskyFeedDefs.isThreadViewPost(a) ||
-    !AppBskyFeedDefs.isThreadViewPost(b)
-  ) {
-    return 0;
-  }
-  return ((b as AppBskyFeedDefs.ThreadViewPost).post.likeCount ?? 0) - ((a as AppBskyFeedDefs.ThreadViewPost).post.likeCount ?? 0);
-};
+/** Replies can be posts, blocked posts or missing posts, so only threads render. */
+function sortReplies(replies: unknown[] | undefined): ThreadViewPost[] {
+  return (replies ?? [])
+    .filter(isThreadViewPost)
+    .sort((a, b) => (b.post.likeCount ?? 0) - (a.post.likeCount ?? 0))
+}

@@ -4,13 +4,24 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CommentSection } from './bsky-comments'
 
-vi.mock('@atproto/api', () => ({
-  AppBskyFeedDefs: { isThreadViewPost: () => true },
-  AppBskyFeedPost: { isRecord: () => true },
-}))
-
 const postUri = 'at://did:plc:example/app.bsky.feed.post/post-key'
 const fetchMock = vi.fn()
+
+const threadPost = (uri: string, text: string, likeCount = 0) => ({
+  $type: 'app.bsky.feed.defs#postView',
+  uri,
+  cid: 'cid',
+  indexedAt: '2026-02-01T00:00:00.000Z',
+  author: { did: 'did:plc:reply', handle: 'reply.bsky.social', displayName: 'Reply Author' },
+  record: { $type: 'app.bsky.feed.post', text, createdAt: '2026-02-01T00:00:00.000Z' },
+  likeCount,
+})
+
+const threadViewPost = (uri: string, text: string, likeCount = 0, replies: unknown[] = []) => ({
+  $type: 'app.bsky.feed.defs#threadViewPost',
+  post: threadPost(uri, text, likeCount),
+  replies,
+})
 
 beforeEach(() => {
   fetchMock.mockReset()
@@ -29,6 +40,7 @@ describe('Bluesky comment entry point', () => {
       ok: true,
       json: async () => ({
         thread: {
+          $type: 'app.bsky.feed.defs#threadViewPost',
           post: { uri: postUri, likeCount: 0, repostCount: 0, replyCount: 0 },
           replies: [],
         },
@@ -42,6 +54,33 @@ describe('Bluesky comment entry point', () => {
       'https://bsky.app/profile/did:plc:example/post/post-key',
     )
     expect(await screen.findByText('No replies yet. Start the conversation on Bluesky.')).toBeTruthy()
+  })
+
+  it('shows the replies the API returns, highest like count first', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        thread: {
+          $type: 'app.bsky.feed.defs#threadViewPost',
+          post: threadPost(postUri, 'the article'),
+          replies: [
+            threadViewPost('at://did:plc:reply/app.bsky.feed.post/few', 'two likes', 2),
+            // A reply can be a blocked or deleted post instead of a thread.
+            { $type: 'app.bsky.feed.defs#blockedPost', uri: 'at://did:plc:blocked/app.bsky.feed.post/hidden' },
+            threadViewPost('at://did:plc:reply/app.bsky.feed.post/many', 'five likes', 5),
+          ],
+        },
+      }),
+    })
+
+    render(<CommentSection uri={postUri} />)
+
+    // Blocked posts are skipped, and what is left is ordered by like count.
+    expect(await screen.findAllByText('Reply Author')).toHaveLength(2)
+    expect(screen.getAllByText(/^(five|two) likes$/).map((node) => node.textContent)).toEqual([
+      'five likes',
+      'two likes',
+    ])
   })
 
   it('keeps the reply link available if loading the conversation fails', async () => {

@@ -1,28 +1,13 @@
-import {
-  AppBskyEmbedExternal,
-  AppBskyEmbedGallery,
-  AppBskyEmbedImages,
-  AppBskyEmbedRecord,
-  AppBskyEmbedRecordWithMedia,
-  AppBskyEmbedVideo,
-  AppBskyFeedDefs,
-  AppBskyRichtextFacet,
-} from '@atproto/api'
 import sanitizeHtml from 'sanitize-html'
+import {
+  type EmbedView,
+  type Facet,
+  type PostRecord,
+  type PostView,
+  isLinkFacet,
+} from './bluesky-view'
 
-export interface PostRecordFields {
-  text?: string
-  facets?: AppBskyRichtextFacet.Main[]
-  createdAt?: string
-}
-
-export type EmbedView =
-  | AppBskyEmbedImages.View
-  | AppBskyEmbedVideo.View
-  | AppBskyEmbedGallery.View
-  | AppBskyEmbedExternal.View
-  | AppBskyEmbedRecord.View
-  | AppBskyEmbedRecordWithMedia.View
+export type { EmbedView, Facet, PostRecord, PostView }
 
 const BLUESKY_TEXT_SANITIZE_OPTIONS = {
   allowedTags: ['a', 'b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'],
@@ -65,10 +50,10 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;')
 }
 
-function wrapFacetLinks(text: string, facets?: AppBskyRichtextFacet.Main[]): string {
+function wrapFacetLinks(text: string, facets?: Facet[]): string {
   const linkByIndex: (string | null)[] = new Array(text.length).fill(null)
   for (const facet of facets ?? []) {
-    const link = facet.features.find(AppBskyRichtextFacet.isLink)
+    const link = facet.features.find(isLinkFacet)
     if (!link || !isSafeLinkUri(link.uri)) continue
     const start = byteOffsetToCodeUnitIndex(text, facet.index.byteStart)
     const end = byteOffsetToCodeUnitIndex(text, facet.index.byteEnd)
@@ -97,20 +82,20 @@ function wrapFacetLinks(text: string, facets?: AppBskyRichtextFacet.Main[]): str
 
 export function formatPostText(
   text: string | undefined,
-  facets?: AppBskyRichtextFacet.Main[]
+  facets?: Facet[]
 ): string {
   const withLinks = wrapFacetLinks(text ?? '', facets)
   const withLineBreaks = withLinks.replace(/\n/g, '<br>')
   return sanitizeHtml(withLineBreaks, BLUESKY_TEXT_SANITIZE_OPTIONS)
 }
 
-export function getFormattedText(post: AppBskyFeedDefs.PostView): string {
-  const record = post.record as PostRecordFields
+export function getFormattedText(post: PostView): string {
+  const record = post.record as PostRecord
   return formatPostText(record?.text, record?.facets)
 }
 
 export function getFormattedTextForRecord(
-  record: { value?: PostRecordFields | null }
+  record: { value?: PostRecord | null }
 ): string {
   return formatPostText(record?.value?.text, record?.value?.facets)
 }

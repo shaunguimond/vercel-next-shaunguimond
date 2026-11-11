@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { AppBskyRichtextFacet } from '@atproto/api'
-import { formatPostText } from './bluesky-format'
+import { type Facet, formatPostText } from './bluesky-format'
 
-function linkFacet(byteStart: number, byteEnd: number, uri: string) {
+// Facets are written the way the AT Protocol sends them: `$type` discriminants.
+function linkFacet(byteStart: number, byteEnd: number, uri: string): Facet {
   return {
     index: { byteStart, byteEnd },
     features: [{ $type: 'app.bsky.richtext.facet#link', uri }],
-  } as AppBskyRichtextFacet.Main
+  }
 }
 
 describe('Bluesky rich-text formatting', () => {
