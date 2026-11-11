@@ -1,0 +1,14 @@
+# Crawlers are welcome: this is a personal blog, and being found is the point.
+# AI crawlers are deliberately not excluded — the posts here are the kind of
+# writing worth citing, and a citation is worth more than the traffic.
+User-agent: *
+Allow: /
+
+# JSON endpoints (post search, category pages, the feed and sitemap sources).
+# They duplicate content the HTML pages already publish, and a crawler that
+# follows them burns budget on payloads nobody reads.
+Disallow: /api/
+
+# Preview deployments share this file, but they are noindexed and canonicalize
+# to https://shaunguimond.com, so they never compete with production.
+Sitemap: https://shaunguimond.com/sitemap.xml

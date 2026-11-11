@@ -7,6 +7,8 @@ import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import Container from '../../components/container'
 import Head from 'next/head'
+import Seo, { JsonLd } from '../../components/seo'
+import { SITE_NAME, collectionPageJsonLd } from '../../lib/seo'
 import type { CategoryWithPosts } from '../../lib/types'
 
 
@@ -27,13 +29,29 @@ export default function PostsByCategory({
     return(
 
     <Layout preview={preview}>
-      <Head>
-        <title>
-          {router.isFallback
-            ? 'Loading…'
-            : `${category?.name ?? 'Category'} | Shaun Guimond`}
-        </title>
-      </Head>
+      {category ? (
+        <>
+          <Seo
+            title={`${category.name} | ${SITE_NAME}`}
+            description={`Posts filed under ${category.name} on shaunguimond.com.`}
+            path={`/category/${category.slug}`}
+          />
+          <JsonLd
+            data={collectionPageJsonLd(
+              category.name,
+              `Posts filed under ${category.name} on shaunguimond.com.`,
+              `/category/${category.slug}`
+            )}
+          />
+        </>
+      ) : (
+        // Reachable only when WordPress returned no category for the slug: the
+        // document has no content, so it must not be indexed under any URL.
+        <Head>
+          <meta name="robots" content="noindex, follow" />
+          <title>Loading… | {SITE_NAME}</title>
+        </Head>
+      )}
       <Container>
         {category && (
         <>

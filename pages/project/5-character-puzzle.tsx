@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import Head from "next/head";
 import { WORDS } from "../../lib/constants";
 import Layout from "../../components/layout";
+import Seo from "../../components/seo";
 
 
 /**
@@ -138,9 +138,11 @@ export default function WordGuesser({ preview }: { preview?: boolean }) {
     // Render the WordGuesser component
     return (
         <Layout preview={preview}>
-        <Head>
-            <title>5 Character Puzzle | Shaun Guimond</title>
-        </Head>
+        <Seo
+            title="5 Character Puzzle | Shaun Guimond"
+            description="A daily five-letter word guessing game played entirely in the browser."
+            path="/project/5-character-puzzle"
+        />
         <article className="flex w-full flex-col items-center justify-center">
             <div className="word-guesser">
                 <h1 className="text-2xl mb-5 text-center font-bold">5 Character Puzzle</h1>
